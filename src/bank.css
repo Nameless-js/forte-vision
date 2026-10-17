@@ -20,3 +20,25 @@ html[lang="kk"] .game-shell:not(.bank-mode){--pixel:Pixel,'Golos Text',sans-seri
 .header-right{flex-wrap:wrap}
 @media(max-width:1200px){header{flex-wrap:wrap;gap:14px}.header-right{margin-left:auto}.edition,.bank-header-tag{display:none}}
 @media(max-width:600px){.header-right{width:100%;justify-content:space-between;margin-left:0;gap:6px}.language-select{min-width:60px}.theme-toggle button{padding:8px}.local{display:none}}
+
+/* Process steps: outlined counters and a plum hover accent. */
+.bank-mode .status-strip{gap:20px}
+.bank-mode .status-strip .process-step{display:inline-flex;align-items:center;gap:12px;flex-shrink:0;padding:8px 0;color:#91496f}
+.bank-mode .process-number{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border:1px solid #91496f;border-radius:50%;font:500 14px/1 var(--font);transition:background-color .2s,color .2s,border-color .2s}
+.bank-mode .status-strip .process-step b{margin-left:0;color:#30232c;font:500 16px/1.4 var(--font);transition:color .2s}
+.bank-mode .status-strip>i{flex:1 1 36px;width:auto;max-width:220px;min-width:24px;background:#d8cbd2}
+@media(hover:hover){
+ .bank-mode .status-strip .process-step:hover .process-number{background:#91496f;color:#fff;border-color:#91496f}
+ .bank-mode .status-strip .process-step:hover b{color:#91496f}
+}
+@media(max-width:1150px){
+ .bank-mode .status-strip{gap:14px;flex-wrap:wrap}
+ .bank-mode .status-strip .process-step b{font-size:14px}
+ .bank-mode .status-strip>i{max-width:100px}
+}
+@media(max-width:760px){
+ .bank-mode .status-strip{gap:12px 20px}
+ .bank-mode .status-strip .process-step{padding:4px 0;gap:10px}
+ .bank-mode .status-strip .process-step b{font-size:13px}
+ .bank-mode .process-number{width:28px;height:28px;font-size:12px}
+}
