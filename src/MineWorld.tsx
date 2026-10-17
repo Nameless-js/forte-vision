@@ -64,6 +64,13 @@ function MineCanvas({animated}:{animated:boolean}){
    const kx=841,ky=419;rect(kx-5,ky-6,4,6,'#3d5b3e');rect(kx+2,ky-6,4,6,'#34513a');rect(kx-3,ky-19,7,14,'#698650');rect(kx-6,ky-29,13,11,'#83a165');rect(kx-4,ky-25,3,3,'#263d2b');rect(kx+2,ky-25,3,3,'#263d2b');rect(kx-1,ky-22,3,4,'#263d2b');rect(kx-3,ky-20,2,3,'#263d2b');rect(kx+2,ky-20,2,3,'#263d2b');
    const spiderX=584+Math.sin(t*.34)*10,spiderY=435;
    for(let i=0;i<3;i++){const d=Math.sin(t*4+i);line([[spiderX-3,spiderY-3],[spiderX-8-i*2,spiderY-6],[spiderX-12-i,spiderY+d]],'#45434a',1);line([[spiderX+3,spiderY-3],[spiderX+8+i*2,spiderY-6],[spiderX+12+i,spiderY-d]],'#45434a',1)}rect(spiderX-5,spiderY-6,10,5,'#37383f');rect(spiderX-3,spiderY-7,6,4,'#4b454a');rect(spiderX-2,spiderY-6,1,1,'#bd6960');rect(spiderX+1,spiderY-6,1,1,'#bd6960');
+   // Restrained patches of living color: moss, hanging vines and cave crystals.
+   for(const [x,y,w]of [[65,449,35],[283,449,18],[552,435,33],[681,419,26],[816,419,25],[104,614,24]]){rect(x,y-2,w,3,'#637d4e');for(let i=0;i<w;i+=7){rect(x+i,y+1,4,3+noise(x+i,y)*6,'#455f44');if(noise(x+i,8)>.5)rect(x+i,y-3,3,2,'#8b9c57')}}
+   for(const [x,y,len]of [[224,223,37],[733,223,49],[812,207,31]]){for(let i=0;i<len;i+=7){const sway=Math.sin(t*.55+i*.1)*1.2;rect(x+sway,y+i,2,8,'#48684e');rect(x-3+sway,y+i+2,4,3,'#69865a');rect(x+2+sway,y+i+5,4,3,'#536f4c')}for(let i=0;i<2;i++)rect(x-2+i*6,y+len-8+i*5,2,3,'#b9a85e')}
+   for(const [x,y,size]of [[879,518,1],[561,434,.65],[247,465,.6]]){const glow=ctx.createRadialGradient(x,y-7,0,x,y-7,32);glow.addColorStop(0,'#66d3da22');glow.addColorStop(1,'#66d3da00');ctx.fillStyle=glow;ctx.fillRect(x-32,y-39,64,64);for(let i=0;i<3;i++){const xx=x+(i-1)*5*size,h=(i===1?17:10)*size;rect(xx,y-h,4*size,h,i===1?'#79b9d0':'#568aab');rect(xx,y-h,2*size,h,'#a4d7d7');rect(xx,y-h-2*size,2*size,2*size,'#c3ebdf')}}
+   // Small red mushrooms and warm lanterns balance the cool stone and water.
+   for(const [x,y]of [[85,449],[689,419],[314,614]]){rect(x,y-5,2,5,'#c6ba91');rect(x-3,y-8,9,4,'#b96550');rect(x-1,y-10,5,3,'#cd7860');rect(x-1,y-8,2,1,'#eee1b5')}
+   for(const [x,y]of [[225,238],[742,370]]){line([[x,y-10],[x,y]],'#7f7968',1);const g=ctx.createRadialGradient(x,y+4,1,x,y+4,49);g.addColorStop(0,'#ffd27c26');g.addColorStop(1,'#ffd27c00');ctx.fillStyle=g;ctx.fillRect(x-49,y-45,98,98);rect(x-3,y,7,9,'#7f7561');rect(x-2,y+2,5,5,'#edba68');rect(x,y+2,2,5,'#ffe1a0')}
    const vignette=ctx.createLinearGradient(0,0,960,0);vignette.addColorStop(0,'#0d101a66');vignette.addColorStop(.5,'#0d101a00');vignette.addColorStop(1,'#0d101a66');ctx.fillStyle=vignette;ctx.fillRect(0,100,960,H-100);
    if(moving)frame=requestAnimationFrame(draw);
   }
