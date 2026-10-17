@@ -1,7 +1,9 @@
+import {useI18n} from './i18n';
 import {useEffect,useRef} from 'react';
 
 // A real-time, deliberately low-resolution world. All art is drawn locally.
 export function World({night,animated}:{night:boolean;animated:boolean}){
+ const {t}=useI18n();
  const ref=useRef<HTMLCanvasElement>(null);
  useEffect(()=>{
   const canvas=ref.current!,ctx=canvas.getContext('2d')!;
@@ -74,7 +76,7 @@ export function World({night,animated}:{night:boolean;animated:boolean}){
   draw(performance.now());
   return()=>{cancelAnimationFrame(frame);window.removeEventListener('pointermove',mouse)};
  },[night,animated]);
- return <canvas className="world-canvas" ref={ref} aria-label="Живой пиксельный Overworld: деревня, лес, река, овца, костёр и башня наблюдения"/>;
+ return <canvas className="world-canvas" ref={ref} aria-label={t("Живой пиксельный Overworld: деревня, лес, река, овца, костёр и башня наблюдения")}/>;
 }
 
 export function PixelItem({kind}:{kind:'grass'|'diamond'|'chest'|'torch'|'sword'|'book'|'compass'|'pickaxe'|'eye'}){
