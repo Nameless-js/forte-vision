@@ -20,46 +20,39 @@ function MineCanvas({animated}:{animated:boolean}){
   function draw(now:number){
    const moving=animated&&!preference.matches&&visible&&!document.hidden;if(moving&&now-last<55){frame=requestAnimationFrame(draw);return}last=now;const t=moving?(now-started)/1000:0,H=canvas.height;
    ctx.drawImage(terrain,0,0);
-   // One continuous cavern: distant silhouettes, stepped rock and a foreground ledge.
-   const poly=(points:number[][],color:string)=>{ctx.fillStyle=color;ctx.beginPath();points.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.fill()};
-   const rock=(x:number,y:number,w:number,h:number,seed:number,lit=false)=>{rect(x,y,w,h,lit?'#545650':'#3b4448');for(let yy=0;yy<h;yy+=16)for(let xx=0;xx<w;xx+=8){const n=noise(xx+seed*7,yy+seed*3);rect(x+xx,y+yy,Math.min(8,w-xx),Math.min(16,h-yy),n>.8?(lit?'#737369':'#545e60'):n>.45?(lit?'#5c605a':'#414c50'):(lit?'#4e544f':'#354046'));if(n>.7)rect(x+xx+1,y+yy+3,5,3,lit?'#8b887436':'#8a96902a');if(n<.17)rect(x+xx+2,y+yy+11,5,2,'#1c2b303b')}rect(x,y,w,3,lit?'#98967a':'#6e7b74');};
-   const cave=ctx.createLinearGradient(0,170,0,690);cave.addColorStop(0,'#151f27');cave.addColorStop(.55,'#283b40');cave.addColorStop(1,'#14252e');ctx.fillStyle=cave;ctx.fillRect(0,170,960,520);
-   // Larger, quieter shapes in the distance give the opening depth.
-   for(let layer=0;layer<3;layer++)for(let x=0;x<960;x+=32){const n=noise(Math.floor(x/80),layer+20),top=200+layer*22+n*90,bottom=580-layer*35-n*45;rect(x,170,33,top-170,['#28343a','#253138','#1d2a32'][layer]);rect(x,bottom,33,700-bottom,['#243940','#293e42','#31484a'][layer]);if(n>.72)rect(x+8,top,14,35+n*40,'#26353b')}
-   // A forgotten timber bridge spans a ravine in the far wall.
-   ctx.globalAlpha=.55;for(const x of [383,454,525,596,667]){beam(x,334,6,130);beam(x-4,329,80,7);beam(x,401,6,88)}beam(375,398,370,8);for(let x=380;x<740;x+=13)rect(x,395,10,5,'#96724c');ctx.globalAlpha=1;
-   for(let x=370;x<750;x+=32){rect(x,408,32,12,'#37484a');if(noise(x,14)>.4)rect(x,420,24,16,'#2b3b40')}
-   rect(547,348,28,47,'#131f26');rect(551,354,20,39,'#1b2b31');
-   // Blocky overhangs and stone shelves replace the regular gallery grid.
-   for(let x=-24;x<984;x+=32){const edge=205+Math.floor(noise(Math.floor(x/64),41)*4)*24;rock(x,94,32,edge-94,x);if(noise(x,42)>.6)rock(x+8,edge,16,24,x+2)}
-   for(let i=0;i<6;i++){const x=i*32,y=271+i*31;rock(x-25,y,54,380-y,i);rock(800+i*32,310-i*24,38,350,i+17)}
-   // A broad foreground shore falls away into a blue-green underground pool.
-   rect(0,573,960,120,'#16333c');for(let i=0;i<28;i++){const x=noise(i,68)*960,y=577+noise(i,69)*94;rect(x+Math.sin(t*.4+i)*5,y,12+noise(i,70)*43,2,i%3?'#2d5860':'#497075')}
-   poly([[0,501],[95,501],[95,525],[190,525],[190,548],[313,548],[313,568],[440,568],[440,593],[566,593],[566,615],[960,615],[960,725],[0,725]],'#4b4e48');
-   for(let x=0;x<960;x+=32){const floor=x<96?501:x<192?525:x<320?548:x<448?568:x<576?593:615;rock(x,floor,32,105,x+51,true)}
-   // The nearer abandoned tunnel is built into the left cliff, with receding supports.
-   rect(64,310,225,207,'#121b23');rect(95,333,163,177,'#182128');rect(129,354,105,150,'#1d272c');
-   for(const [x,y,w,h]of [[77,317,195,207],[111,342,144,174],[143,365,94,147]]){beam(x,y,13,h);beam(x+w,y,13,h);beam(x-7,y-9,w+28,18);rect(x-5,y+h-5,23,6,'#b18b55')}
-   // Rails bend out of the tunnel across the shelf, with visible sleepers.
-   for(let i=0;i<25;i++){const p=i/24,x=185+p*600,y=489+p*151;line([[x-22,y+8],[x+15,y-9]],'#624a35',6)}
-   line([[174,485],[288,530],[453,575],[785,628]],'#b5ad94',3);line([[205,476],[312,516],[476,560],[806,611]],'#939d96',3);
-   // Cobwebs hang from timber corners rather than filling every opening.
-   const web=(x:number,y:number,w:number,h:number)=>{ctx.globalAlpha=.38;for(let i=0;i<5;i++)line([[x,y],[x+w*(1-i/4),y+h*i/4]],'#c8c7b6',1);for(let i=1;i<5;i++){const p=i/4;line([[x+w*p,y],[x+w*p*.7,y+h*p*.3],[x+w*p*.3,y+h*p*.7],[x,y+h*p]],'#c8c7b6',1)}ctx.globalAlpha=1};web(91,325,58,62);web(785,275,54,66);web(599,340,27,30);
-   // Torches illuminate the stone with warm pools of light and pixel sparks.
-   const torch=(x:number,y:number,scale=1)=>{const glow=ctx.createRadialGradient(x,y,1,x,y,100*scale);glow.addColorStop(0,'#ffbe6550');glow.addColorStop(.5,'#db85351c');glow.addColorStop(1,'#db853500');ctx.fillStyle=glow;ctx.fillRect(x-100*scale,y-100*scale,200*scale,200*scale);rect(x,y+2,4*scale,17*scale,'#99703e');rect(x-2*scale,y-8*scale,8*scale,12*scale,'#d77c29');rect(x,y-11*scale+Math.sin(t*9+x)*2,4*scale,14*scale,'#ffe69c');for(let i=0;i<3;i++){ctx.globalAlpha=.6;rect(x+Math.sin(i+t)*5,y-10-((t*17+i*11)%25),2,2,'#ffc76e')}ctx.globalAlpha=1};torch(100,406);torch(276,448);torch(784,419);torch(457,373,.45);
-   // Ore uses the familiar clustered pixels embedded in individual stone blocks.
-   for(const [x,y,color]of [[37,377,'#bc906b'],[304,528,'#cba44f'],[865,349,'#72c7bd'],[889,382,'#67c0c0'],[73,554,'#be7657']] as const){for(let i=0;i<8;i++){const xx=x+Math.floor(noise(i,x)*5)*5,yy=y+Math.floor(noise(i,y)*5)*5;rect(xx,yy,5,4,color);rect(xx,yy,2,2,'#dbe5c88a')}}
-   // Minecart: top rim, side face, shaded end and iron wheels.
-   const cx=360+Math.sin(t*.19)*13,cy=540+Math.sin(t*.19)*3;poly([[cx-23,cy-25],[cx+11,cy-33],[cx+31,cy-23],[cx-4,cy-15]],'#a3a59c');poly([[cx-23,cy-25],[cx-4,cy-15],[cx-4,cy+6],[cx-20,cy-1]],'#515e62');poly([[cx-4,cy-15],[cx+31,cy-23],[cx+27,cy-1],[cx-4,cy+6]],'#7e8987');rect(cx-2,cy-12,26,3,'#b0b3a6');for(const x of [cx-13,cx+18]){rect(x-4,cy+1,8,9,'#202c33');rect(x-2,cy+3,4,4,'#8c9895')}
-   // A creeper half hidden behind the far rock; a bat circles over the ravine.
-   const crx=713,cry=615;rect(crx-7,cry-9,6,9,'#3b5a48');rect(crx+4,cry-9,6,9,'#304f40');rect(crx-5,cry-29,13,22,'#567951');rect(crx-9,cry-46,20,18,'#6e9159');rect(crx-9,cry-46,20,4,'#86a265');rect(crx-6,cry-40,4,4,'#1b332c');rect(crx+3,cry-40,4,4,'#1b332c');rect(crx-2,cry-36,5,6,'#1b332c');rect(crx-5,cry-32,4,5,'#1b332c');rect(crx+2,cry-32,4,5,'#1b332c');
-   const bx=590+Math.sin(t*.4)*55,by=298+Math.cos(t*.9)*13,flap=Math.sin(t*7)*8;rect(bx-3,by-4,7,9,'#7d7369');line([[bx-3,by],[bx-13,by-4+flap],[bx-22,by+4+flap]],'#635d5c',4);line([[bx+3,by],[bx+13,by-4+flap],[bx+22,by+4+flap]],'#635d5c',4);
-   // Foreground boulders frame the view, plus moss, mushrooms and an old chest.
-   rock(0,620,79,92,83,true);rock(45,650,90,80,86);rock(850,532,53,150,80);rock(902,485,58,218,84);rock(826,578,36,100,87);
-   for(const [x,y]of [[28,620],[62,650],[858,532],[911,485]]){rect(x,y,23,4,'#526a4d');rect(x+3,y+4,5,9,'#415846')}
-   for(const [x,y]of [[746,603],[807,615],[122,559]]){rect(x,y-9,3,11,'#c3b58d');rect(x-5,y-12,14,5,'#a96448');rect(x-2,y-15,8,4,'#bf8060');rect(x-2,y-12,3,2,'#e0c49c')}
-   beam(610,590,35,25);rect(610,598,35,3,'#3a2b24');rect(625,598,5,7,'#d7ba72');
-   for(let i=0;i<35;i++){const x=noise(i,32)*960+Math.sin(t*.3+i)*7,y=240+((noise(i,33)*400+t*(2+noise(i,34)*3))%400);ctx.globalAlpha=.1+noise(i,35)*.2;rect(x,y,2,2,'#d9c697')}ctx.globalAlpha=1;
+   // A quiet side-view mining scene at the same small sprite scale as the Overworld.
+   const rock=(x:number,y:number,w:number,h:number,seed:number)=>{rect(x,y,w,h,'#3e4548');for(let yy=0;yy<h;yy+=12)for(let xx=0;xx<w;xx+=12){const n=noise(xx+seed,yy+seed*3);rect(x+xx,y+yy,Math.min(12,w-xx),Math.min(12,h-yy),n>.72?'#505759':n>.36?'#41494b':'#353e42');if(n>.8)rect(x+xx+2,y+yy+3,6,2,'#69716c55')}rect(x,y,w,2,'#747b6b')};
+   const back=ctx.createLinearGradient(0,180,0,680);back.addColorStop(0,'#18262d');back.addColorStop(.6,'#253b40');back.addColorStop(1,'#1c3037');ctx.fillStyle=back;ctx.fillRect(0,180,960,510);
+   // Distant cave silhouettes remain understated behind the small foreground details.
+   for(let layer=0;layer<3;layer++)for(let x=0;x<960;x+=16){const n=noise(Math.floor(x/48),layer+20),top=211+layer*19+n*44,bottom=530+layer*33-n*36;rect(x,180,17,top-180,['#29373d','#26353b','#223139'][layer]);rect(x,bottom,17,690-bottom,['#2c4247','#30464a','#33474a'][layer]);if(n>.8)rect(x+3,top,7,20,'#26383d')}
+   // Fine stone blocks carve an irregular roof; the central view stays open.
+   for(let x=0;x<960;x+=16){const edge=207+Math.floor(noise(Math.floor(x/48),41)*3)*16;rock(x,94,16,edge-94,x)}
+   for(let x=0;x<960;x+=16){const left=x<160, right=x>816;if(left||right){const top=left?350+Math.floor(x/32)*16:350+Math.floor((960-x)/32)*16;rock(x,top,16,690-top,x+2)}}
+   // Three low natural shelves rather than giant tunnel frames.
+   for(let x=64;x<367;x+=16)rock(x,449+(x>304?16:0),16,33,x+14);
+   for(let x=544;x<896;x+=16)rock(x,419+(x<608?16:0),16,33,x+18);
+   for(let x=0;x<960;x+=16){const y=598+Math.floor(noise(Math.floor(x/80),5)*3)*16;rock(x,y,16,100,x+31)}
+   // A modest working tunnel tucked into the left shelf.
+   rect(98,366,107,83,'#16252c');rect(111,376,82,73,'#1c2d33');
+   for(const x of [107,184]){beam(x,369,6,80)}beam(102,363,96,8);
+   // Small timber supports on the far shelf match the houses and sprites above ground.
+   for(const x of [605,701,797]){beam(x,361,5,58);beam(x+61,361,5,58);beam(x-3,356,72,7)}
+   const torch=(x:number,y:number)=>{const glow=ctx.createRadialGradient(x,y,1,x,y,43);glow.addColorStop(0,'#ffc36c38');glow.addColorStop(1,'#ffc36c00');ctx.fillStyle=glow;ctx.fillRect(x-43,y-43,86,86);rect(x,y+2,2,8,'#9e7b4d');rect(x-1,y-4,4,7,'#dc8c36');rect(x,y-6+Math.sin(t*8+x),2,7,'#ffe9a6')};
+   for(const [x,y]of [[113,395],[333,430],[615,383],[806,384],[463,570],[865,579]])torch(x,y);
+   // Rails, a small cart and a supply chest on the working shelf.
+   for(let x=111;x<350;x+=12)rect(x,445,7,3,'#91714a');rect(111,443,241,2,'#a4a79b');rect(111,448,241,1,'#697b7d');
+   const cart=260+Math.sin(t*.22)*16;rect(cart,432,23,12,'#778587');rect(cart-2,430,27,3,'#a7afa4');rect(cart+3,442,5,5,'#28343b');rect(cart+17,442,5,5,'#28343b');rect(cart+3,432,17,3,'#9aa5a1');
+   beam(756,403,19,16);rect(756,408,19,2,'#3f3028');rect(764,408,3,5,'#d8bc75');
+   // Familiar ore clusters are small, occasional accents in the rock.
+   for(const [x,y,color]of [[43,401,'#bd9470'],[231,456,'#c2a65e'],[829,472,'#6dafb5'],[676,625,'#9f7761'],[350,622,'#7fbab4']] as const)for(let i=0;i<5;i++){const xx=x+Math.floor(noise(i,x)*4)*4,yy=y+Math.floor(noise(i,y)*3)*4;rect(xx,yy,4,3,color);rect(xx,yy,1,1,'#d4e2cc')}
+   // Third-person miner: compact full-body sprite with an animated pickaxe.
+   const px=309,py=449;rect(px-4,py-9,3,9,'#3f4866');rect(px+2,py-9,3,9,'#36415c');rect(px-5,py-21,11,13,'#49858b');rect(px-5,py-30,11,10,'#b9906d');rect(px-6,py-32,13,4,'#5c4438');rect(px+3,py-27,2,2,'#293d40');const swing=Math.sin(t*2.5)*4;line([[px+5,py-17],[px+12,py-15],[px+19,py-25+swing]],'#b59070',3);line([[px+14,py-29+swing],[px+23,py-27+swing],[px+26,py-23+swing]],'#9db6b2',2);
+   // A second tiny miner works in the distance, keeping the scene inhabited and calm.
+   rect(648,410,3,9,'#46566b');rect(654,410,3,9,'#3a495d');rect(647,400,11,11,'#61837a');rect(648,392,9,8,'#b18e71');rect(646,390,13,3,'#b9a15a');
+   // A narrow underground stream, gentle droplets and a bat far above.
+   rect(373,589,157,8,'#365f65');for(let i=0;i<9;i++)rect(377+i*17+Math.sin(t+i)*3,592,7,1,'#7a9c97');ctx.globalAlpha=.45;rect(503,241,3,327,'#46767d');for(let i=0;i<12;i++)rect(503,246+(i*27+t*20)%315,3,3,'#92b4ab');ctx.globalAlpha=1;
+   const bx=465+Math.sin(t*.35)*22,by=320+Math.cos(t*.7)*6,f=Math.sin(t*7)*3;rect(bx,by,4,5,'#7d776a');line([[bx,by+1],[bx-6,by-2+f],[bx-10,by+2+f]],'#68675f',2);line([[bx+4,by+1],[bx+10,by-2+f],[bx+14,by+2+f]],'#68675f',2);
+   for(let i=0;i<20;i++){const x=noise(i,32)*960+Math.sin(t*.3+i)*4,y=270+((noise(i,33)*315+t*2)%315);ctx.globalAlpha=.1+noise(i,35)*.15;rect(x,y,1,1,'#d9c697')}ctx.globalAlpha=1;
    const vignette=ctx.createLinearGradient(0,0,960,0);vignette.addColorStop(0,'#0d101a66');vignette.addColorStop(.5,'#0d101a00');vignette.addColorStop(1,'#0d101a66');ctx.fillStyle=vignette;ctx.fillRect(0,100,960,H-100);
    if(moving)frame=requestAnimationFrame(draw);
   }
@@ -72,5 +65,5 @@ function MineCanvas({animated}:{animated:boolean}){
 }
 
 export function Underground({enabled,animated,children}:{enabled:boolean;animated:boolean;children:ReactNode}){return enabled?<div className="underground"><MineCanvas animated={animated}/>{children}</div>:<>{children}</>}
-export function MineIntro(){const {t}=useI18n();return <section className="mine-descent" aria-label={t('Заброшенная шахта')}><div className="mine-sign"><span>{t('НИЖЕ ПОВЕРХНОСТИ')}</span><h2>{t('Заброшенная шахта')}</h2><p>{t('Самое важное часто скрыто глубже.')}</p></div><div className="mine-depth"><span>↓</span>{t('ГЛУБИНА: 32 БЛОКА')}</div></section>}
+export function MineIntro(){const {t}=useI18n();return <section className="mine-descent" aria-label={t('Шахта')}><div className="mine-sign"><span>{t('НИЖЕ ПОВЕРХНОСТИ')}</span><h2>{t('Шахта')}</h2><p>{t('Самое важное часто скрыто глубже.')}</p></div><div className="mine-depth"><span>↓</span>{t('ГЛУБИНА: 32 БЛОКА')}</div></section>}
 

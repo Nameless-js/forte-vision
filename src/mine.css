@@ -3,3 +3,7 @@
 @media(max-width:760px){.underground .status-strip{margin-top:67px}.mine-descent{height:330px;padding:23px 6% 0;gap:15px;flex-direction:column;justify-content:flex-start}.mine-sign{padding:14px 16px;max-width:100%}.mine-sign h2{font-size:13px;line-height:2}.mine-sign>span{font-size:5px}.mine-sign p{font-size:6px;line-height:2.4}.mine-depth{font-size:5px;margin-top:0}.underground .how{padding-top:38px}.underground .feature-grid article{background:#2b2b36e8}}
 .underground .mine-descent{height:clamp(435px,calc(69vw - 171px),1150px)}
 @media(max-width:760px){.underground .mine-descent{height:330px}}
+
+/* Keep the mine caption as quiet as the Overworld location markers. */
+.underground .mine-sign{padding:12px 15px;max-width:360px}.underground .mine-sign h2{font-size:13px;margin:5px 0}.underground .mine-sign p{font-size:6px}.underground .mine-sign>span{font-size:5px}
+
