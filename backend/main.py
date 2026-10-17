@@ -1,21 +1,24 @@
 import asyncio
 import base64
 import hmac
-import json
 import os
 import secrets
-import sqlite3
 import time
 from contextlib import asynccontextmanager
 from pathlib import Path
-from uuid import uuid4
+from uuid import uuid4, UUID
+from datetime import datetime, timezone
 
 import httpx
-from fastapi import Depends, FastAPI, File, Header, HTTPException, UploadFile
+from fastapi import Depends, FastAPI, File, Header, HTTPException, UploadFile, Query
+from pydantic import BaseModel, Field
+from dotenv import load_dotenv
+from .storage import create_repository
 from fastapi.staticfiles import StaticFiles
 from .model_adapter import analyze_video
 
 ROOT = Path(__file__).resolve().parent.parent
+load_dotenv(ROOT / '.env', override=False)
 DATA = Path(os.getenv('DATA_DIRECTORY', str(ROOT / 'runtime')))
 DATA.mkdir(parents=True, exist_ok=True)
 KEY = os.getenv('API_KEY')
@@ -25,37 +28,8 @@ if not KEY:
         key_path.write_text(secrets.token_urlsafe(32), encoding='utf-8')
     KEY = key_path.read_text(encoding='utf-8').strip()
 MAX_BYTES = 100 * 1024 * 1024
-DB = DATA / 'jobs.sqlite'
+repository = create_repository(DATA)
 tasks: set[asyncio.Task] = set()
-
-def connection():
-    con = sqlite3.connect(DB)
-    con.execute('create table if not exists jobs (id text primary key, payload text not null)')
-    return con
-
-def store(payload):
-    with connection() as con:
-        con.execute('insert or replace into jobs values (?,?)', (payload['job_id'], json.dumps(payload, ensure_ascii=False)))
-
-def read_job(job_id):
-    with connection() as con:
-        row = con.execute('select payload from jobs where id=?', (job_id,)).fetchone()
-    return json.loads(row[0]) if row else None
-
-async def mirror(payload):
-    # Optional local Supabase REST persistence. Uploaded video stays on disk.
-    url = os.getenv('SUPABASE_URL', '').rstrip('/')
-    key = os.getenv('SUPABASE_SECRET_KEY', '')
-    if not url or not key:
-        return
-    try:
-        async with httpx.AsyncClient(timeout=5) as client:
-            response = await client.post(f'{url}/rest/v1/analysis_jobs?on_conflict=id', headers={'apikey':key, 'Authorization':f'Bearer {key}', 'Prefer':'resolution=merge-duplicates'}, json={'id':payload['job_id'],'status':payload['status'],'result':payload})
-            response.raise_for_status()
-    except httpx.HTTPError:
-        # SQLite remains authoritative; a mirror outage must not lose the job.
-        import logging
-        logging.getLogger('blockwatch').warning('Supabase mirror unavailable; result retained locally')
 
 def validate_result(value):
     if value.get('verdict') not in ('violation','no_violation'):
@@ -81,33 +55,28 @@ def validate_result(value):
                 raise ValueError('Кадр должен быть JPEG в base64')
     return value
 
-async def process(job_id, path):
+async def process(job_id, path, metadata):
     start = time.monotonic()
-    payload = {'job_id':job_id,'status':'processing','violations':[]}
-    await mirror(payload)
     try:
         value = await asyncio.wait_for(asyncio.to_thread(analyze_video,path), timeout=270)
         validated = validate_result(value)
-        payload = {**validated,'job_id':job_id,'status':'done','processing_seconds':round(time.monotonic()-start,2)}
+        payload = {**validated, **metadata, 'job_id':job_id,'status':'done','processing_seconds':round(time.monotonic()-start,2)}
     except asyncio.TimeoutError:
-        payload = {'job_id':job_id,'status':'failed','violations':[],'error':'Модель превысила лимит 270 секунд'}
+        payload = {**metadata,'job_id':job_id,'status':'failed','violations':[],'error':'Модель превысила лимит 270 секунд'}
     except Exception as exc:
-        payload = {'job_id':job_id,'status':'failed','violations':[],'error':str(exc)[:500]}
+        payload = {**metadata,'job_id':job_id,'status':'failed','violations':[],'error':str(exc)[:500]}
     finally:
         path.unlink(missing_ok=True)
-    store(payload)
-    await mirror(payload)
+    await repository.save(payload)
 
 @asynccontextmanager
 async def lifespan(app):
-    # Jobs interrupted by a server restart must not remain processing forever.
-    with connection() as con:
-        pending = [json.loads(r[0]) for r in con.execute('select payload from jobs')]
-    for payload in pending:
+    await repository.check()
+    for payload in await repository.list(1000):
         if payload['status']=='processing':
-            store({'job_id':payload['job_id'],'status':'failed','violations':[],'error':'Сервер перезапущен. Загрузите видео повторно.'})
+            await repository.save({**payload,'status':'failed','violations':[],'error':'Сервер перезапущен. Загрузите видео повторно.'})
     yield
-    for task in tasks:
+    for task in list(tasks):
         task.cancel()
     if tasks:
         await asyncio.gather(*tasks,return_exceptions=True)
@@ -120,7 +89,11 @@ async def authorize(x_api_key: str = Header(default='')):
 
 @app.get('/api/health')
 async def health():
-    return {'status':'ok','model':'adapter','storage':'sqlite','supabase_configured':bool(os.getenv('SUPABASE_URL'))}
+    try:
+        await repository.check()
+    except httpx.HTTPError:
+        raise HTTPException(503,'База данных недоступна')
+    return {'status':'ok','model':'adapter','storage':repository.name,'database_connected':True}
 
 @app.post('/api/v1/analyze', dependencies=[Depends(authorize)],status_code=202)
 async def analyze(file: UploadFile = File(...)):
@@ -145,18 +118,50 @@ async def analyze(file: UploadFile = File(...)):
         raise
     finally:
         await file.close()
-    store({'job_id':job_id,'status':'processing','violations':[]})
-    task = asyncio.create_task(process(job_id,path))
+    metadata={'filename':Path(file.filename or 'video').name[:255],'file_size':size,'created_at':datetime.now(timezone.utc).isoformat()}
+    try:
+        await repository.save({**metadata,'job_id':job_id,'status':'processing','violations':[]})
+    except httpx.HTTPError:
+        path.unlink(missing_ok=True)
+        raise HTTPException(503,'Не удалось сохранить проверку в базе')
+    task = asyncio.create_task(process(job_id,path,metadata))
     tasks.add(task)
     task.add_done_callback(tasks.discard)
     return {'job_id':job_id}
 
 @app.get('/api/v1/jobs/{job_id}', dependencies=[Depends(authorize)])
 async def job(job_id: str):
-    payload = read_job(job_id)
+    try:
+        UUID(job_id)
+    except ValueError:
+        raise HTTPException(404,'Задание не найдено')
+    payload = await repository.get(job_id)
     if payload is None:
         raise HTTPException(404,'Задание не найдено')
     return payload
+
+class DemoRequest(BaseModel):
+    filename: str = Field(min_length=1,max_length=255)
+    file_size: int = Field(ge=0,le=MAX_BYTES)
+    duration_sec: float = Field(gt=0,le=86400)
+
+@app.post('/api/v1/demo/jobs',dependencies=[Depends(authorize)],status_code=201)
+async def demo_job(data: DemoRequest):
+    events=[
+        {'type':'Открытое хранилище наличных','timecode_sec':min(12,data.duration_sec*.35),
+         'description':'Учебный пример открытого хранилища. Это не результат анализа вашего видео.','evidence_frames':[]},
+        {'type':'Передача ценностей','timecode_sec':min(28,data.duration_sec*.72),
+         'description':'Учебный пример передачи ценностей. Нормативный вывод не выполнялся.','evidence_frames':[]}
+    ]
+    payload={'job_id':str(uuid4()),'status':'done','verdict':'violation','violations':events,'demo':True,
+             **data.model_dump(),'created_at':datetime.now(timezone.utc).isoformat()}
+    await repository.save(payload)
+    return payload
+
+@app.get('/api/v1/jobs',dependencies=[Depends(authorize)])
+async def list_jobs(limit: int = Query(default=30,ge=1,le=100)):
+    return {'jobs':[{k:v for k,v in row.items() if k not in ('violations',)} |
+                    {'event_count':len(row.get('violations',[]))} for row in await repository.list(limit)]}
 
 if (ROOT / 'dist').exists():
     app.mount('/', StaticFiles(directory=ROOT/'dist',html=True),name='frontend')

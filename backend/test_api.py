@@ -2,6 +2,12 @@ import base64
 from fastapi.testclient import TestClient
 from .main import app, KEY, validate_result
 import pytest
+from . import main
+from .storage import SQLiteJobs
+
+@pytest.fixture(autouse=True)
+def isolated_database(tmp_path,monkeypatch):
+    monkeypatch.setattr(main,'repository',SQLiteJobs(tmp_path/'jobs.sqlite'))
 
 def test_auth_and_unknown_job():
     with TestClient(app) as client:
@@ -31,3 +37,18 @@ def test_model_contract():
     assert validate_result({'verdict':'violation','violations':[event]})['violations'][0]['timecode_sec']==1
     event['timecode_sec']=float('nan')
     with pytest.raises(ValueError):validate_result({'verdict':'violation','violations':[event]})
+
+def test_saved_demo_history():
+    headers={'X-API-Key':KEY}
+    with TestClient(app) as client:
+        result=client.post('/api/v1/demo/jobs',headers=headers,json={'filename':'synthetic.mov','file_size':123,'duration_sec':20})
+        assert result.status_code==201
+        saved=result.json()
+        assert saved['demo'] is True
+        assert len(saved['violations'])==2
+        assert client.get('/api/v1/jobs/'+saved['job_id'],headers=headers).json()==saved
+        history=client.get('/api/v1/jobs',headers=headers).json()['jobs']
+        assert history[0]['filename']=='synthetic.mov'
+        assert history[0]['event_count']==2
+        assert 'violations' not in history[0]
+        assert client.get('/api/health').json()['database_connected'] is True
