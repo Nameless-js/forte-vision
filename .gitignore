@@ -2,6 +2,16 @@ node_modules/
 .python-deps/
 dist/
 .env
+.env.*
+!.env.example
+.pytest_cache/
+*.sqlite
+*.sqlite3
+*.sqlite-journal
+.api-key
+*.mov
+*.mp4
+*.webm
 .venv/
 __pycache__/
 runtime/
