@@ -1,0 +1,8 @@
+node_modules/
+.python-deps/
+dist/
+.env
+.venv/
+__pycache__/
+runtime/
+*.tsbuildinfo
