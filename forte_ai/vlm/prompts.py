@@ -18,7 +18,7 @@ CHECKLIST_RU = (
     "посторонние не заходят за стол кассира; инкассаторская сумка принимается после осмотра и с документом."
 )
 
-VERIFY_SCHEMA_KEYS = ["counted_money", "id_shown", "cashier_left", "phone_visible", "unauthorized_person", "bag_checked", "cash_handover", "what_is_visible_ru", "confidence"]
+VERIFY_SCHEMA_KEYS = ["counted_money", "id_shown", "cashier_left", "phone_visible", "unauthorized_person", "bag_checked", "safe_open", "cash_handover", "what_is_visible_ru", "confidence"]
 
 VERIFY_JSON_TEMPLATE = {
     "counted_money": "yes|no|unclear",
@@ -27,6 +27,7 @@ VERIFY_JSON_TEMPLATE = {
     "phone_visible": "yes|no|unclear",
     "unauthorized_person": "yes|no|unclear",
     "bag_checked": "yes|no|unclear|no_bag",
+    "safe_open": "yes|no|unclear",
     "cash_handover": "cashier_to_client|client_to_cashier|none|unclear",
     "what_is_visible_ru": "1–2 предложения по-русски: что делают люди и что происходит с наличными",
     "confidence": 0.0,
@@ -49,8 +50,8 @@ TYPE_QUESTIONS_RU = {
 }
 
 
-def verify_prompt(type_id: str, type_name_ru: str, facts: list[str], t_event: float, t_window: tuple[float, float]) -> str:
-    q = TYPE_QUESTIONS_RU.get(type_id, TYPE_QUESTIONS_RU["protocol_deviation_other"])
+def verify_prompt(type_id: str, type_name_ru: str, facts: list[str], t_event: float, t_window: tuple[float, float], question: str = "") -> str:
+    q = question or TYPE_QUESTIONS_RU.get(type_id, TYPE_QUESTIONS_RU["protocol_deviation_other"])
     facts_txt = "; ".join(facts[:8]) if facts else "нет"
     return (
         f"{SYSTEM_RU}\n\n{CHECKLIST_RU}\n\n"

@@ -233,11 +233,20 @@ SUPPORT = {
 }
 
 
-def judge(type_id: str, answer: Optional[dict], reject_below: float) -> tuple[str, float]:
-    """Return (verdict, delta) where verdict in {'reject','support','neutral'} and delta adjusts confidence."""
+def judge(type_id: str, answer: Optional[dict], reject_below: float, expect: Optional[tuple] = None) -> tuple[str, float]:
+    """Return (verdict, delta) where verdict in {'reject','support','neutral'} and delta adjusts confidence.
+
+    `expect` overrides the static maps: (answer_key, support_values, reject_values)."""
     if not answer:
         return "neutral", 0.0
     conf = float(answer.get("confidence", 0.0))
+    if expect:
+        key, good, bad = expect[0], set(expect[1]), set(expect[2])
+        if answer.get(key) in bad and conf >= reject_below:
+            return "reject", -0.35
+        if answer.get(key) in good:
+            return "support", 0.15 * max(0.5, conf)
+        return "neutral", 0.0
     key, bad = CONTRADICTION.get(type_id, (None, set()))
     if key and answer.get(key) in bad and conf >= reject_below:
         return "reject", -0.35

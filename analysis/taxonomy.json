@@ -1,38 +1,179 @@
 {
-  "note": "Team-assigned taxonomy (provisional, built from analysis/review/*.md; reconciled with the workflow arbitration when it lands). Types are assigned by the team, not by the organisers. t_event = the precise second the violation becomes visible per the frame reviews.",
-  "types": [
-    {"type_id": "issue_without_count", "name_ru": "Выдача наличных без пересчёта в присутствии клиента"},
-    {"type_id": "accept_without_count", "name_ru": "Приём наличных без полистного пересчёта в присутствии клиента"},
-    {"type_id": "workplace_left_unsecured", "name_ru": "Кассир покинул рабочее место, не обеспечив сохранность ценностей"},
-    {"type_id": "cash_left_unattended", "name_ru": "Наличные (сейф) оставлены без присмотра"},
-    {"type_id": "unauthorized_in_cash_zone", "name_ru": "Посторонний в зоне кассира"},
-    {"type_id": "two_clients_cash_mixed", "name_ru": "Наличные двух клиентов одновременно / второй клиент во время операции"},
-    {"type_id": "no_id_check", "name_ru": "Операция без предъявления документа, удостоверяющего личность"},
-    {"type_id": "collection_bag_unchecked", "name_ru": "Инкассаторская сумка принята без проверки"},
-    {"type_id": "personal_items_at_workplace", "name_ru": "Личные вещи / еда и напитки на рабочем месте кассира"}
-  ],
-  "assignments": [
-    {"id": 1, "type_id": "issue_without_count", "t_label": 22, "t_event": 22.5},
-    {"id": 2, "type_id": "no_id_check", "t_label": 10, "t_event": 10.5},
-    {"id": 4, "type_id": "two_clients_cash_mixed", "t_label": 57, "t_event": 57.0},
-    {"id": 11, "type_id": "workplace_left_unsecured", "t_label": 18, "t_event": 18.5},
-    {"id": 13, "type_id": "accept_without_count", "t_label": 47, "t_event": 46.0},
-    {"id": 15, "type_id": "cash_left_unattended", "t_label": 15, "t_event": 15.0},
-    {"id": 17, "type_id": "collection_bag_unchecked", "t_label": 7, "t_event": 8.0},
-    {"id": 18, "type_id": "two_clients_cash_mixed", "t_label": 20, "t_event": 19.5},
-    {"id": 20, "type_id": "cash_left_unattended", "t_label": 5, "t_event": 4.5},
-    {"id": 22, "type_id": "workplace_left_unsecured", "t_label": 14, "t_event": 14.5},
-    {"id": 24, "type_id": "workplace_left_unsecured", "t_label": 8, "t_event": 8.0},
-    {"id": 26, "type_id": "cash_left_unattended", "t_label": 9, "t_event": 9.5},
-    {"id": 28, "type_id": "workplace_left_unsecured", "t_label": 7, "t_event": 7.0},
-    {"id": 30, "type_id": "unauthorized_in_cash_zone", "t_label": 13, "t_event": 13.0},
-    {"id": 32, "type_id": "unauthorized_in_cash_zone", "t_label": 5, "t_event": 4.5},
-    {"id": 33, "type_id": "unauthorized_in_cash_zone", "t_label": 6, "t_event": 5.5},
-    {"id": 34, "type_id": "accept_without_count", "t_label": 13, "t_event": 12.5},
-    {"id": 38, "type_id": "two_clients_cash_mixed", "t_label": 33, "t_event": 33.0},
-    {"id": 40, "type_id": "unauthorized_in_cash_zone", "t_label": 17, "t_event": 17.5},
-    {"id": 44, "type_id": "unknown_pending_review", "t_label": 16, "t_event": 16.0},
-    {"id": 46, "type_id": "personal_items_at_workplace", "t_label": 11, "t_event": 11.0},
-    {"id": 47, "type_id": "accept_without_count", "t_label": 68, "t_event": 68.0}
-  ]
+ "note": "Team-assigned taxonomy (provisional, built from analysis/review/*.md; reconciled with the workflow arbitration when it lands). Types are assigned by the team, not by the organisers. t_event = the precise second the violation becomes visible per the frame reviews.",
+ "types": [
+  {
+   "type_id": "issue_without_count",
+   "name_ru": "Выдача наличных без пересчёта в присутствии клиента"
+  },
+  {
+   "type_id": "accept_without_count",
+   "name_ru": "Приём наличных без полистного пересчёта в присутствии клиента"
+  },
+  {
+   "type_id": "workplace_left_unsecured",
+   "name_ru": "Кассир покинул рабочее место, не обеспечив сохранность ценностей"
+  },
+  {
+   "type_id": "cash_left_unattended",
+   "name_ru": "Наличные (сейф) оставлены без присмотра"
+  },
+  {
+   "type_id": "unauthorized_in_cash_zone",
+   "name_ru": "Посторонний в зоне кассира"
+  },
+  {
+   "type_id": "two_clients_cash_mixed",
+   "name_ru": "Наличные двух клиентов одновременно / второй клиент во время операции"
+  },
+  {
+   "type_id": "no_id_check",
+   "name_ru": "Операция без предъявления документа, удостоверяющего личность"
+  },
+  {
+   "type_id": "collection_bag_unchecked",
+   "name_ru": "Инкассаторская сумка принята без проверки"
+  },
+  {
+   "type_id": "personal_items_at_workplace",
+   "name_ru": "Личные вещи / еда и напитки на рабочем месте кассира"
+  },
+  {
+   "type_id": "suspect_note_mishandled",
+   "name_ru": "Купюра возвращена в пересчитанную пачку без повторной проверки"
+  }
+ ],
+ "assignments": [
+  {
+   "id": 1,
+   "type_id": "issue_without_count",
+   "t_label": 22,
+   "t_event": 22.5
+  },
+  {
+   "id": 2,
+   "type_id": "no_id_check",
+   "t_label": 10,
+   "t_event": 10.5
+  },
+  {
+   "id": 4,
+   "type_id": "two_clients_cash_mixed",
+   "t_label": 57,
+   "t_event": 57.0
+  },
+  {
+   "id": 11,
+   "type_id": "workplace_left_unsecured",
+   "t_label": 18,
+   "t_event": 18.5
+  },
+  {
+   "id": 13,
+   "type_id": "accept_without_count",
+   "t_label": 47,
+   "t_event": 46.0
+  },
+  {
+   "id": 15,
+   "type_id": "cash_left_unattended",
+   "t_label": 15,
+   "t_event": 15.0
+  },
+  {
+   "id": 17,
+   "type_id": "collection_bag_unchecked",
+   "t_label": 7,
+   "t_event": 8.0
+  },
+  {
+   "id": 18,
+   "type_id": "two_clients_cash_mixed",
+   "t_label": 20,
+   "t_event": 19.5
+  },
+  {
+   "id": 20,
+   "type_id": "cash_left_unattended",
+   "t_label": 5,
+   "t_event": 4.5
+  },
+  {
+   "id": 22,
+   "type_id": "workplace_left_unsecured",
+   "t_label": 14,
+   "t_event": 14.5
+  },
+  {
+   "id": 24,
+   "type_id": "workplace_left_unsecured",
+   "t_label": 8,
+   "t_event": 8.0
+  },
+  {
+   "id": 26,
+   "type_id": "cash_left_unattended",
+   "t_label": 9,
+   "t_event": 9.5
+  },
+  {
+   "id": 28,
+   "type_id": "workplace_left_unsecured",
+   "t_label": 7,
+   "t_event": 7.0
+  },
+  {
+   "id": 30,
+   "type_id": "unauthorized_in_cash_zone",
+   "t_label": 13,
+   "t_event": 13.0
+  },
+  {
+   "id": 32,
+   "type_id": "unauthorized_in_cash_zone",
+   "t_label": 5,
+   "t_event": 4.5
+  },
+  {
+   "id": 33,
+   "type_id": "unauthorized_in_cash_zone",
+   "t_label": 6,
+   "t_event": 5.5
+  },
+  {
+   "id": 34,
+   "type_id": "accept_without_count",
+   "t_label": 13,
+   "t_event": 12.5
+  },
+  {
+   "id": 38,
+   "type_id": "two_clients_cash_mixed",
+   "t_label": 33,
+   "t_event": 33.0
+  },
+  {
+   "id": 40,
+   "type_id": "unauthorized_in_cash_zone",
+   "t_label": 17,
+   "t_event": 17.5
+  },
+  {
+   "id": 44,
+   "type_id": "suspect_note_mishandled",
+   "t_label": 16,
+   "t_event": 16.0
+  },
+  {
+   "id": 46,
+   "type_id": "personal_items_at_workplace",
+   "t_label": 11,
+   "t_event": 11.0
+  },
+  {
+   "id": 47,
+   "type_id": "accept_without_count",
+   "t_label": 68,
+   "t_event": 68.0
+  }
+ ]
 }

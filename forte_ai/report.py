@@ -28,6 +28,8 @@ class Candidate:
     vlm: Optional[dict] = None
     annotate: dict = field(default_factory=dict)  # drawing hints: boxes {label: xyxy (det px)}, scale
     source: str = "rules"  # rules | vlm_catch_all
+    vlm_question: str = ""  # optional type-question override for the verifier
+    vlm_expect: Optional[tuple] = None  # (answer_key, support_values, reject_values) override for judging
 
     def key(self) -> tuple:
         return (self.type_id, round(self.t_event, 1))

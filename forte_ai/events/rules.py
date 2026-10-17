@@ -381,8 +381,9 @@ def run_rules(states: list[FrameState], cal: Calibration, cfg: dict, fps: float,
             continue
         secured = _cum_in(ev.storage_dwell, seg.start - lookback, seg.start)
         after_end = min(duration, seg.start + 6.0)
+        # cash OR a cash bag left out on the desk counts as valuables left unattended
         cash_after = any(
-            (s.cash_on_cashier_side or s.cash_on_counter) for s in states if seg.start <= s.t <= after_end
+            (s.cash_on_cashier_side or s.cash_on_counter or bool(s.bag)) for s in states if seg.start <= s.t <= after_end
         )
         facts = [f"кассир выходит из помещения на {seg.start:.1f} с; помещение остаётся пустым до {seg.end:.1f} с"]
         if cash_after:
@@ -531,6 +532,64 @@ def run_rules(states: list[FrameState], cal: Calibration, cfg: dict, fps: float,
                     rule_id="R9b",
                 )
             )
+
+    # ---------------- R11: note separated after a machine count and merged back (VLM-arbitrated) ----------
+    # Pattern of video 44: the counting machine leaves a note in the hopper; the cashier holds it apart and
+    # slips it back into the counted pack without re-checking. Pure geometry cannot separate this from the
+    # correct handling (odd note kept aside — clean twins 43/45), so the rule emits a LOW-confidence
+    # candidate that only crosses the verdict threshold if the local VLM supports it.
+    if bool(cfg.get("suspect_note_rule", True)):
+        machs = runs(_smooth([st.counting_machine_active for st in states], 3), [st.t for st in states], min_duration=float(cfg.get("counting_machine_min_s", 1.2)), max_gap_frames=max(1, int(fps)))
+        for m in machs:
+            w0, w1 = m.end, min(duration, m.end + 10.0)
+            handling = _cum_in(ev.cash_visible, w0, w1)
+            ep = episode_at((w0 + w1) / 2)
+            if handling >= 1.5 and ep is None:
+                conf = float(base.get("suspect_note_mishandled", 0.40))
+                cands.append(
+                    Candidate(
+                        "suspect_note_mishandled", round(w0 + 1.0, 1), (w0, w1), conf,
+                        [f"работа счётной машины до {m.end:.1f} с, затем ручная работа с купюрами {handling:.1f} с"],
+                        rule_id="R11",
+                        vlm_question=(
+                            "После выгрузки купюр из счётной машины: отделял ли кассир отдельную купюру от пачки, "
+                            "и если да — вернул ли он её обратно в пересчитанную пачку (нарушение) или отложил "
+                            "отдельно на стол (норма)? Если купюра не отделялась — counted_money: yes."
+                        ),
+                        vlm_expect=("counted_money", {"no"}, {"yes"}),
+                    )
+                )
+                break  # one candidate per video is enough for this subtle pattern
+
+    # ---------------- R12: safe opened, cashier walks away without closing (VLM-arbitrated) ---------------
+    # Pattern of video 20: cash taken out of the safe, the cashier walks to the desk leaving the door open.
+    if bool(cfg.get("open_safe_rule", True)) and ev.storage_dwell:
+        for i, dwell in enumerate(ev.storage_dwell):
+            if dwell.duration < 1.2:
+                continue
+            # cash appears at the cashier's hands / desk shortly after the dwell
+            cash_after = _any_in(ev.cash_visible, dwell.end - 1.0, dwell.end + 6.0)
+            # no return to the safe afterwards (closing would be another dwell)
+            returned = any(d.start > dwell.end + 1.0 and d.duration >= 0.8 for d in ev.storage_dwell[i + 1 :])
+            sp = cal.storage_point
+            sr = float(cfg.get("storage_dwell_radius_frac", 0.09)) * diag
+            moved_away = sp is None or any(
+                dwell.end < s.t <= dwell.end + 3.0 and s.cashier_present and s.cashier_box is not None
+                and math.hypot((s.cashier_box[0] + s.cashier_box[2]) / 2 - sp[0], s.cashier_box[1] + 0.6 * (s.cashier_box[3] - s.cashier_box[1]) - sp[1]) > 1.6 * sr
+                for s in states
+            )
+            if cash_after is not None and not returned and moved_away:
+                conf = float(base.get("open_safe", 0.42))
+                cands.append(
+                    Candidate(
+                        "cash_left_unattended", round(dwell.end, 1), (dwell.start, min(duration, dwell.end + 6.0)), conf,
+                        [f"работа у сейфа {dwell.start:.1f}–{dwell.end:.1f} с, затем кассир отходит с наличными; возврата к сейфу не зафиксировано"],
+                        rule_id="R12",
+                        vlm_question="Осталась ли дверца сейфа (металлического шкафа) открытой после того, как кассир отошёл от него? Ответь в поле safe_open.",
+                        vlm_expect=("safe_open", {"yes"}, {"no"}),
+                    )
+                )
+                break
 
     return merge_candidates(cands, float(cfg.get("merge_events_within_s", 3.0))), ev
 

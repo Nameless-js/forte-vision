@@ -233,11 +233,11 @@ class Analyzer:
             t0, t1 = max(0.0, c.t_event - half), min(info.duration_s, c.t_event + half)
             frames = self.vlm.frames_for_window(getter, t0, t1, roi)
             card = self.kb.get(c.type_id)
-            prompt = P.verify_prompt(c.type_id, card.name_ru, c.facts, c.t_event, (t0, t1))
+            prompt = P.verify_prompt(c.type_id, card.name_ru, c.facts, c.t_event, (t0, t1), question=c.vlm_question)
             ans, raw, cached = self.vlm.ask_json(info.content_md5, f"verify:{c.type_id}:{c.t_event:.1f}", frames, prompt, P.VERIFY_SCHEMA_KEYS)
             vlm_info["calls"] += 1
             vlm_info["cached"] += int(cached)
-            verdict, delta = judge(c.type_id, ans, reject_below)
+            verdict, delta = judge(c.type_id, ans, reject_below, expect=c.vlm_expect)
             c.vlm = {"verdict": verdict, "answer": ans}
             if ans and ans.get("what_is_visible_ru"):
                 c.description_ru = f"На {c.t_event:.1f} с: {ans['what_is_visible_ru']}".replace(".0 с", " с")
