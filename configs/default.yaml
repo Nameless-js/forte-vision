@@ -16,21 +16,38 @@ perception:
     backend: grounding_dino            # grounding_dino | owlv2 | rtdetr
     model_id: IDEA-Research/grounding-dino-tiny
     # open-vocabulary prompts per engine class (lower-case, '.'-joined into one text query)
+    # phrases chosen with scripts/prompt_probe.py on this scene (see analysis/perception_qa.md)
     prompts:
       person: ["person"]
-      cash: ["banknote", "stack of banknotes", "paper money"]
-      bag: ["bag", "cash bag", "sack"]
-      document: ["paper document", "sheet of paper", "receipt"]
-      id_card: ["id card", "plastic card", "passport"]
-      phone: ["mobile phone", "smartphone"]
-      cash_drawer: ["cash drawer", "money tray"]
-      counting_machine: ["banknote counting machine"]
+      cash: ["banknotes", "money", "paper bills"]
+      bag: ["money bag", "sack", "handbag"]
+      document: ["document"]
+      id_card: ["small card", "plastic card", "id card"]
+      phone: ["mobile phone", "cell phone", "smartphone"]
+      storage: ["metal cabinet", "grey metal box", "locker"]          # safe / cabinet / drawer unit
+      counting_machine: ["black printer", "black office machine", "money counting machine"]
+      laptop: ["laptop"]
+    landmark_classes: ["counting_machine", "storage", "laptop"]       # static objects; small objects inside them are suppressed
+    input_short_side: 480              # detector input: shortest side in px (0 = processor default 800)
     box_threshold: 0.30
     text_threshold: 0.25
     class_thresholds:                  # per-class overrides of box_threshold
       person: 0.35
-      cash: 0.28
-      phone: 0.30
+      cash: 0.25
+      bag: 0.40
+      document: 0.40
+      id_card: 0.35
+      phone: 0.35
+      storage: 0.35
+      counting_machine: 0.40
+      laptop: 0.30
+    cross_class_iou: 0.50              # overlapping boxes of different classes: keep the higher score
+    class_max_area_frac:               # hand-held objects cannot be large (fraction of the frame area)
+      cash: 0.03
+      document: 0.04
+      id_card: 0.01
+      phone: 0.01
+      bag: 0.12
     detect_every_n: 1                  # run the detector on every n-th sampled frame
     min_box_area_frac: 0.0003
     max_boxes_per_class: 8
@@ -54,7 +71,9 @@ roles:
   cashier_min_presence: 0.50           # share of sampled frames the cashier track must be present in
   cashier_zone_dilate_frac: 0.12       # dilation of the cashier hull, fraction of frame diagonal
   counter_margin_frac: 0.04            # band around the counter line that counts as "at the window"
-  client_max_dist_frac: 0.45           # a track is a client only if within this distance of the counter line
+  client_max_dist_frac: 0.40           # a track is a window candidate only if it comes within this fraction of the frame diagonal of the cashier
+  client_band_frac: 0.15               # ... and within this fraction of the diagonal of the counter line (people behind glass walls stay "other")
+  reach_frac: 0.10                     # arm extension toward the other side of the counter that counts as a reach (fraction of the diagonal)
   collector_bag_iou: 0.05
   min_track_frames: 5
 
@@ -114,4 +133,4 @@ time:
 cache:
   enabled: true
   dir: data/cache
-  pipeline_version: "p1"               # bump to invalidate perception caches
+  pipeline_version: "p2"               # bump to invalidate perception caches

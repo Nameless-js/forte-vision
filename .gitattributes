@@ -1,0 +1,8 @@
+* text=auto eol=lf
+*.jpg binary
+*.png binary
+*.mov binary
+*.xlsx binary
+*.docx binary
+*.onnx binary
+*.safetensors binary
