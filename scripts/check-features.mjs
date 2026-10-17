@@ -16,3 +16,11 @@ assert.equal(metrics([sample('violation','violation',{expected_time:'0',result:{
 const duplicates=metrics([sample('violation','violation',{sha256:'same'}),sample('violation','violation',{sha256:'same'})]);
 assert.equal(duplicates.evaluated,1);assert.equal(duplicates.duplicate_count,1);assert.equal(duplicates.completed,2);
 console.log('PASS benchmark confusion matrix, failed/unlabelled/demo exclusion, empty metrics, timestamp boundaries');
+const cycleBundle=await build({entryPoints:['src/dayCycle.ts'],bundle:true,write:false,platform:'node',format:'cjs'});
+const cycleModule={exports:{}};new Function('require','module','exports',cycleBundle.outputFiles[0].text)(createRequire(import.meta.url),cycleModule,cycleModule.exports);
+const {createDayCycle,celestialPositions,mixColor}=cycleModule.exports;
+const cycle=createDayCycle(false);assert.equal(cycle.sample(0),0);cycle.set(true,0);assert.equal(cycle.sample(2100),.5);assert.equal(cycle.sample(4200),1);
+assert.equal(celestialPositions(0).sun.y,100);assert.equal(celestialPositions(1).moon.y,100);assert.ok(celestialPositions(1).sun.y>600);assert.ok(celestialPositions(0).moon.y>600);
+cycle.set(false,4200);const beforeReverse=cycle.sample(5200);cycle.set(true,5200);assert.equal(cycle.sample(5200),beforeReverse,'Reversing must preserve the current position');assert.equal(cycle.sample(10000),1);
+cycle.set(false,10000,true);assert.equal(cycle.sample(10000),0,'Reduced motion / pause must skip travel');assert.equal(mixColor('#000000','#ffffff',.5),'rgb(128,128,128)');
+console.log('PASS smooth day/night endpoints, celestial travel, reversal continuity and motion bypass');
