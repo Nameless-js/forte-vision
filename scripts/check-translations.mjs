@@ -15,6 +15,8 @@ for(const theme of ['bank','world'])for(const language of ['ru','kk','en'])for(c
  assert.ok(html.includes(dictionary['Загрузить видео'][language]));
  assert.ok(html.includes(dictionary['Как это работает'][language]));
  assert.ok(html.includes('language-select'));
+ assert.equal(html.includes('nether-canvas'),theme==='world'&&page==='workspace','Nether scene must only render in the game workspace');
+ assert.equal(html.includes('nether-portal-button'),theme==='world'&&page==='home','Portal entrance must only render on the Overworld home page');
  if(language==='en')assert.ok(!/[А-Яа-яЁё]/.test(html),'Russian leaked into English markup');
  if(page==='workspace')assert.ok(html.includes(dictionary['Открытое хранилище наличных'][language]));
  console.log(`PASS ${theme} / ${language} / ${page}`);
