@@ -52,6 +52,7 @@ class Calibration:
     window_anchor: Optional[tuple[float, float]] = None  # median seated position of the nearest client
     cashier_client_dist: float = 0.0  # ||cashier_center - window_anchor|| (det px)
     zone_radius: float = 0.0  # radius of the cashier zone around cashier_center (det px)
+    storage_points: list = field(default_factory=list)  # all storage-unit cluster centres
     method: str = "presence+static+early+objects+cash"
     notes: list[str] = field(default_factory=list)
 
@@ -76,6 +77,7 @@ class Calibration:
             "window_anchor_norm": None if self.window_anchor is None else [round(self.window_anchor[0] / self.frame_w, 3), round(self.window_anchor[1] / self.frame_h, 3)],
             "cashier_client_dist_frac": round(self.cashier_client_dist / self.diag, 3) if self.diag else 0.0,
             "zone_radius_frac": round(self.zone_radius / self.diag, 3) if self.diag else 0.0,
+            "storage_points_norm": [[round(p[0] / self.frame_w, 3), round(p[1] / self.frame_h, 3)] for p in self.storage_points],
             "method": self.method,
             "notes": self.notes,
         }
@@ -94,7 +96,8 @@ class Calibration:
         """
         if math.hypot(p[0] - self.cashier_center[0], p[1] - self.cashier_center[1]) <= self.zone_radius:
             return True
-        for anchor in (self.storage_point, self.counting_machine_point):
+        anchors = list(self.storage_points) + ([self.counting_machine_point] if self.counting_machine_point else [])
+        for anchor in anchors:
             if anchor is not None and math.hypot(p[0] - anchor[0], p[1] - anchor[1]) <= 0.7 * self.zone_radius:
                 return True
         return False
@@ -170,13 +173,29 @@ def calibrate(frames: list[FrameDetections], poses: list[FramePoses], tracks: di
     calib_s = float(cfg.get("calibration_seconds", 12.0))
     t0 = frames[0].t if frames else 0.0
 
-    # static workplace objects: median centres of their detections (only classes seen in >= 10 % of frames)
+    # static workplace objects: CLUSTERED centres of their detections (a scene can contain two storage
+    # units — e.g. the safe and a drawer pedestal — and mixing them into one median lands between them)
     workplace: dict[str, tuple[float, float]] = {}
+    workplace_clusters: dict[str, list[tuple[float, float]]] = {}
     for cls in WORKPLACE_CLASSES:
         cs = [_center(d.xyxy) for f in frames for d in f.by_class(cls)]
-        if len(cs) >= max(3, 0.10 * n_frames):
-            arr = np.asarray(cs)
-            workplace[cls] = (float(np.median(arr[:, 0])), float(np.median(arr[:, 1])))
+        if len(cs) < max(3, 0.10 * n_frames):
+            continue
+        clusters: list[list[tuple[float, float]]] = []
+        for p in cs:
+            for cl in clusters:
+                m = np.median(np.asarray(cl), axis=0)
+                if math.hypot(p[0] - m[0], p[1] - m[1]) <= 0.10 * diag:
+                    cl.append(p)
+                    break
+            else:
+                clusters.append([p])
+        clusters = [cl for cl in clusters if len(cl) >= max(3, 0.05 * n_frames)]
+        if not clusters:
+            continue
+        meds = [tuple(np.median(np.asarray(cl), axis=0).tolist()) for cl in sorted(clusters, key=len, reverse=True)]
+        workplace_clusters[cls] = meds
+        workplace[cls] = meds[0]
 
     # per-track cues
     cash_centers_by_frame = [[_center(d.xyxy) for d in f.by_class("cash")] for f in frames]
@@ -234,30 +253,36 @@ def calibrate(frames: list[FrameDetections], poses: list[FramePoses], tracks: di
     med_w = float(np.median([b[2] - b[0] for b in st.boxes])) if st.boxes else 0.1 * diag
     hull = _dilate_polygon(hull, max(0.5 * med_w, float(cfg.get("cashier_zone_dilate_frac", 0.12)) * diag))
 
-    # ---- window anchor: the median SEATED position of the nearest sustained visitor -------------------
+    # ---- window anchor: the median SEATED position of the main sustained visitor -------------------
     # For every other track collect its positions while within reach of the cashier; a window candidate must
     # hold a stable position there (seated at the desk), which excludes people walking past or seen through
-    # the glass wall. The closest candidate's seated median becomes the window anchor; the counter line is
-    # the perpendicular bisector between the cashier seat and that anchor.
+    # the glass wall; it must also sit CLEARLY AWAY from the cashier's own seat — residual duplicate tracks
+    # of the cashier otherwise collapse the counter line onto her. The candidate with the most seated frames
+    # becomes the window anchor; the counter line is the perpendicular bisector between the seats.
     others = [t for t in track_scores if t != cashier]
     reach = float(cfg.get("client_max_dist_frac", 0.40)) * diag
     sit_r = float(cfg.get("client_sit_radius_frac", 0.05)) * diag
+    min_sep = max(float(cfg.get("anchor_min_sep_frac", 0.10)) * diag, 1.0 * med_w)
     candidates: list[int] = []
     cand_medians: dict[int, tuple[float, float]] = {}
+    cand_near: dict[int, int] = {}
     for t in others:
         near = [p for p in (_body_point(b) for b in tracks[t].boxes) if math.hypot(p[0] - c_center[0], p[1] - c_center[1]) <= reach]
         if len(near) < max(3, 0.1 * tracks[t].n):
             continue
         arr = np.asarray(near)
         med = (float(np.median(arr[:, 0])), float(np.median(arr[:, 1])))
+        if math.hypot(med[0] - c_center[0], med[1] - c_center[1]) < min_sep:
+            continue  # sits on top of the cashier -> a duplicate/fragment of her own track
         stable = sum(1 for p in near if math.hypot(p[0] - med[0], p[1] - med[1]) <= sit_r)
         if stable < max(3, 0.3 * len(near)):
             continue  # never settles near the cashier -> passer-by / background person
         candidates.append(t)
         cand_medians[t] = med
+        cand_near[t] = stable
     if candidates:
-        # weight by time spent seated, prefer the closest anchor
-        anchor_t = min(candidates, key=lambda t: math.hypot(cand_medians[t][0] - c_center[0], cand_medians[t][1] - c_center[1]))
+        # the main visitor = the one seated at the window the longest
+        anchor_t = max(candidates, key=lambda t: (cand_near[t], -math.hypot(cand_medians[t][0] - c_center[0], cand_medians[t][1] - c_center[1])))
         window_anchor = cand_medians[anchor_t]
         v = np.array([c_center[0] - window_anchor[0], c_center[1] - window_anchor[1]])
         dist_cc = float(np.linalg.norm(v))
@@ -301,11 +326,16 @@ def calibrate(frames: list[FrameDetections], poses: list[FramePoses], tracks: di
             if fr is None:
                 continue
             tb = tracks[t].boxes[k]
+            bw = tb[2] - tb[0]
             for d in fr.by_class("bag"):
-                if _iou(tb, d.xyxy) >= bag_iou:
+                if _iou(tb, d.xyxy) >= bag_iou or _dist_point_box(_center(d.xyxy), tb) <= 0.75 * bw:
                     with_bag += 1
                     break
-        if with_bag >= max(3, 0.15 * tracks[t].n):
+        # a collector arrives WITH the bag: either the bag co-occurs with the track often, or bag
+        # detections start within a couple of seconds of the track's appearance
+        bag_times = [f.t for f in frames if f.by_class("bag")]
+        bag_at_arrival = bool(bag_times) and any(abs(bt - tracks[t].first_t) <= 2.5 for bt in bag_times[:10])
+        if with_bag >= max(3, 0.15 * tracks[t].n) or (bag_at_arrival and with_bag >= 2):
             collectors.append(t)
         else:
             clients.append(t)
@@ -318,10 +348,14 @@ def calibrate(frames: list[FrameDetections], poses: list[FramePoses], tracks: di
         second = sorted((v["score"] for v in track_scores.values()), reverse=True)[1]
         if cs["score"] - second < 0.05:
             notes.append(f"cashier margin small: {cs['score']:.3f} vs {second:.3f}")
+    # storage anchor used for dwell/securing: the storage cluster nearest to the cashier seat
+    storage_pts = workplace_clusters.get("storage", [])
+    storage_near = min(storage_pts, key=lambda p: math.hypot(p[0] - c_center[0], p[1] - c_center[1])) if storage_pts else storage
     return Calibration(
         frame_w, frame_h, diag, cashier, cs["score"], track_scores, c_center, [tuple(map(float, p)) for p in hull], point, counter_normal, counter_conf,
-        clients, collectors, rest, workplace, storage, workplace.get("counting_machine"),
-        window_anchor=window_anchor, cashier_client_dist=dist_cc, zone_radius=zone_radius, notes=notes
+        clients, collectors, rest, workplace, storage_near, workplace.get("counting_machine"),
+        window_anchor=window_anchor, cashier_client_dist=dist_cc, zone_radius=zone_radius,
+        storage_points=storage_pts or ([storage] if storage else []), notes=notes
     )
 
 

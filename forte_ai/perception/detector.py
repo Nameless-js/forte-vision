@@ -56,15 +56,22 @@ class FrameDetections:
         return fd
 
 
-def _nms_per_class(dets: list[Detection], iou_thr: float = 0.6) -> list[Detection]:
+def _nms_per_class(dets: list[Detection], iou_thr: float = 0.6, person_iou_thr: float = 0.5, person_containment: float = 0.7) -> list[Detection]:
+    """Per-class NMS. Persons get stricter treatment: duplicate boxes of the same person (an upper-body box
+    inside a full-body box, or heavily overlapping doubles) create phantom tracks that poison the role
+    calibration downstream, so overlapping/contained person boxes are collapsed to the highest-scoring one."""
     out: list[Detection] = []
     for cls in sorted({d.cls for d in dets}):
         cand = sorted([d for d in dets if d.cls == cls], key=lambda d: -d.score)
+        thr = person_iou_thr if cls == "person" else iou_thr
         kept: list[Detection] = []
         for d in cand:
             ok = True
             for k in kept:
-                if _iou(d.xyxy, k.xyxy) > iou_thr:
+                if _iou(d.xyxy, k.xyxy) > thr:
+                    ok = False
+                    break
+                if cls == "person" and (_containment(d.xyxy, k.xyxy) >= person_containment or _containment(k.xyxy, d.xyxy) >= person_containment):
                     ok = False
                     break
             if ok:

@@ -36,7 +36,7 @@ CFG = {
 def make_cal() -> Calibration:
     diag = math.hypot(W, H)
     hull = [(120.0, 470.0), (340.0, 470.0), (340.0, 760.0), (120.0, 760.0)]
-    return Calibration(W, H, diag, 1, 0.9, {}, (230.0, 600.0), hull, (230.0, 430.0), (0.0, 1.0), 1.0, [2], [], [], {"counting_machine": (80.0, 500.0)}, (400.0, 520.0), (80.0, 500.0))
+    return Calibration(W, H, diag, 1, 0.9, {}, (230.0, 600.0), hull, (230.0, 430.0), (0.0, 1.0), 1.0, [2], [], [], {"counting_machine": (80.0, 500.0), "laptop": (260.0, 560.0)}, (400.0, 520.0), (80.0, 500.0), storage_points=[(400.0, 520.0)], zone_radius=110.0)
 
 
 def state(k, t, cashier=True, in_zone=True, hands=None, client=True, client_hands=None, cash=None, cash_c=False, cash_k=False, phone=False, intrusion=False, over=False, cash_side=False, pose_ok=True):
@@ -70,7 +70,9 @@ def state(k, t, cashier=True, in_zone=True, hands=None, client=True, client_hand
         document_near_hands=False,
         id_card_visible=False,
         counting_machine_active=False,
-        n_people=2 if client else 1,
+        n_people=(1 if cashier else 0) + (1 if client else 0),
+        cashier_strong=cashier,
+        person_in_zone_any=bool(cashier and in_zone) or intrusion,
     )
 
 

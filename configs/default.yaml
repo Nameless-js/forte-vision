@@ -155,4 +155,4 @@ time:
 cache:
   enabled: true
   dir: data/cache
-  pipeline_version: "p3"               # bump to invalidate perception caches
+  pipeline_version: "p4"               # bump to invalidate perception caches

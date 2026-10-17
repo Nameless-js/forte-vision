@@ -51,6 +51,8 @@ class FrameState:
     counting_machine_active: bool  # a cashier hand near the counting machine with cash near it
     n_people: int
     cup_near_cashier_hand: bool = False  # cup / bottle / food package in the cashier's hand
+    cashier_strong: bool = False  # the cashier box is backed by a solid person detection (not through glass)
+    person_in_zone_any: bool = False  # ANY solidly-detected person body is inside the cashier zone
 
 
 def _hands(fp: FramePoses, tid: int, thr: float) -> tuple[list, list, bool]:
@@ -76,12 +78,27 @@ def _near(points: Iterable[tuple], dets: Iterable[Detection], radius: float) -> 
     return False
 
 
+def _cups(fd: FrameDetections, min_score: float) -> list[Detection]:
+    """Cup/bottle/food detections that are confident and not just a re-labeled banknote stack or document."""
+    others = fd.by_class("cash") + fd.by_class("document") + fd.by_class("id_card")
+    out = []
+    for d in fd.by_class("cup"):
+        if d.score < min_score:
+            continue
+        if any(_iou(d.xyxy, o.xyxy) > 0.2 for o in others):
+            continue
+        out.append(d)
+    return out
+
+
 def build_frame_states(pr: PerceptionResult, cal: Calibration, cfg: dict) -> list[FrameState]:
     diag = cal.diag
     kthr = float(cfg.get("kpt_threshold", 0.3))
     hand_r = float(cfg.get("hand_radius_frac", 0.06)) * diag
     phone_r = float(cfg.get("phone_radius_frac", 0.045)) * diag
     phone_score = float(cfg.get("phone_min_score", 0.45))
+    cup_score = float(cfg.get("cup_min_score", 0.55))
+    strong_score = float(cfg.get("person_strong_score", 0.5))
     body_r = float(cfg.get("body_radius_frac", 0.10)) * diag
     band = float(cfg.get("counter_margin_frac", 0.06)) * diag
     storage_r = float(cfg.get("storage_radius_frac", 0.10)) * diag
@@ -93,6 +110,22 @@ def build_frame_states(pr: PerceptionResult, cal: Calibration, cfg: dict) -> lis
     for k, (fd, fp, assigned) in enumerate(zip(pr.frames, pr.poses, pr.per_frame_tracks)):
         cbox = assigned.get(cashier) if cashier is not None else None
         c_present = cbox is not None
+        person_dets = fd.by_class("person")
+
+        def det_score_of(box) -> float:
+            best = 0.0
+            for d in person_dets:
+                if _iou(box, d.xyxy) >= 0.5:
+                    best = max(best, d.score)
+            return best
+
+        c_strong = c_present and det_score_of(cbox) >= strong_score
+        any_in_zone = False
+        for _tid, _box in assigned.items():
+            _bp = ((_box[0] + _box[2]) / 2, _box[1] + 0.6 * (_box[3] - _box[1]))
+            if cal.in_cashier_zone(_bp) and det_score_of(_box) >= strong_score:
+                any_in_zone = True
+                break
         c_in_zone = False
         c_hands: list = []
         c_elbows: list = []
@@ -180,7 +213,9 @@ def build_frame_states(pr: PerceptionResult, cal: Calibration, cfg: dict) -> lis
                 id_card_visible=bool(fd.by_class("id_card")),
                 counting_machine_active=machine_active,
                 n_people=len(assigned),
-                cup_near_cashier_hand=c_present and c_pose_ok and _near(c_hands, fd.by_class("cup"), phone_r),
+                cup_near_cashier_hand=c_present and c_pose_ok and _near(c_hands, _cups(fd, cup_score), phone_r),
+                cashier_strong=c_strong,
+                person_in_zone_any=any_in_zone,
             )
         )
     return states

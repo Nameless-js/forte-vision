@@ -1,0 +1,234 @@
+{
+ "note": "iter 4: M2 rules (taxonomy-driven), p3 perception with cup class",
+ "created": "2026-10-18 02:37:19",
+ "hardware": "NVIDIA GeForce RTX 4060 Laptop GPU (8.6 GB), torch 2.6.0+cu124, Windows-11-10.0.26200-SP0",
+ "profile": "gpu-small",
+ "vlm_enabled": false,
+ "n_videos": 42,
+ "config_threshold": 0.5,
+ "fitted_threshold": 0.25,
+ "train_config_threshold": {
+  "threshold": 0.5,
+  "n_videos": 42,
+  "n_violation": 22,
+  "n_clean": 20,
+  "tp": 14,
+  "fn": 8,
+  "fp": 13,
+  "tn": 7,
+  "accuracy": 0.5,
+  "recall_violation": 0.6363636363636364,
+  "fp_rate_clean": 0.65,
+  "localization": {
+   "within_1s": 0.07142857142857142,
+   "within_2s": 0.21428571428571427,
+   "within_3s": 0.35714285714285715,
+   "within_5s": 0.7142857142857143,
+   "median_dt": 3.5999999999999996,
+   "n": 14
+  },
+  "classification_accuracy": 0.42857142857142855,
+  "classification_n": 14
+ },
+ "train_fitted_threshold": {
+  "threshold": 0.25,
+  "n_videos": 42,
+  "n_violation": 22,
+  "n_clean": 20,
+  "tp": 15,
+  "fn": 7,
+  "fp": 15,
+  "tn": 5,
+  "accuracy": 0.47619047619047616,
+  "recall_violation": 0.6818181818181818,
+  "fp_rate_clean": 0.75,
+  "localization": {
+   "within_1s": 0.26666666666666666,
+   "within_2s": 0.3333333333333333,
+   "within_3s": 0.4666666666666667,
+   "within_5s": 0.7333333333333333,
+   "median_dt": 3.2,
+   "n": 15
+  },
+  "classification_accuracy": 0.3333333333333333,
+  "classification_n": 15
+ },
+ "lovo": {
+  "n_folds": 40,
+  "fold_thresholds": {
+   "0608eca654509fddf4bb0dc799e2e6de": 0.25,
+   "189e0353de852ff8f2ab3cd977db2a0f": 0.25,
+   "1cff94bb96d75439b00365a07adee716": 0.45,
+   "1fb32d10e1499480865e6b72199c6a3d": 0.25,
+   "23bc05eb011f80545a6009d98836baa6": 0.25,
+   "304e8be8155a1f6529fe86ba88d05668": 0.25,
+   "3ba888f705c81cad73bc45ece2077ff4": 0.25,
+   "442dc88203d3715c5293e7da2156bd35": 0.25,
+   "4c92ba52ec957d0ecf81a09f66817b29": 0.25,
+   "52d8217b15bc14b128e5d36d675bb98a": 0.25,
+   "545c045acd070acb09ff2594f1b44577": 0.25,
+   "5575e411e2810a72703890f0b2443c10": 0.25,
+   "595c577e53299940a5c557bf84c795a2": 0.25,
+   "5c78378409c487c886b479d6fe561d0d": 0.25,
+   "5fd1b371c742b676b6c029d16c2e2198": 0.25,
+   "612cf89dc4e7213143242bc409949ded": 0.25,
+   "7356dd59916c98eae91b2710b15ccb27": 0.25,
+   "767f2a65c96f8253bbe8e2f9d700e2a3": 0.25,
+   "8661055b1e0d0d2b083347eff3b581f7": 0.25,
+   "9183adf045efbbc3cb115605e9ca704b": 0.25,
+   "91f6d6e30c28c1d899ce874a06444561": 0.25,
+   "a91d22affe251b634dc0d7fd63235c9e": 0.25,
+   "abebea33f273d52bd3f50fb57c5444b9": 0.25,
+   "b18427a9a72818c2768fbf501ec2d9e3": 0.25,
+   "b88d9942288015ffe424d5a50f206ab2": 0.25,
+   "c19c3785b4a311ee97a6d0df1e9bddd6": 0.25,
+   "c41b35b2ac643cf436b0f6d548d5c163": 0.25,
+   "c5efdc077357191503d132c9b0ccca1d": 0.25,
+   "cc15799ee16a1c9d15fdbd7531d046bf": 0.25,
+   "cc739e64be12fc0acdeb582d4fdc0463": 0.25,
+   "cdf8c6d946765256427f68ffa89974f1": 0.25,
+   "d14976d777c2ecddbfd6f31f2359f4e0": 0.25,
+   "d19984330918f5f57453950acce2118a": 0.25,
+   "d4d0dce8ff94ba59eb6be0780b18339e": 0.25,
+   "d4e7c11733f8a6982fce711cf62c6a90": 0.25,
+   "dacb4cf5da210be8550081264ca31317": 0.25,
+   "e00ced6c40089f399ab909d11629a5df": 0.25,
+   "e27b34f262cc51c90b44deda61422f56": 0.25,
+   "e5a64fff53efade025ae10e6bbd047df": 0.25,
+   "fdd5aa51aefe4b42dd4d318bbbd3f207": 0.25
+  },
+  "tp": 15,
+  "fn": 7,
+  "fp": 15,
+  "tn": 5,
+  "accuracy": 0.47619047619047616,
+  "recall_violation": 0.6818181818181818,
+  "fp_rate_clean": 0.75,
+  "localization": {
+   "within_1s": 0.2,
+   "within_2s": 0.26666666666666666,
+   "within_3s": 0.4,
+   "within_5s": 0.6666666666666666,
+   "median_dt": 3.4,
+   "n": 15
+  },
+  "classification_accuracy": 0.3333333333333333,
+  "classification_n": 15
+ },
+ "type_confusion_train": {
+  "issue_without_count": {
+   "personal_items_at_workplace": 1
+  },
+  "no_id_check": {
+   "(missed)": 1
+  },
+  "two_clients_cash_mixed": {
+   "(missed)": 1,
+   "two_clients_cash_mixed": 2
+  },
+  "workplace_left_unsecured": {
+   "cashier_left_during_service": 1,
+   "unauthorized_in_cash_zone": 2,
+   "(missed)": 1
+  },
+  "accept_without_count": {
+   "(missed)": 2,
+   "two_clients_cash_mixed": 1
+  },
+  "cash_left_unattended": {
+   "(missed)": 2,
+   "unauthorized_in_cash_zone": 1
+  },
+  "collection_bag_unchecked": {
+   "accept_without_count": 1
+  },
+  "unauthorized_in_cash_zone": {
+   "unauthorized_in_cash_zone": 3,
+   "(missed)": 1
+  },
+  "suspect_note_mishandled": {
+   "unauthorized_in_cash_zone": 1
+  },
+  "personal_items_at_workplace": {
+   "personal_items_at_workplace": 1
+  }
+ },
+ "type_confusion_lovo": {
+  "issue_without_count": {
+   "no_id_check": 1
+  },
+  "no_id_check": {
+   "(missed)": 1
+  },
+  "two_clients_cash_mixed": {
+   "(missed)": 1,
+   "no_id_check": 1,
+   "two_clients_cash_mixed": 1
+  },
+  "workplace_left_unsecured": {
+   "cashier_left_during_service": 1,
+   "unauthorized_in_cash_zone": 2,
+   "(missed)": 1
+  },
+  "accept_without_count": {
+   "(missed)": 2,
+   "two_clients_cash_mixed": 1
+  },
+  "cash_left_unattended": {
+   "no_id_check": 1,
+   "(missed)": 1,
+   "unauthorized_in_cash_zone": 1
+  },
+  "collection_bag_unchecked": {
+   "accept_without_count": 1
+  },
+  "unauthorized_in_cash_zone": {
+   "unauthorized_in_cash_zone": 3,
+   "(missed)": 1
+  },
+  "suspect_note_mishandled": {
+   "unauthorized_in_cash_zone": 1
+  },
+  "personal_items_at_workplace": {
+   "personal_items_at_workplace": 1
+  }
+ },
+ "timing": {
+  "mean_s": 0.19561536539168584,
+  "max_s": 1.224729299545288,
+  "max_video": 14,
+  "total_wall_s": 8.400601863861084,
+  "stage_mean": {
+   "probe": 0.014642857142857143,
+   "perception": 0.0195,
+   "perception.decode": 0.212,
+   "perception.detect": 23.849452380952382,
+   "perception.track": 0.05961904761904762,
+   "perception.pose": 3.301047619047619,
+   "perception.total": 27.737809523809524,
+   "perception.n_sampled": 172.33333333333334,
+   "perception.cache_hit": 1.0,
+   "roles": 0.004309523809523809,
+   "rules": 0.011738095238095238,
+   "report": 0.14404761904761904,
+   "total": 0.19466666666666668
+  },
+  "stage_max": {
+   "probe": 0.066,
+   "perception": 0.128,
+   "perception.decode": 0.802,
+   "perception.detect": 99.201,
+   "perception.track": 0.226,
+   "perception.pose": 13.172,
+   "perception.total": 113.483,
+   "perception.n_sampled": 713.0,
+   "perception.cache_hit": 1.0,
+   "roles": 0.019,
+   "rules": 0.08,
+   "report": 0.986,
+   "total": 1.22
+  }
+ },
+ "schema_problems": {},
+ "team_types_available": true
+}

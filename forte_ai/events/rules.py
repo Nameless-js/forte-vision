@@ -146,10 +146,12 @@ def extract_events(states: list[FrameState], cal: Calibration, cfg: dict, fps: f
                 coll = True
         episodes.append(Episode(seg.start, seg.end, seg.k_start, seg.k_end, ids, coll))
 
-    # ---- cashier absent from own zone / room empty
-    absent = _smooth([not (s.cashier_present and s.cashier_in_zone) for s in states], smooth_k)
+    # ---- cashier absent from own zone / room empty. "Absent" = no SOLIDLY-detected person body in the zone:
+    # this survives track-id switches (the person is still seen under another id) and the cashier remaining
+    # tracked through the glass wall after leaving (weak, low-score detections).
+    absent = _smooth([not s.person_in_zone_any for s in states], smooth_k)
     cashier_absent = runs(absent, times, min_duration=float(cfg.get("left_zone_min_s", 1.5)), max_gap_frames=gap)
-    room_empty = runs(_smooth([s.n_people == 0 for s in states], smooth_k), times, min_duration=0.6, max_gap_frames=gap)
+    room_empty = runs(_smooth([s.n_people == 0 or (not s.person_in_zone_any and not s.client_at_window) for s in states], smooth_k), times, min_duration=0.6, max_gap_frames=gap)
 
     # ---- phone / cup in the cashier's hand
     phone = runs(_smooth([s.phone_near_cashier_hand for s in states], smooth_k), times, min_duration=float(cfg.get("phone_min_s", 2.0)), max_gap_frames=gap)
@@ -186,8 +188,20 @@ def extract_events(states: list[FrameState], cal: Calibration, cfg: dict, fps: f
     machine_runs = runs(
         _smooth([s.counting_machine_active for s in states], smooth_k), times, min_duration=float(cfg.get("counting_machine_min_s", 1.2)), max_gap_frames=gap
     )
+    # cash detections are sporadic -> dilate the cash-near-hand signal ±2 s before using it as evidence
+    cash_near = np.asarray([s.cash_near_cashier_hand for s in states], dtype=bool)
+    dil = max(1, int(round(2.0 * fps)))
+    cash_dil = np.zeros(n, dtype=bool)
+    for i in np.flatnonzero(cash_near):
+        cash_dil[max(0, i - dil) : min(n, i + dil + 1)] = True
     in_machine = [False] * n
     for seg in machine_runs:
+        # a machine run only counts as counting if cash is actually seen around it (±3 s): standing next to
+        # the machine while packing a bag is not a count
+        a3 = max(0, seg.k_start - int(round(3.0 * fps)))
+        b3 = min(n, seg.k_end + 1 + int(round(3.0 * fps)))
+        if not cash_dil[a3:b3].any():
+            continue
         for k in range(seg.k_start, seg.k_end + 1):
             in_machine[k] = True
     count_flags = []
@@ -195,7 +209,7 @@ def extract_events(states: list[FrameState], cal: Calibration, cfg: dict, fps: f
         a, b = max(0, i - win // 2), min(n, i + win // 2 + 1)
         seg = speed[a:b]
         s = states[i]
-        cash_frac = sum(1 for j in range(a, b) if states[j].cash_near_cashier_hand) / max(1, b - a)
+        cash_frac = float(cash_dil[a:b].mean())
         periodic = float(np.mean(seg)) >= s_min and periodicity(seg, fps) >= p_min
         count_flags.append(in_machine[i] or (periodic and s.cashier_present and cash_frac >= cash_frac_min))
     counting = runs(_smooth(count_flags, smooth_k), times, min_duration=float(cfg.get("counting_min_duration_s", 1.5)), max_gap_frames=gap)
@@ -215,7 +229,7 @@ def extract_events(states: list[FrameState], cal: Calibration, cfg: dict, fps: f
     # ---- empty start: nobody at the workplace during the first seconds
     empty_start_s = float(cfg.get("empty_start_s", 2.5))
     near_r = float(cfg.get("workplace_near_frac", 0.16)) * diag
-    anchors = [p for p in [cal.counting_machine_point, cal.storage_point] if p is not None]
+    anchors = [a for a in ([cal.counting_machine_point] + list(cal.storage_points) + [cal.workplace_objects.get("laptop")]) if a is not None]
     if not anchors:
         anchors = [cal.cashier_center]
 
@@ -228,8 +242,10 @@ def extract_events(states: list[FrameState], cal: Calibration, cfg: dict, fps: f
             pts.extend(hs)
         return any(math.hypot(p[0] - a[0], p[1] - a[1]) <= near_r for p in pts for a in anchors)
 
+    # empty start: nobody AT THE WORKPLACE in the first seconds (people may be visible through the glass);
+    # additionally the (selected) cashier track must not be working at the desk from the start
     head = [s for s in states if s.t <= empty_start_s]
-    empty_start = bool(head) and not any(s.n_people > 0 and at_workplace(s) for s in head) and not any(s.n_people > 0 for s in head[: max(1, len(head) // 2)])
+    empty_start = bool(head) and not any(at_workplace(s) for s in head)
 
     handovers = _detect_handovers(states, cal, cfg, fps)
     return EventSummary(
@@ -321,7 +337,7 @@ def run_rules(states: list[FrameState], cal: Calibration, cfg: dict, fps: float,
     # ---------------- R10: entry into an unattended cash workplace ----------------
     if ev.empty_start:
         near_r = float(cfg.get("workplace_near_frac", 0.16)) * diag
-        anchors = [p for p in [cal.counting_machine_point, cal.storage_point] if p is not None] or [cal.cashier_center]
+        anchors = [a for a in ([cal.counting_machine_point] + list(cal.storage_points) + [cal.workplace_objects.get("laptop")]) if a is not None] or [cal.cashier_center]
         flags = []
         for s in states:
             pts = []
@@ -333,7 +349,12 @@ def run_rules(states: list[FrameState], cal: Calibration, cfg: dict, fps: float,
             flags.append(any(math.hypot(p[0] - a[0], p[1] - a[1]) <= near_r for p in pts for a in anchors))
         segs = runs(_smooth(flags, 3), [s.t for s in states], min_duration=float(cfg.get("entry_min_s", 1.5)), max_gap_frames=max(1, int(fps)))
         if segs:
+            # anchor on the first sustained presence; but if the first touch is brief (dropping a bag in
+            # passing) and a much longer settling comes later, the organisers label the settling moment
             first = segs[0]
+            longest = max(segs, key=lambda s: s.duration)
+            if first.duration < 3.0 and longest.duration >= 4.0 * first.duration and longest.start > first.end:
+                first = longest
             conf = float(base.get("entry_unattended", 0.8)) + min(0.15, 0.02 * sum(s.duration for s in segs))
             cands.append(
                 Candidate(
@@ -507,8 +528,23 @@ def run_rules(states: list[FrameState], cal: Calibration, cfg: dict, fps: float,
             cands.append(Candidate("collection_bag_unchecked", first.start, (first.start, first.end), conf, [f"сумка инкассатора у рук {first.start:.1f}–{first.end:.1f} с без осмотра/документа"], rule_id="R8"))
 
     # ---------------- R9: second client / cash of two clients ----------------
-    # Variant A: two visitors at the window simultaneously while the operation is live
-    flags = [s.cashier_present and len(set(s.client_at_window)) >= 2 for s in states]
+    # Variant A: two visitors at the window simultaneously while the operation is live.
+    # The two bodies must be clearly separated — duplicate boxes of one person do not count.
+    def two_separated(s: FrameState) -> bool:
+        ids = sorted(set(s.client_at_window))
+        if len(ids) < 2 or not s.cashier_present:
+            return False
+        pts = []
+        for tid in ids:
+            hs = s.client_hands.get(tid)
+            if hs:
+                pts.append((sum(h[0] for h in hs) / len(hs), sum(h[1] for h in hs) / len(hs)))
+        if len(pts) < 2:
+            return False
+        dmax = max(math.hypot(a[0] - b[0], a[1] - b[1]) for i, a in enumerate(pts) for b in pts[i + 1 :])
+        return dmax >= 0.10 * diag
+
+    flags = [two_separated(s) for s in states]
     cash_flags = [bool(s.cash) or s.cash_on_counter for s in states]
     for seg in runs(_smooth(flags, 3), [s.t for s in states], min_duration=float(cfg.get("two_clients_min_s", 1.5)), max_gap_frames=max(1, int(fps))):
         with_cash = any(cash_flags[k] for k in range(seg.k_start, seg.k_end + 1))

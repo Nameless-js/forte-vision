@@ -1,0 +1,183 @@
+
+#### id 3 | cashier=T1 score=0.806 margin_notes=[] empty_start=False
+tracks: {'1': {'n': 92, 'presence': 0.911, 'score': 0.806}, '2': {'n': 7, 'presence': 0.069, 'score': 0.514}, '3': {'n': 99, 'presence': 0.98, 'score': 0.671}, '4': {'n': 77, 'presence': 0.762, 'score': 0.58}, '5': {'n': 68, 'presence': 0.673, 'score': 0.617}, '8': {'n': 9, 'presence': 0.089, 'score': 0.408}}
+clients: [3, 4, 8] collectors: [] others: [2, 5] anchor: [0.476, 0.603] dist_cc: 0.004 zone_r: 0.08
+  episodes: [[0.4, 20.0, [3, 4, 8], False]]
+  handovers: [[11.4, 'cashier_to_client', 'cashier_reach+meet+cash', 0.99], [14.6, 'cashier_to_client', 'cashier_reach+meet+cash', 1.0]]
+  counting: [[15.6, 18.4]]
+  cands: [('two_clients_cash_mixed', 4.2, 0.85, 'R9a'), ('issue_without_count', 11.4, 0.748, 'R5'), ('no_id_check', 11.4, 0.45, 'R7'), ('issue_without_count', 14.6, 0.75, 'R5'), ('no_id_check', 14.6, 0.45, 'R7')]
+
+#### id 5 | cashier=T2 score=0.826 margin_notes=[] empty_start=False
+tracks: {'1': {'n': 303, 'presence': 0.846, 'score': 0.672}, '2': {'n': 357, 'presence': 0.997, 'score': 0.826}, '3': {'n': 8, 'presence': 0.022, 'score': 0.486}, '4': {'n': 10, 'presence': 0.028, 'score': 0.407}, '5': {'n': 20, 'presence': 0.056, 'score': 0.47}, '6': {'n': 79, 'presence': 0.221, 'score': 0.427}, '7': {'n': 8, 'presence': 0.022, 'score': 0.416}, '8': {'n': 206, 'presence': 0.575, 'score': 0.575}, '9': {'n': 160, 'presence': 0.447, 'score': 0.429}, '11': {'n': 43, 'presence': 0.12, 'score': 0.385}, '12': {'n': 20, 'presence': 0.056, 'score': 0.311}, '14': {'n': 49, 'presence': 0.137, 'score': 0.307}, '15': {'n': 17, 'presence': 0.047, 'score': 0.315}, '17': {'n': 17, 'presence': 0.047, 'score': 0.357}, '18': {'n': 6, 'presence': 0.017, 'score': 0.365}}
+clients: [1, 14] collectors: [] others: [3, 4, 5, 6, 7, 8, 9, 11, 12, 15, 17, 18] anchor: [0.326, 0.432] dist_cc: 0.169 zone_r: 0.08
+  episodes: [[0.2, 71.4, [1, 14], False]]
+  handovers: [[25.6, 'cashier_to_client', 'cashier_reach+meet+cash', 0.98], [54.8, 'cashier_to_client', 'cashier_reach+meet+cash', 0.94]]
+  phone: [[10.0, 15.8]]
+  cup: [[10.8, 12.8]]
+  storage_dwell: [[46.2, 47.8], [49.2, 53.2]]
+  cands: [('phone_at_workplace', 10.0, 0.75, 'R3'), ('personal_items_at_workplace', 10.8, 0.75, 'R3b'), ('issue_without_count', 25.6, 0.745, 'R5'), ('issue_without_count', 54.8, 0.735, 'R5')]
+
+#### id 8 | cashier=T1 score=0.798 margin_notes=[] empty_start=False
+tracks: {'1': {'n': 155, 'presence': 0.812, 'score': 0.798}, '2': {'n': 83, 'presence': 0.435, 'score': 0.664}, '3': {'n': 53, 'presence': 0.277, 'score': 0.434}, '5': {'n': 50, 'presence': 0.262, 'score': 0.415}, '7': {'n': 30, 'presence': 0.157, 'score': 0.441}}
+clients: [2, 3, 5, 7] collectors: [] others: [] anchor: [0.342, 0.443] dist_cc: 0.007 zone_r: 0.08
+  episodes: [[0.6, 38.0, [2, 3, 5, 7], False]]
+  handovers: [[3.6, 'cashier_to_client', 'client_reach+cash', 0.85], [9.8, 'client_to_cashier', 'client_reach+cash', 0.78], [21.4, 'unknown', 'client_reach', 0.47], [28.2, 'unknown', 'cashier_reach+meet', 0.62], [30.4, 'unknown', 'cashier_reach+meet', 0.63], [35.2, 'unknown', 'client_reach', 0.49]]
+  counting: [[0.2, 5.8], [9.2, 18.2], [27.4, 31.0]]
+  cashier_absent: [[31.2, 38.0]]
+  intrusion: [[0.6, 28.4]]
+  storage_dwell: [[0.2, 2.2], [12.2, 14.6], [16.0, 27.4]]
+  cands: [('unauthorized_in_cash_zone', 0.6, 0.9, 'R4'), ('no_id_check', 3.6, 0.443, 'R7'), ('no_id_check', 9.8, 0.439, 'R7'), ('cashier_left_during_service', 31.2, 0.95, 'R1a')]
+
+#### id 12 | cashier=T2 score=0.723 margin_notes=['cashier presence 0.40 below 0.5', 'cashier margin small: 0.723 vs 0.700'] empty_start=False
+tracks: {'1': {'n': 205, 'presence': 0.967, 'score': 0.7}, '2': {'n': 84, 'presence': 0.396, 'score': 0.723}, '4': {'n': 27, 'presence': 0.127, 'score': 0.356}, '6': {'n': 11, 'presence': 0.052, 'score': 0.35}, '7': {'n': 5, 'presence': 0.024, 'score': 0.331}}
+clients: [1, 4, 6, 7] collectors: [] others: [] anchor: [0.16, 0.31] dist_cc: 0.048 zone_r: 0.08
+  episodes: [[18.2, 41.0, [1, 4, 6, 7], False]]
+  handovers: [[0.2, 'unknown', 'client_reach', 0.55]]
+  cashier_absent: [[18.0, 42.2]]
+  intrusion: [[0.2, 17.8]]
+  room_empty: [[41.6, 42.2]]
+  cands: [('unauthorized_in_cash_zone', 0.2, 0.9, 'R4')]
+
+#### id 14 | cashier=T1 score=0.767 margin_notes=[] empty_start=False
+tracks: {'1': {'n': 683, 'presence': 0.958, 'score': 0.767}, '2': {'n': 28, 'presence': 0.039, 'score': 0.528}, '3': {'n': 166, 'presence': 0.233, 'score': 0.454}, '4': {'n': 8, 'presence': 0.011, 'score': 0.327}, '5': {'n': 251, 'presence': 0.352, 'score': 0.406}, '6': {'n': 308, 'presence': 0.432, 'score': 0.598}, '8': {'n': 21, 'presence': 0.029, 'score': 0.306}, '9': {'n': 17, 'presence': 0.024, 'score': 0.327}, '10': {'n': 23, 'presence': 0.032, 'score': 0.328}, '11': {'n': 191, 'presence': 0.268, 'score': 0.452}}
+clients: [2, 3, 4, 5, 6, 8, 9, 10, 11] collectors: [] others: [] anchor: [0.344, 0.532] dist_cc: 0.076 zone_r: 0.08
+  episodes: [[48.6, 112.0, [5, 6, 8], False]]
+  handovers: [[0.2, 'client_to_cashier', 'client_reach+cash', 0.85], [29.4, 'client_to_cashier', 'client_reach+cash', 0.85], [35.4, 'unknown', 'client_reach+cash', 0.81], [37.6, 'unknown', 'client_reach+cash', 0.82], [43.6, 'unknown', 'client_reach+cash', 0.85], [50.2, 'cashier_to_client', 'client_reach+meet+cash', 1.0], [56.6, 'client_to_cashier', 'client_reach+meet+cash', 0.95], [60.8, 'client_to_cashier', 'client_reach+meet+cash', 1.0], [71.6, 'client_to_cashier', 'client_reach+meet+cash', 1.0], [80.8, 'client_to_cashier', 'client_reach+meet+cash', 0.97], [83.4, 'client_to_cashier', 'client_reach+meet+cash', 0.94], [89.2, 'client_to_cashier', 'client_reach+meet+cash', 0.95], [91.2, 'client_to_cashier', 'client_reach+meet+cash', 1.0], [103.2, 'client_to_cashier', 'client_reach+meet+cash', 1.0], [115.6, 'unknown', 'client_reach', 0.48], [117.8, 'client_to_cashier', 'client_reach+cash', 0.82], [130.2, 'unknown', 'client_reach', 0.55], [140.6, 'unknown', 'client_reach', 0.47]]
+  counting: [[32.0, 39.2], [40.6, 48.8], [50.4, 55.6], [57.2, 111.8]]
+  cashier_absent: [[103.2, 105.2], [107.0, 109.0]]
+  intrusion: [[0.2, 40.0], [42.4, 45.6], [50.6, 55.6], [57.2, 111.4], [112.8, 141.8]]
+  cup: [[81.4, 84.2]]
+  storage_dwell: [[0.2, 46.0], [50.4, 51.0], [71.6, 74.0], [91.6, 92.6], [100.8, 102.0], [111.0, 142.4]]
+  cands: [('unauthorized_in_cash_zone', 0.2, 0.9, 'R4'), ('unauthorized_in_cash_zone', 42.4, 0.9, 'R4'), ('unauthorized_in_cash_zone', 50.6, 0.9, 'R4'), ('unauthorized_in_cash_zone', 57.2, 0.9, 'R4'), ('personal_items_at_workplace', 81.4, 0.79, 'R3b'), ('cashier_left_during_service', 103.2, 0.86, 'R1a'), ('cashier_left_during_service', 107.0, 0.86, 'R1a'), ('unauthorized_in_cash_zone', 112.8, 0.9, 'R4')]
+
+#### id 25 | cashier=T3 score=0.758 margin_notes=[] empty_start=False
+tracks: {'1': {'n': 17, 'presence': 0.107, 'score': 0.597}, '2': {'n': 31, 'presence': 0.195, 'score': 0.562}, '3': {'n': 150, 'presence': 0.943, 'score': 0.758}, '6': {'n': 10, 'presence': 0.063, 'score': 0.437}, '7': {'n': 11, 'presence': 0.069, 'score': 0.42}, '8': {'n': 9, 'presence': 0.057, 'score': 0.414}, '9': {'n': 8, 'presence': 0.05, 'score': 0.362}, '12': {'n': 10, 'presence': 0.063, 'score': 0.326}}
+clients: [1, 2, 6, 7, 8, 9, 12] collectors: [] others: [] anchor: [0.282, 0.303] dist_cc: 0.07 zone_r: 0.08
+  episodes: [[0.2, 16.4, [2, 6, 7, 8], False]]
+  handovers: [[0.2, 'client_to_cashier', 'client_reach+meet+cash', 1.0]]
+  counting: [[0.2, 5.2], [10.4, 12.2]]
+  intrusion: [[4.4, 8.2]]
+  cup: [[0.2, 5.0]]
+  cands: [('no_id_check', 0.2, 0.45, 'R7'), ('personal_items_at_workplace', 0.2, 0.85, 'R3b'), ('unauthorized_in_cash_zone', 4.4, 0.9, 'R4')]
+
+#### id 27 | cashier=T2 score=0.73 margin_notes=['cashier margin small: 0.730 vs 0.728'] empty_start=False
+tracks: {'1': {'n': 40, 'presence': 0.301, 'score': 0.728}, '2': {'n': 126, 'presence': 0.947, 'score': 0.73}, '3': {'n': 39, 'presence': 0.293, 'score': 0.601}, '7': {'n': 13, 'presence': 0.098, 'score': 0.35}}
+clients: [1, 3, 7] collectors: [] others: [] anchor: [0.215, 0.319] dist_cc: 0.081 zone_r: 0.08
+  episodes: [[0.4, 10.0, [3], False], [18.4, 20.4, [7], False]]
+  handovers: [[0.2, 'client_to_cashier', 'client_reach+meet+cash', 1.0]]
+  intrusion: [[8.2, 10.0]]
+  cup: [[4.0, 7.0]]
+  room_empty: [[25.6, 26.4]]
+  cands: [('no_id_check', 0.2, 0.45, 'R7'), ('personal_items_at_workplace', 4.0, 0.8, 'R3b'), ('unauthorized_in_cash_zone', 8.2, 0.794, 'R4'), ('accept_without_count', 10.0, 0.6, 'R6')]
+
+#### id 29 | cashier=T1 score=0.721 margin_notes=[] empty_start=False
+tracks: {'1': {'n': 80, 'presence': 0.92, 'score': 0.721}, '2': {'n': 38, 'presence': 0.437, 'score': 0.641}, '4': {'n': 24, 'presence': 0.276, 'score': 0.594}, '6': {'n': 14, 'presence': 0.161, 'score': 0.356}}
+clients: [2, 4, 6] collectors: [] others: [] anchor: [0.28, 0.326] dist_cc: 0.094 zone_r: 0.08
+  episodes: [[0.2, 16.6, [2, 4, 6], False]]
+  handovers: [[9.8, 'cashier_to_client', 'cashier_reach+meet+cash', 0.98], [12.8, 'client_to_cashier', 'cashier_reach+meet', 0.63], [14.6, 'unknown', 'cashier_reach', 0.47]]
+  cashier_absent: [[10.2, 13.6]]
+  cands: [('two_clients_cash_mixed', 1.2, 0.614, 'R9a'), ('issue_without_count', 9.8, 0.745, 'R5'), ('no_id_check', 9.8, 0.449, 'R7'), ('cashier_left_during_service', 10.2, 0.902, 'R1a')]
+
+#### id 35 | cashier=T1 score=0.787 margin_notes=[] empty_start=False
+tracks: {'1': {'n': 283, 'presence': 0.996, 'score': 0.787}, '2': {'n': 276, 'presence': 0.972, 'score': 0.693}, '3': {'n': 6, 'presence': 0.021, 'score': 0.513}, '6': {'n': 160, 'presence': 0.563, 'score': 0.521}, '7': {'n': 24, 'presence': 0.085, 'score': 0.409}, '9': {'n': 130, 'presence': 0.458, 'score': 0.469}, '8': {'n': 20, 'presence': 0.07, 'score': 0.421}, '11': {'n': 74, 'presence': 0.261, 'score': 0.406}, '12': {'n': 14, 'presence': 0.049, 'score': 0.342}, '13': {'n': 29, 'presence': 0.102, 'score': 0.363}}
+clients: [2, 6, 8] collectors: [] others: [3, 7, 9, 11, 12, 13] anchor: [0.441, 0.387] dist_cc: 0.161 zone_r: 0.08
+  episodes: [[0.8, 55.8, [2, 6, 8], False]]
+  handovers: [[11.4, 'unknown', 'cashier_reach+meet', 0.7]]
+  counting: [[11.2, 14.0], [18.6, 29.8], [39.4, 47.8]]
+  storage_dwell: [[39.6, 41.6], [44.2, 47.6]]
+  cands: [('two_clients_cash_mixed', 5.2, 0.85, 'R9a')]
+
+#### id 43 | cashier=T1 score=0.851 margin_notes=[] empty_start=False
+tracks: {'1': {'n': 116, 'presence': 0.991, 'score': 0.851}, '2': {'n': 34, 'presence': 0.291, 'score': 0.643}, '3': {'n': 34, 'presence': 0.291, 'score': 0.542}}
+clients: [2, 3] collectors: [] others: [] anchor: [0.17, 0.318] dist_cc: 0.179 zone_r: 0.08
+  episodes: [[1.2, 18.0, [2, 3], False]]
+  counting: [[0.2, 23.2]]
+  cup: [[18.0, 21.4]]
+  storage_dwell: [[0.2, 3.4], [7.0, 9.0], [11.0, 13.2]]
+  cands: [('personal_items_at_workplace', 18.0, 0.82, 'R3b')]
+
+#### id 30 | cashier=T1 score=0.809 margin_notes=[] empty_start=False
+tracks: {'1': {'n': 92, 'presence': 0.979, 'score': 0.809}, '4': {'n': 35, 'presence': 0.372, 'score': 0.489}, '5': {'n': 15, 'presence': 0.16, 'score': 0.444}}
+clients: [4, 5] collectors: [] others: [] anchor: [0.307, 0.301] dist_cc: 0.064 zone_r: 0.08
+  episodes: [[11.6, 18.6, [4, 5], False]]
+  counting: [[5.2, 17.0]]
+  intrusion: [[11.6, 13.8], [15.8, 18.6]]
+  cands: [('unauthorized_in_cash_zone', 11.6, 0.826, 'R4'), ('two_clients_cash_mixed', 15.8, 0.662, 'R9a'), ('unauthorized_in_cash_zone', 15.8, 0.874, 'R4')]
+
+#### id 32 | cashier=T1 score=0.839 margin_notes=[] empty_start=False
+tracks: {'1': {'n': 100, 'presence': 0.935, 'score': 0.839}, '5': {'n': 7, 'presence': 0.065, 'score': 0.412}}
+clients: [5] collectors: [] others: [] anchor: [0.324, 0.312] dist_cc: 0.057 zone_r: 0.08
+  counting: [[6.4, 21.2]]
+  intrusion: [[13.4, 15.0]]
+  room_empty: [[0.0, 1.2]]
+  cands: [('unauthorized_in_cash_zone', 13.4, 0.778, 'R4')]
+
+#### id 40 | cashier=T1 score=0.764 margin_notes=[] empty_start=False
+tracks: {'1': {'n': 123, 'presence': 0.969, 'score': 0.764}, '7': {'n': 7, 'presence': 0.055, 'score': 0.402}, '9': {'n': 20, 'presence': 0.157, 'score': 0.409}, '10': {'n': 5, 'presence': 0.039, 'score': 0.363}}
+clients: [7, 9, 10] collectors: [] others: [] anchor: [0.322, 0.278] dist_cc: 0.079 zone_r: 0.08
+  episodes: [[11.4, 18.2, [9, 10], False]]
+  counting: [[8.8, 25.2]]
+  cashier_absent: [[4.4, 7.2]]
+  storage_dwell: [[0.8, 3.0], [7.6, 25.2]]
+  room_empty: [[0.0, 0.6]]
+  cands: []
+
+#### id 2 | cashier=T1 score=0.737 margin_notes=[] empty_start=False
+tracks: {'1': {'n': 85, 'presence': 0.988, 'score': 0.737}, '2': {'n': 16, 'presence': 0.186, 'score': 0.558}, '4': {'n': 74, 'presence': 0.86, 'score': 0.615}, '5': {'n': 24, 'presence': 0.279, 'score': 0.493}, '6': {'n': 40, 'presence': 0.465, 'score': 0.514}, '7': {'n': 24, 'presence': 0.279, 'score': 0.475}}
+clients: [4] collectors: [] others: [2, 5, 6, 7] anchor: [0.373, 0.424] dist_cc: 0.167 zone_r: 0.08
+  episodes: [[2.2, 17.0, [4], False]]
+  handovers: [[13.6, 'unknown', 'cashier_reach+meet', 0.69]]
+  counting: [[13.8, 15.4]]
+  cands: []
+
+#### id 13 | cashier=T1 score=0.868 margin_notes=[] empty_start=False
+tracks: {'1': {'n': 313, 'presence': 0.957, 'score': 0.868}, '2': {'n': 183, 'presence': 0.56, 'score': 0.615}, '4': {'n': 34, 'presence': 0.104, 'score': 0.318}, '6': {'n': 5, 'presence': 0.015, 'score': 0.325}, '7': {'n': 67, 'presence': 0.205, 'score': 0.467}, '10': {'n': 5, 'presence': 0.015, 'score': 0.38}}
+clients: [2, 4, 6, 7, 10] collectors: [] others: [] anchor: [0.379, 0.33] dist_cc: 0.014 zone_r: 0.08
+  episodes: [[0.2, 59.8, [2, 4, 6, 7], False]]
+  handovers: [[58.0, 'cashier_to_client', 'cashier_reach+meet+cash', 0.99]]
+  counting: [[36.6, 44.2]]
+  cashier_absent: [[58.8, 65.2]]
+  storage_dwell: [[0.2, 58.0]]
+  room_empty: [[64.0, 65.2]]
+  cands: []
+
+#### id 15 | cashier=T2 score=0.757 margin_notes=[] empty_start=False
+tracks: {'1': {'n': 33, 'presence': 0.314, 'score': 0.662}, '2': {'n': 98, 'presence': 0.933, 'score': 0.757}, '3': {'n': 45, 'presence': 0.429, 'score': 0.651}, '4': {'n': 32, 'presence': 0.305, 'score': 0.478}}
+clients: [3, 4] collectors: [1] others: [] anchor: [0.184, 0.272] dist_cc: 0.094 zone_r: 0.08
+  episodes: [[0.2, 15.4, [3, 4], True]]
+  handovers: [[0.2, 'client_to_cashier', 'client_reach+meet+cash', 1.0]]
+  counting: [[0.2, 8.0]]
+  storage_dwell: [[5.2, 14.0]]
+  room_empty: [[20.2, 20.8]]
+  cands: [('no_id_check', 0.2, 0.45, 'R7')]
+
+#### id 20 | cashier=T1 score=0.865 margin_notes=[] empty_start=False
+tracks: {'1': {'n': 58, 'presence': 0.983, 'score': 0.865}, '2': {'n': 14, 'presence': 0.237, 'score': 0.572}, '6': {'n': 7, 'presence': 0.119, 'score': 0.438}}
+clients: [2, 6] collectors: [] others: [] anchor: [0.184, 0.277] dist_cc: 0.117 zone_r: 0.08
+  episodes: [[2.6, 5.4, [2], False]]
+  counting: [[6.2, 11.6]]
+  cands: []
+
+#### id 28 | cashier=T1 score=0.723 margin_notes=['cashier margin small: 0.723 vs 0.695'] empty_start=False
+tracks: {'1': {'n': 77, 'presence': 0.928, 'score': 0.723}, '2': {'n': 54, 'presence': 0.651, 'score': 0.695}, '4': {'n': 7, 'presence': 0.084, 'score': 0.375}}
+clients: [2, 4] collectors: [] others: [] anchor: [0.226, 0.327] dist_cc: 0.105 zone_r: 0.08
+  episodes: [[0.2, 11.4, [2, 4], False]]
+  handovers: [[11.0, 'unknown', 'cashier_reach+meet', 0.62]]
+  room_empty: [[15.6, 16.4]]
+  cands: []
+
+#### id 47 | cashier=T1 score=0.839 margin_notes=[] empty_start=False
+tracks: {'1': {'n': 363, 'presence': 0.997, 'score': 0.839}, '2': {'n': 30, 'presence': 0.082, 'score': 0.532}, '3': {'n': 246, 'presence': 0.676, 'score': 0.548}, '4': {'n': 210, 'presence': 0.577, 'score': 0.587}, '5': {'n': 196, 'presence': 0.538, 'score': 0.488}, '9': {'n': 31, 'presence': 0.085, 'score': 0.298}, '11': {'n': 89, 'presence': 0.245, 'score': 0.298}, '12': {'n': 62, 'presence': 0.17, 'score': 0.357}, '13': {'n': 33, 'presence': 0.091, 'score': 0.329}}
+clients: [3, 11] collectors: [] others: [2, 4, 5, 9, 12, 13] anchor: [0.343, 0.434] dist_cc: 0.162 zone_r: 0.08
+  episodes: [[4.6, 72.6, [3, 11], False]]
+  handovers: [[24.6, 'unknown', 'cashier_reach+meet', 0.7]]
+  counting: [[24.8, 26.8], [41.0, 43.0], [46.6, 48.2]]
+  cands: []
+
+#### id 4 | cashier=T1 score=0.839 margin_notes=[] empty_start=False
+tracks: {'1': {'n': 363, 'presence': 0.997, 'score': 0.839}, '2': {'n': 30, 'presence': 0.082, 'score': 0.532}, '3': {'n': 246, 'presence': 0.676, 'score': 0.548}, '4': {'n': 210, 'presence': 0.577, 'score': 0.587}, '5': {'n': 196, 'presence': 0.538, 'score': 0.488}, '9': {'n': 31, 'presence': 0.085, 'score': 0.298}, '11': {'n': 89, 'presence': 0.245, 'score': 0.298}, '12': {'n': 62, 'presence': 0.17, 'score': 0.357}, '13': {'n': 33, 'presence': 0.091, 'score': 0.329}}
+clients: [3, 11] collectors: [] others: [2, 4, 5, 9, 12, 13] anchor: [0.343, 0.434] dist_cc: 0.162 zone_r: 0.08
+  episodes: [[4.6, 72.6, [3, 11], False]]
+  handovers: [[24.6, 'unknown', 'cashier_reach+meet', 0.7]]
+  counting: [[24.8, 26.8], [41.0, 43.0], [46.6, 48.2]]
+  cands: []

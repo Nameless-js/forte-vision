@@ -2,18 +2,18 @@
  "1": {
   "video_id": 1,
   "duration_s": 25.933333,
-  "wall_s": 40.5,
+  "wall_s": 35.5,
   "from_cache": false,
   "timings": {
-   "decode": 0.28,
-   "detect": 23.36,
+   "decode": 0.18,
+   "detect": 19.64,
    "track": 0.06,
-   "pose": 4.54,
-   "total": 40.34,
+   "pose": 3.17,
+   "total": 35.37,
    "n_sampled": 130.0
   },
   "model_load": {
-   "detector": 11.6,
+   "detector": 11.9,
    "pose": 0.4
   },
   "n_frames": 130,
@@ -22,35 +22,36 @@
    129,
    127,
    97,
-   46,
-   34,
-   6
+   45,
+   33,
+   7
   ],
   "dets_per_class_per_frame": {
-   "bag": 0.03,
-   "cash": 0.15,
-   "counting_machine": 0.9,
+   "bag": 0.02,
+   "cash": 0.18,
+   "counting_machine": 0.91,
+   "cup": 0.16,
    "laptop": 1.0,
-   "person": 3.46,
-   "phone": 0.25,
-   "storage": 1.55
+   "person": 3.44,
+   "phone": 0.13,
+   "storage": 1.44
   }
  },
  "2": {
   "video_id": 2,
   "duration_s": 17.066667,
-  "wall_s": 19.0,
+  "wall_s": 14.0,
   "from_cache": false,
   "timings": {
-   "decode": 0.25,
-   "detect": 15.53,
-   "track": 0.03,
-   "pose": 3.06,
-   "total": 18.89,
+   "decode": 0.12,
+   "detect": 11.67,
+   "track": 0.04,
+   "pose": 2.06,
+   "total": 13.9,
    "n_sampled": 86.0
   },
   "model_load": {
-   "detector": 11.6,
+   "detector": 11.9,
    "pose": 0.4
   },
   "n_frames": 86,
@@ -58,36 +59,37 @@
   "track_lengths": [
    85,
    74,
-   53,
-   39,
-   16,
-   8
+   40,
+   24,
+   24,
+   16
   ],
   "dets_per_class_per_frame": {
    "cash": 0.07,
-   "counting_machine": 0.94,
-   "id_card": 0.06,
+   "counting_machine": 0.98,
+   "cup": 0.13,
+   "id_card": 0.05,
    "laptop": 1.0,
-   "person": 3.3,
-   "phone": 0.3,
-   "storage": 1.78
+   "person": 3.21,
+   "phone": 0.23,
+   "storage": 1.49
   }
  },
  "3": {
   "video_id": 3,
   "duration_s": 20.033021,
-  "wall_s": 22.7,
+  "wall_s": 16.9,
   "from_cache": false,
   "timings": {
-   "decode": 0.23,
-   "detect": 18.74,
+   "decode": 0.13,
+   "detect": 13.93,
    "track": 0.04,
-   "pose": 3.56,
-   "total": 22.59,
+   "pose": 2.68,
+   "total": 16.79,
    "n_sampled": 101.0
   },
   "model_load": {
-   "detector": 11.6,
+   "detector": 11.9,
    "pose": 0.4
   },
   "n_frames": 101,
@@ -95,37 +97,37 @@
   "track_lengths": [
    99,
    92,
-   78,
-   69,
+   77,
+   68,
    9,
    7
   ],
   "dets_per_class_per_frame": {
-   "bag": 0.02,
-   "cash": 0.23,
+   "bag": 0.01,
+   "cash": 0.14,
    "counting_machine": 0.9,
-   "id_card": 0.01,
+   "cup": 0.12,
    "laptop": 1.01,
-   "person": 3.62,
-   "phone": 0.3,
-   "storage": 1.91
+   "person": 3.6,
+   "phone": 0.16,
+   "storage": 1.7
   }
  },
  "4": {
   "video_id": 4,
   "duration_s": 72.7,
-  "wall_s": 83.4,
+  "wall_s": 59.6,
   "from_cache": false,
   "timings": {
-   "decode": 0.64,
-   "detect": 69.88,
-   "track": 0.17,
-   "pose": 12.16,
-   "total": 82.93,
+   "decode": 0.4,
+   "detect": 49.37,
+   "track": 0.14,
+   "pose": 9.29,
+   "total": 59.25,
    "n_sampled": 364.0
   },
   "model_load": {
-   "detector": 11.6,
+   "detector": 11.9,
    "pose": 0.4
   },
   "n_frames": 364,
@@ -133,112 +135,115 @@
   "track_lengths": [
    363,
    246,
-   209,
-   203,
+   210,
+   196,
    89,
    62
   ],
   "dets_per_class_per_frame": {
    "bag": 0.01,
-   "cash": 0.17,
-   "counting_machine": 1.04,
-   "id_card": 0.03,
+   "cash": 0.13,
+   "counting_machine": 1.07,
+   "cup": 0.35,
+   "id_card": 0.02,
    "laptop": 1.0,
-   "person": 3.5,
-   "phone": 0.56,
-   "storage": 1.62
+   "person": 3.51,
+   "phone": 0.43,
+   "storage": 1.45
   }
  },
  "5": {
   "video_id": 5,
   "duration_s": 71.6,
-  "wall_s": 85.2,
+  "wall_s": 59.0,
   "from_cache": false,
   "timings": {
-   "decode": 0.67,
-   "detect": 71.04,
-   "track": 0.17,
-   "pose": 12.78,
-   "total": 84.74,
+   "decode": 0.4,
+   "detect": 48.62,
+   "track": 0.15,
+   "pose": 9.4,
+   "total": 58.6,
    "n_sampled": 358.0
   },
   "model_load": {
-   "detector": 11.6,
+   "detector": 11.9,
    "pose": 0.4
   },
   "n_frames": 358,
-  "n_tracks": 13,
+  "n_tracks": 15,
   "track_lengths": [
    357,
    303,
-   185,
-   178,
-   85,
-   66
+   206,
+   160,
+   79,
+   49
   ],
   "dets_per_class_per_frame": {
    "bag": 0.03,
    "cash": 0.06,
-   "counting_machine": 1.07,
-   "id_card": 0.13,
-   "laptop": 1.01,
+   "counting_machine": 1.09,
+   "cup": 0.18,
+   "id_card": 0.15,
+   "laptop": 1.0,
    "person": 3.7,
-   "phone": 1.04,
-   "storage": 1.51
+   "phone": 1.0,
+   "storage": 1.32
   }
  },
  "8": {
   "video_id": 8,
   "duration_s": 38.033021,
-  "wall_s": 42.5,
+  "wall_s": 30.6,
   "from_cache": false,
   "timings": {
-   "decode": 0.43,
-   "detect": 37.92,
+   "decode": 0.28,
+   "detect": 27.21,
    "track": 0.07,
-   "pose": 3.84,
-   "total": 42.33,
+   "pose": 2.9,
+   "total": 30.48,
    "n_sampled": 191.0
   },
   "model_load": {
-   "detector": 11.6,
+   "detector": 11.9,
    "pose": 0.4
   },
   "n_frames": 191,
   "n_tracks": 5,
   "track_lengths": [
    155,
-   127,
+   83,
+   53,
    50,
-   30,
-   11
+   30
   ],
   "dets_per_class_per_frame": {
-   "cash": 0.21,
-   "counting_machine": 1.04,
+   "cash": 0.06,
+   "counting_machine": 1.11,
+   "cup": 0.07,
    "document": 0.07,
    "id_card": 0.04,
-   "laptop": 0.41,
-   "person": 2.01,
+   "laptop": 0.35,
+   "person": 2.0,
    "phone": 0.08,
-   "storage": 1.7
+   "storage": 1.45
   }
  },
  "10": {
   "video_id": 10,
   "duration_s": 15.566667,
-  "wall_s": 17.4,
+  "wall_s": 12.6,
   "from_cache": false,
   "timings": {
-   "decode": 0.21,
-   "detect": 15.57,
-   "track": 0.03,
-   "pose": 1.47,
-   "total": 17.33,
+   "decode": 0.13,
+   "detect": 11.21,
+   "track": 0.02,
+   "pose": 1.19,
+   "total": 12.57,
    "n_sampled": 78.0
   },
   "model_load": {
-   "detector": 11.6,
+   "detector": 11.9,
    "pose": 0.4
   },
   "n_frames": 78,
@@ -248,30 +253,31 @@
    71
   ],
   "dets_per_class_per_frame": {
-   "cash": 0.79,
+   "cash": 0.51,
    "counting_machine": 1.83,
-   "id_card": 0.13,
-   "laptop": 0.04,
+   "cup": 0.1,
+   "id_card": 0.04,
+   "laptop": 0.05,
    "person": 1.95,
-   "phone": 0.13,
-   "storage": 1.23
+   "phone": 0.09,
+   "storage": 1.18
   }
  },
  "11": {
   "video_id": 11,
   "duration_s": 25.6,
-  "wall_s": 28.5,
+  "wall_s": 19.3,
   "from_cache": false,
   "timings": {
-   "decode": 0.45,
-   "detect": 25.85,
-   "track": 0.06,
-   "pose": 1.99,
-   "total": 28.38,
+   "decode": 0.19,
+   "detect": 17.53,
+   "track": 0.03,
+   "pose": 1.43,
+   "total": 19.19,
    "n_sampled": 128.0
   },
   "model_load": {
-   "detector": 11.6,
+   "detector": 11.9,
    "pose": 0.4
   },
   "n_frames": 128,
@@ -279,613 +285,631 @@
   "track_lengths": [
    121,
    43,
-   24
+   23
   ],
   "dets_per_class_per_frame": {
    "cash": 0.09,
-   "counting_machine": 1.06,
+   "counting_machine": 1.09,
+   "cup": 0.14,
    "id_card": 0.02,
    "laptop": 1.0,
-   "person": 1.57,
+   "person": 1.55,
    "phone": 0.12,
-   "storage": 1.15
+   "storage": 1.09
   }
  },
  "12": {
   "video_id": 12,
   "duration_s": 42.3,
-  "wall_s": 49.3,
+  "wall_s": 31.8,
   "from_cache": false,
   "timings": {
-   "decode": 0.73,
-   "detect": 44.69,
-   "track": 0.08,
-   "pose": 3.56,
-   "total": 49.1,
+   "decode": 0.26,
+   "detect": 28.65,
+   "track": 0.06,
+   "pose": 2.58,
+   "total": 31.58,
    "n_sampled": 212.0
   },
   "model_load": {
-   "detector": 11.6,
+   "detector": 11.9,
    "pose": 0.4
   },
   "n_frames": 212,
-  "n_tracks": 4,
+  "n_tracks": 5,
   "track_lengths": [
    205,
-   85,
-   37,
+   84,
+   27,
+   11,
    5
   ],
   "dets_per_class_per_frame": {
-   "cash": 0.08,
-   "counting_machine": 1.17,
+   "cash": 0.07,
+   "counting_machine": 1.15,
+   "cup": 0.1,
    "id_card": 0.0,
-   "laptop": 0.95,
-   "person": 1.64,
-   "phone": 0.08,
-   "storage": 1.22
+   "laptop": 0.92,
+   "person": 1.63,
+   "phone": 0.05,
+   "storage": 1.17
   }
  },
  "13": {
   "video_id": 13,
   "duration_s": 65.3,
-  "wall_s": 74.1,
+  "wall_s": 50.1,
   "from_cache": false,
   "timings": {
-   "decode": 0.76,
-   "detect": 66.35,
-   "track": 0.1,
-   "pose": 6.55,
-   "total": 73.85,
+   "decode": 0.41,
+   "detect": 44.54,
+   "track": 0.09,
+   "pose": 4.72,
+   "total": 49.8,
    "n_sampled": 327.0
   },
   "model_load": {
-   "detector": 11.6,
+   "detector": 11.9,
    "pose": 0.4
   },
   "n_frames": 327,
-  "n_tracks": 4,
+  "n_tracks": 6,
   "track_lengths": [
-   316,
+   313,
    183,
-   84,
-   22
+   67,
+   34,
+   5,
+   5
   ],
   "dets_per_class_per_frame": {
-   "bag": 0.29,
-   "cash": 0.62,
-   "counting_machine": 1.51,
-   "id_card": 0.25,
+   "bag": 0.25,
+   "cash": 0.58,
+   "counting_machine": 1.57,
+   "cup": 0.04,
+   "id_card": 0.14,
    "laptop": 1.0,
    "person": 1.91,
-   "phone": 1.04,
-   "storage": 1.14
+   "phone": 1.02,
+   "storage": 1.15
   }
  },
  "14": {
   "video_id": 14,
   "duration_s": 142.533021,
-  "wall_s": 167.3,
+  "wall_s": 114.0,
   "from_cache": false,
   "timings": {
-   "decode": 1.59,
-   "detect": 147.37,
-   "track": 0.35,
-   "pose": 17.28,
-   "total": 166.73,
+   "decode": 0.8,
+   "detect": 99.2,
+   "track": 0.23,
+   "pose": 13.17,
+   "total": 113.48,
    "n_sampled": 713.0
   },
   "model_load": {
-   "detector": 11.6,
+   "detector": 11.9,
    "pose": 0.4
   },
   "n_frames": 713,
-  "n_tracks": 9,
+  "n_tracks": 10,
   "track_lengths": [
-   673,
-   399,
-   309,
-   168,
-   67,
+   683,
+   308,
+   251,
+   191,
+   166,
    28
   ],
   "dets_per_class_per_frame": {
-   "bag": 0.15,
-   "cash": 1.0,
-   "counting_machine": 0.97,
+   "bag": 0.13,
+   "cash": 0.97,
+   "counting_machine": 0.94,
+   "cup": 0.28,
    "document": 0.0,
-   "id_card": 0.24,
+   "id_card": 0.16,
    "laptop": 1.01,
-   "person": 2.39,
-   "phone": 0.17,
-   "storage": 1.2
+   "person": 2.4,
+   "phone": 0.14,
+   "storage": 1.08
   }
  },
  "15": {
   "video_id": 15,
   "duration_s": 20.866667,
-  "wall_s": 24.5,
+  "wall_s": 16.5,
   "from_cache": false,
   "timings": {
-   "decode": 0.36,
-   "detect": 21.78,
+   "decode": 0.16,
+   "detect": 14.56,
    "track": 0.04,
-   "pose": 2.15,
-   "total": 24.38,
+   "pose": 1.64,
+   "total": 16.4,
    "n_sampled": 105.0
   },
   "model_load": {
-   "detector": 11.6,
+   "detector": 11.9,
    "pose": 0.4
   },
   "n_frames": 105,
   "n_tracks": 4,
   "track_lengths": [
-   97,
-   43,
+   98,
+   45,
    33,
    32
   ],
   "dets_per_class_per_frame": {
-   "bag": 0.78,
-   "cash": 0.1,
+   "bag": 0.66,
+   "cash": 0.04,
    "counting_machine": 1.44,
+   "cup": 0.14,
    "laptop": 1.0,
-   "person": 2.06,
-   "phone": 1.03,
+   "person": 2.08,
+   "phone": 1.02,
    "storage": 1.26
   }
  },
  "16": {
   "video_id": 16,
   "duration_s": 22.733021,
-  "wall_s": 27.4,
+  "wall_s": 19.1,
   "from_cache": false,
   "timings": {
-   "decode": 0.29,
-   "detect": 23.45,
-   "track": 0.06,
-   "pose": 3.46,
-   "total": 27.28,
+   "decode": 0.15,
+   "detect": 16.05,
+   "track": 0.04,
+   "pose": 2.7,
+   "total": 18.96,
    "n_sampled": 114.0
   },
   "model_load": {
-   "detector": 11.6,
+   "detector": 11.9,
    "pose": 0.4
   },
   "n_frames": 114,
   "n_tracks": 7,
   "track_lengths": [
    113,
-   87,
+   88,
    67,
    25,
    17,
-   11
+   12
   ],
   "dets_per_class_per_frame": {
-   "bag": 0.3,
-   "cash": 0.02,
-   "counting_machine": 0.87,
+   "bag": 0.25,
+   "cash": 0.01,
+   "counting_machine": 0.88,
+   "cup": 0.78,
    "id_card": 0.01,
    "laptop": 1.0,
-   "person": 2.96,
-   "phone": 0.37,
-   "storage": 1.4
+   "person": 2.99,
+   "phone": 0.32,
+   "storage": 1.28
   }
  },
  "17": {
   "video_id": 17,
   "duration_s": 14.733333,
-  "wall_s": 17.6,
+  "wall_s": 12.5,
   "from_cache": false,
   "timings": {
-   "decode": 0.22,
-   "detect": 15.43,
-   "track": 0.04,
-   "pose": 1.79,
-   "total": 17.53,
+   "decode": 0.11,
+   "detect": 10.85,
+   "track": 0.02,
+   "pose": 1.47,
+   "total": 12.48,
    "n_sampled": 74.0
   },
   "model_load": {
-   "detector": 11.6,
+   "detector": 11.9,
    "pose": 0.4
   },
   "n_frames": 74,
-  "n_tracks": 4,
+  "n_tracks": 5,
   "track_lengths": [
    73,
    55,
-   37,
+   23,
+   14,
    8
   ],
   "dets_per_class_per_frame": {
-   "bag": 0.51,
-   "cash": 0.05,
+   "bag": 0.43,
+   "cash": 0.04,
    "counting_machine": 0.82,
+   "cup": 0.38,
    "laptop": 1.0,
-   "person": 2.45,
+   "person": 2.47,
    "phone": 0.27,
-   "storage": 1.32
+   "storage": 1.22
   }
  },
  "18": {
   "video_id": 18,
   "duration_s": 22.6,
-  "wall_s": 27.4,
+  "wall_s": 19.2,
   "from_cache": false,
   "timings": {
-   "decode": 0.32,
-   "detect": 23.28,
-   "track": 0.06,
-   "pose": 3.54,
-   "total": 27.23,
+   "decode": 0.15,
+   "detect": 16.16,
+   "track": 0.04,
+   "pose": 2.72,
+   "total": 19.08,
    "n_sampled": 113.0
   },
   "model_load": {
-   "detector": 11.6,
+   "detector": 11.9,
    "pose": 0.4
   },
   "n_frames": 113,
   "n_tracks": 6,
   "track_lengths": [
    112,
-   64,
-   47,
-   46,
+   59,
+   53,
+   45,
    35,
    30
   ],
   "dets_per_class_per_frame": {
-   "cash": 0.06,
-   "counting_machine": 0.83,
-   "id_card": 0.01,
-   "laptop": 1.12,
-   "person": 3.07,
-   "phone": 0.3,
-   "storage": 1.35
+   "cash": 0.07,
+   "counting_machine": 0.85,
+   "cup": 0.27,
+   "laptop": 1.14,
+   "person": 3.08,
+   "phone": 0.21,
+   "storage": 1.23
   }
  },
  "19": {
   "video_id": 19,
   "duration_s": 57.433021,
-  "wall_s": 69.0,
+  "wall_s": 47.6,
   "from_cache": false,
   "timings": {
-   "decode": 0.83,
-   "detect": 58.81,
-   "track": 0.14,
-   "pose": 8.89,
-   "total": 68.74,
+   "decode": 0.33,
+   "detect": 40.36,
+   "track": 0.11,
+   "pose": 6.52,
+   "total": 47.36,
    "n_sampled": 288.0
   },
   "model_load": {
-   "detector": 11.6,
+   "detector": 11.9,
    "pose": 0.4
   },
   "n_frames": 288,
-  "n_tracks": 11,
+  "n_tracks": 12,
   "track_lengths": [
    287,
    236,
-   182,
+   145,
    41,
-   19,
-   18
+   24,
+   19
   ],
   "dets_per_class_per_frame": {
-   "cash": 0.08,
-   "counting_machine": 0.8,
-   "id_card": 0.14,
+   "cash": 0.12,
+   "counting_machine": 0.83,
+   "cup": 0.19,
+   "id_card": 0.07,
    "laptop": 1.01,
    "person": 3.02,
-   "phone": 0.27,
-   "storage": 1.41
+   "phone": 0.18,
+   "storage": 1.33
   }
  },
  "20": {
   "video_id": 20,
   "duration_s": 11.633333,
-  "wall_s": 13.2,
+  "wall_s": 9.3,
   "from_cache": false,
   "timings": {
-   "decode": 0.22,
-   "detect": 11.78,
+   "decode": 0.1,
+   "detect": 8.55,
    "track": 0.02,
-   "pose": 1.07,
-   "total": 13.13,
+   "pose": 0.61,
+   "total": 9.28,
    "n_sampled": 59.0
   },
   "model_load": {
-   "detector": 11.6,
+   "detector": 11.9,
    "pose": 0.4
   },
   "n_frames": 59,
   "n_tracks": 3,
   "track_lengths": [
    58,
-   15,
+   14,
    7
   ],
   "dets_per_class_per_frame": {
-   "bag": 0.54,
-   "cash": 0.08,
-   "counting_machine": 1.15,
+   "bag": 0.34,
+   "cash": 0.1,
+   "counting_machine": 1.24,
+   "cup": 1.0,
    "laptop": 1.0,
    "person": 1.58,
-   "phone": 0.34,
-   "storage": 1.41
+   "phone": 0.27,
+   "storage": 1.44
   }
  },
  "21": {
   "video_id": 21,
   "duration_s": 19.6,
-  "wall_s": 22.0,
+  "wall_s": 15.3,
   "from_cache": false,
   "timings": {
-   "decode": 0.39,
-   "detect": 19.65,
-   "track": 0.03,
-   "pose": 1.79,
-   "total": 21.86,
+   "decode": 0.14,
+   "detect": 13.94,
+   "track": 0.02,
+   "pose": 1.1,
+   "total": 15.22,
    "n_sampled": 98.0
   },
   "model_load": {
-   "detector": 11.6,
+   "detector": 11.9,
    "pose": 0.4
   },
   "n_frames": 98,
-  "n_tracks": 5,
+  "n_tracks": 4,
   "track_lengths": [
    97,
-   18,
+   21,
    10,
-   9,
    8
   ],
   "dets_per_class_per_frame": {
-   "bag": 0.28,
-   "cash": 0.07,
-   "counting_machine": 1.3,
-   "id_card": 0.01,
+   "bag": 0.16,
+   "cash": 0.13,
+   "counting_machine": 1.35,
+   "cup": 0.9,
    "laptop": 1.0,
-   "person": 1.53,
-   "phone": 0.68,
-   "storage": 1.99
+   "person": 1.51,
+   "phone": 0.57,
+   "storage": 2.02
   }
  },
  "22": {
   "video_id": 22,
   "duration_s": 21.033021,
-  "wall_s": 24.2,
+  "wall_s": 16.3,
   "from_cache": false,
   "timings": {
-   "decode": 0.44,
-   "detect": 21.57,
+   "decode": 0.14,
+   "detect": 14.83,
    "track": 0.03,
-   "pose": 2.05,
-   "total": 24.1,
+   "pose": 1.23,
+   "total": 16.25,
    "n_sampled": 106.0
   },
   "model_load": {
-   "detector": 11.6,
+   "detector": 11.9,
    "pose": 0.4
   },
   "n_frames": 106,
   "n_tracks": 3,
   "track_lengths": [
    99,
-   33,
-   31
+   48,
+   14
   ],
   "dets_per_class_per_frame": {
-   "bag": 0.58,
+   "bag": 0.43,
    "cash": 0.04,
-   "counting_machine": 1.38,
-   "laptop": 1.01,
-   "person": 1.58,
-   "phone": 0.49,
-   "storage": 1.93
+   "counting_machine": 1.35,
+   "cup": 0.75,
+   "laptop": 1.02,
+   "person": 1.56,
+   "phone": 0.45,
+   "storage": 1.96
   }
  },
  "23": {
   "video_id": 23,
   "duration_s": 18.266667,
-  "wall_s": 21.2,
+  "wall_s": 14.0,
   "from_cache": false,
   "timings": {
-   "decode": 0.42,
-   "detect": 18.62,
-   "track": 0.03,
-   "pose": 2.01,
-   "total": 21.1,
+   "decode": 0.13,
+   "detect": 12.75,
+   "track": 0.02,
+   "pose": 1.06,
+   "total": 13.99,
    "n_sampled": 92.0
   },
   "model_load": {
-   "detector": 11.6,
+   "detector": 11.9,
    "pose": 0.4
   },
   "n_frames": 92,
   "n_tracks": 4,
   "track_lengths": [
    86,
-   27,
+   28,
    13,
    9
   ],
   "dets_per_class_per_frame": {
-   "bag": 0.26,
-   "cash": 0.02,
-   "counting_machine": 1.25,
+   "bag": 0.17,
+   "cash": 0.16,
+   "counting_machine": 1.23,
+   "cup": 0.84,
    "laptop": 1.01,
-   "person": 1.53,
-   "phone": 0.55,
-   "storage": 1.86
+   "person": 1.54,
+   "phone": 0.45,
+   "storage": 1.75
   }
  },
  "24": {
   "video_id": 24,
   "duration_s": 14.7,
-  "wall_s": 17.0,
+  "wall_s": 11.7,
   "from_cache": false,
   "timings": {
-   "decode": 0.29,
-   "detect": 15.18,
-   "track": 0.04,
-   "pose": 1.42,
-   "total": 16.94,
+   "decode": 0.1,
+   "detect": 10.49,
+   "track": 0.02,
+   "pose": 1.04,
+   "total": 11.66,
    "n_sampled": 74.0
   },
   "model_load": {
-   "detector": 11.6,
+   "detector": 11.9,
    "pose": 0.4
   },
   "n_frames": 74,
   "n_tracks": 4,
   "track_lengths": [
-   59,
-   33,
+   65,
+   34,
    20,
    12
   ],
   "dets_per_class_per_frame": {
-   "bag": 0.49,
-   "cash": 1.01,
-   "counting_machine": 1.77,
+   "bag": 0.27,
+   "cash": 0.11,
+   "counting_machine": 1.78,
+   "cup": 1.08,
    "document": 0.04,
-   "id_card": 0.11,
-   "laptop": 1.05,
-   "person": 1.8,
-   "phone": 0.47,
-   "storage": 1.92
+   "id_card": 0.2,
+   "laptop": 1.04,
+   "person": 1.88,
+   "phone": 0.51,
+   "storage": 1.93
   }
  },
  "25": {
   "video_id": 25,
   "duration_s": 31.7,
-  "wall_s": 36.9,
+  "wall_s": 24.6,
   "from_cache": false,
   "timings": {
-   "decode": 0.67,
-   "detect": 32.48,
-   "track": 0.07,
-   "pose": 3.48,
-   "total": 36.73,
+   "decode": 0.19,
+   "detect": 22.18,
+   "track": 0.06,
+   "pose": 1.9,
+   "total": 24.35,
    "n_sampled": 159.0
   },
   "model_load": {
-   "detector": 11.6,
+   "detector": 11.9,
    "pose": 0.4
   },
   "n_frames": 159,
   "n_tracks": 8,
   "track_lengths": [
-   146,
+   150,
    31,
-   18,
+   17,
    11,
    10,
    10
   ],
   "dets_per_class_per_frame": {
-   "bag": 0.26,
-   "cash": 0.38,
-   "counting_machine": 1.52,
+   "bag": 0.14,
+   "cash": 0.04,
+   "counting_machine": 1.51,
+   "cup": 0.53,
    "document": 0.01,
    "id_card": 0.03,
    "laptop": 1.01,
-   "person": 1.66,
-   "phone": 0.45,
-   "storage": 1.77
+   "person": 1.64,
+   "phone": 0.43,
+   "storage": 1.79
   }
  },
  "26": {
   "video_id": 26,
   "duration_s": 19.8,
-  "wall_s": 23.2,
+  "wall_s": 15.6,
   "from_cache": false,
   "timings": {
-   "decode": 0.36,
-   "detect": 20.34,
-   "track": 0.04,
-   "pose": 2.29,
-   "total": 23.08,
+   "decode": 0.14,
+   "detect": 13.87,
+   "track": 0.02,
+   "pose": 1.51,
+   "total": 15.55,
    "n_sampled": 99.0
   },
   "model_load": {
-   "detector": 11.6,
+   "detector": 11.9,
    "pose": 0.4
   },
   "n_frames": 99,
   "n_tracks": 5,
   "track_lengths": [
    84,
-   53,
+   52,
    43,
    9,
    5
   ],
   "dets_per_class_per_frame": {
-   "bag": 0.07,
-   "cash": 0.04,
-   "counting_machine": 1.87,
-   "id_card": 0.33,
+   "bag": 0.02,
+   "cash": 0.05,
+   "counting_machine": 1.88,
+   "cup": 0.38,
+   "id_card": 0.24,
    "laptop": 1.01,
-   "person": 2.06,
-   "phone": 0.85,
-   "storage": 1.9
+   "person": 2.05,
+   "phone": 0.69,
+   "storage": 1.92
   }
  },
  "27": {
   "video_id": 27,
   "duration_s": 26.433021,
-  "wall_s": 31.3,
+  "wall_s": 20.7,
   "from_cache": false,
   "timings": {
-   "decode": 0.61,
-   "detect": 27.44,
-   "track": 0.05,
-   "pose": 2.93,
-   "total": 31.05,
+   "decode": 0.17,
+   "detect": 18.72,
+   "track": 0.04,
+   "pose": 1.7,
+   "total": 20.64,
    "n_sampled": 133.0
   },
   "model_load": {
-   "detector": 11.6,
+   "detector": 11.9,
    "pose": 0.4
   },
   "n_frames": 133,
   "n_tracks": 4,
   "track_lengths": [
    126,
-   45,
    40,
+   39,
    13
   ],
   "dets_per_class_per_frame": {
-   "bag": 0.05,
-   "cash": 0.04,
-   "counting_machine": 1.05,
+   "bag": 0.04,
+   "cash": 0.05,
+   "counting_machine": 1.11,
+   "cup": 0.18,
    "laptop": 1.01,
-   "person": 1.76,
-   "phone": 0.61,
-   "storage": 1.93
+   "person": 1.74,
+   "phone": 0.37,
+   "storage": 1.94
   }
  },
  "28": {
   "video_id": 28,
   "duration_s": 16.533021,
-  "wall_s": 19.3,
+  "wall_s": 12.9,
   "from_cache": false,
   "timings": {
-   "decode": 0.28,
-   "detect": 17.14,
+   "decode": 0.11,
+   "detect": 11.58,
    "track": 0.03,
-   "pose": 1.71,
-   "total": 19.19,
+   "pose": 1.08,
+   "total": 12.81,
    "n_sampled": 83.0
   },
   "model_load": {
-   "detector": 11.6,
+   "detector": 11.9,
    "pose": 0.4
   },
   "n_frames": 83,
@@ -893,66 +917,69 @@
   "track_lengths": [
    77,
    54,
-   5
+   7
   ],
   "dets_per_class_per_frame": {
    "bag": 0.06,
-   "counting_machine": 1.58,
-   "laptop": 1.24,
+   "counting_machine": 1.63,
+   "cup": 0.25,
+   "laptop": 1.22,
    "person": 1.77,
-   "phone": 0.57,
+   "phone": 0.51,
    "storage": 1.9
   }
  },
  "29": {
   "video_id": 29,
   "duration_s": 17.3,
-  "wall_s": 20.4,
+  "wall_s": 13.7,
   "from_cache": false,
   "timings": {
-   "decode": 0.34,
-   "detect": 17.98,
-   "track": 0.04,
-   "pose": 1.94,
-   "total": 20.31,
+   "decode": 0.11,
+   "detect": 12.26,
+   "track": 0.03,
+   "pose": 1.26,
+   "total": 13.67,
    "n_sampled": 87.0
   },
   "model_load": {
-   "detector": 11.6,
+   "detector": 11.9,
    "pose": 0.4
   },
   "n_frames": 87,
   "n_tracks": 4,
   "track_lengths": [
    80,
-   37,
-   19,
-   7
+   38,
+   24,
+   14
   ],
   "dets_per_class_per_frame": {
    "bag": 0.02,
-   "counting_machine": 1.55,
+   "cash": 0.01,
+   "counting_machine": 1.59,
+   "cup": 0.26,
    "laptop": 1.01,
-   "person": 1.84,
-   "phone": 0.66,
-   "storage": 1.87
+   "person": 1.97,
+   "phone": 0.6,
+   "storage": 1.9
   }
  },
  "30": {
   "video_id": 30,
   "duration_s": 18.8,
-  "wall_s": 21.8,
+  "wall_s": 14.5,
   "from_cache": false,
   "timings": {
-   "decode": 0.48,
-   "detect": 19.31,
-   "track": 0.04,
-   "pose": 1.83,
-   "total": 21.67,
+   "decode": 0.12,
+   "detect": 13.22,
+   "track": 0.02,
+   "pose": 1.09,
+   "total": 14.47,
    "n_sampled": 94.0
   },
   "model_load": {
-   "detector": 11.6,
+   "detector": 11.9,
    "pose": 0.4
   },
   "n_frames": 94,
@@ -960,103 +987,107 @@
   "track_lengths": [
    92,
    35,
-   14
+   15
   ],
   "dets_per_class_per_frame": {
-   "cash": 0.1,
-   "counting_machine": 1.06,
-   "document": 0.07,
-   "laptop": 0.3,
-   "person": 1.56,
-   "phone": 0.36,
-   "storage": 1.6
+   "cash": 0.09,
+   "counting_machine": 1.07,
+   "cup": 0.41,
+   "document": 0.06,
+   "laptop": 0.28,
+   "person": 1.57,
+   "phone": 0.14,
+   "storage": 1.61
   }
  },
  "31": {
   "video_id": 31,
   "duration_s": 23.8,
-  "wall_s": 27.5,
+  "wall_s": 18.2,
   "from_cache": false,
   "timings": {
-   "decode": 0.45,
-   "detect": 24.63,
+   "decode": 0.14,
+   "detect": 16.7,
    "track": 0.04,
-   "pose": 2.29,
-   "total": 27.44,
+   "pose": 1.26,
+   "total": 18.15,
    "n_sampled": 119.0
   },
   "model_load": {
-   "detector": 11.6,
+   "detector": 11.9,
    "pose": 0.4
   },
   "n_frames": 119,
   "n_tracks": 5,
   "track_lengths": [
    78,
-   39,
+   40,
    29,
-   10,
+   9,
    7
   ],
   "dets_per_class_per_frame": {
-   "bag": 0.02,
-   "counting_machine": 1.08,
-   "document": 0.01,
-   "laptop": 0.09,
+   "bag": 0.01,
+   "cash": 0.02,
+   "counting_machine": 1.03,
+   "cup": 0.13,
+   "document": 0.02,
+   "laptop": 0.08,
    "person": 1.45,
-   "phone": 0.31,
-   "storage": 2.02
+   "phone": 0.18,
+   "storage": 1.99
   }
  },
  "32": {
   "video_id": 32,
   "duration_s": 21.3,
-  "wall_s": 24.6,
+  "wall_s": 16.0,
   "from_cache": false,
   "timings": {
-   "decode": 0.54,
-   "detect": 22.47,
-   "track": 0.04,
-   "pose": 1.5,
-   "total": 24.57,
+   "decode": 0.13,
+   "detect": 14.88,
+   "track": 0.03,
+   "pose": 0.9,
+   "total": 15.96,
    "n_sampled": 107.0
   },
   "model_load": {
-   "detector": 11.6,
+   "detector": 11.9,
    "pose": 0.4
   },
   "n_frames": 107,
   "n_tracks": 2,
   "track_lengths": [
    100,
-   8
+   7
   ],
   "dets_per_class_per_frame": {
    "bag": 0.02,
-   "cash": 0.02,
-   "counting_machine": 1.16,
+   "cash": 0.06,
+   "counting_machine": 1.02,
+   "cup": 0.38,
    "document": 0.02,
-   "laptop": 0.11,
+   "laptop": 0.07,
    "person": 1.17,
-   "phone": 0.3,
+   "phone": 0.18,
    "storage": 1.6
   }
  },
  "33": {
   "video_id": 33,
   "duration_s": 14.333333,
-  "wall_s": 17.1,
+  "wall_s": 11.3,
   "from_cache": false,
   "timings": {
-   "decode": 0.3,
-   "detect": 15.02,
-   "track": 0.03,
-   "pose": 1.62,
-   "total": 16.98,
+   "decode": 0.1,
+   "detect": 10.08,
+   "track": 0.02,
+   "pose": 1.05,
+   "total": 11.26,
    "n_sampled": 72.0
   },
   "model_load": {
-   "detector": 11.6,
+   "detector": 11.9,
    "pose": 0.4
   },
   "n_frames": 72,
@@ -1065,35 +1096,36 @@
    66,
    24,
    22,
-   14,
-   9
+   15,
+   7
   ],
   "dets_per_class_per_frame": {
-   "bag": 0.06,
+   "bag": 0.11,
    "cash": 0.04,
-   "counting_machine": 1.53,
+   "counting_machine": 1.62,
+   "cup": 0.24,
    "document": 0.03,
    "laptop": 1.0,
-   "person": 2.01,
-   "phone": 0.25,
-   "storage": 1.49
+   "person": 1.96,
+   "phone": 0.24,
+   "storage": 1.43
   }
  },
  "34": {
   "video_id": 34,
   "duration_s": 17.733333,
-  "wall_s": 22.3,
+  "wall_s": 14.6,
   "from_cache": false,
   "timings": {
-   "decode": 0.27,
-   "detect": 19.33,
-   "track": 0.03,
-   "pose": 2.57,
-   "total": 22.21,
+   "decode": 0.11,
+   "detect": 12.51,
+   "track": 0.04,
+   "pose": 1.82,
+   "total": 14.49,
    "n_sampled": 89.0
   },
   "model_load": {
-   "detector": 11.6,
+   "detector": 11.9,
    "pose": 0.4
   },
   "n_frames": 89,
@@ -1104,340 +1136,346 @@
    20,
    19,
    17,
-   7
+   5
   ],
   "dets_per_class_per_frame": {
    "bag": 0.01,
-   "cash": 0.21,
-   "counting_machine": 0.96,
+   "cash": 0.04,
+   "counting_machine": 0.97,
+   "cup": 0.11,
    "id_card": 0.01,
-   "laptop": 1.04,
-   "person": 2.73,
-   "phone": 0.06,
-   "storage": 2.13
+   "laptop": 1.06,
+   "person": 2.71,
+   "phone": 0.08,
+   "storage": 2.15
   }
  },
  "35": {
   "video_id": 35,
   "duration_s": 56.766667,
-  "wall_s": 73.5,
+  "wall_s": 47.9,
   "from_cache": false,
   "timings": {
-   "decode": 0.72,
-   "detect": 61.56,
-   "track": 0.14,
-   "pose": 10.63,
-   "total": 73.09,
+   "decode": 0.32,
+   "detect": 39.37,
+   "track": 0.13,
+   "pose": 7.71,
+   "total": 47.56,
    "n_sampled": 284.0
   },
   "model_load": {
-   "detector": 11.6,
+   "detector": 11.9,
    "pose": 0.4
   },
   "n_frames": 284,
-  "n_tracks": 11,
+  "n_tracks": 10,
   "track_lengths": [
    283,
    276,
-   195,
-   129,
-   29,
-   28
+   160,
+   130,
+   74,
+   29
   ],
   "dets_per_class_per_frame": {
-   "cash": 0.4,
-   "counting_machine": 1.04,
+   "cash": 0.06,
+   "counting_machine": 1.05,
+   "cup": 0.07,
    "id_card": 0.0,
-   "laptop": 1.02,
-   "person": 3.67,
-   "phone": 0.32,
-   "storage": 2.24
+   "laptop": 1.01,
+   "person": 3.65,
+   "phone": 0.33,
+   "storage": 2.32
   }
  },
  "37": {
   "video_id": 37,
   "duration_s": 15.866667,
-  "wall_s": 20.2,
+  "wall_s": 12.9,
   "from_cache": false,
   "timings": {
-   "decode": 0.23,
-   "detect": 17.34,
+   "decode": 0.11,
+   "detect": 10.9,
    "track": 0.03,
-   "pose": 2.47,
-   "total": 20.13,
+   "pose": 1.81,
+   "total": 12.86,
    "n_sampled": 80.0
   },
   "model_load": {
-   "detector": 11.6,
+   "detector": 11.9,
    "pose": 0.4
   },
   "n_frames": 80,
-  "n_tracks": 6,
+  "n_tracks": 5,
   "track_lengths": [
    79,
    71,
-   36,
+   45,
    29,
-   13,
    10
   ],
   "dets_per_class_per_frame": {
-   "cash": 0.11,
+   "cash": 0.05,
    "counting_machine": 0.97,
-   "laptop": 1.04,
-   "person": 3.14,
-   "phone": 0.23,
-   "storage": 2.39
+   "cup": 0.09,
+   "laptop": 1.02,
+   "person": 3.12,
+   "phone": 0.14,
+   "storage": 2.42
   }
  },
  "38": {
   "video_id": 38,
   "duration_s": 58.966667,
-  "wall_s": 76.3,
+  "wall_s": 48.3,
   "from_cache": false,
   "timings": {
-   "decode": 0.74,
-   "detect": 65.35,
-   "track": 0.15,
-   "pose": 9.68,
-   "total": 75.95,
+   "decode": 0.35,
+   "detect": 40.2,
+   "track": 0.13,
+   "pose": 7.3,
+   "total": 48.02,
    "n_sampled": 295.0
   },
   "model_load": {
-   "detector": 11.6,
+   "detector": 11.9,
    "pose": 0.4
   },
   "n_frames": 295,
-  "n_tracks": 13,
+  "n_tracks": 16,
   "track_lengths": [
    294,
    147,
    125,
-   99,
    85,
-   81
+   73,
+   52
   ],
   "dets_per_class_per_frame": {
-   "cash": 0.24,
+   "cash": 0.07,
    "counting_machine": 1.02,
-   "id_card": 0.0,
+   "cup": 0.12,
    "laptop": 1.0,
-   "person": 3.35,
-   "phone": 0.31,
-   "storage": 2.11
+   "person": 3.33,
+   "phone": 0.33,
+   "storage": 2.19
   }
  },
  "39": {
   "video_id": 39,
   "duration_s": 78.733021,
-  "wall_s": 99.5,
+  "wall_s": 62.6,
   "from_cache": false,
   "timings": {
-   "decode": 1.1,
-   "detect": 86.39,
-   "track": 0.18,
-   "pose": 11.21,
-   "total": 98.95,
+   "decode": 0.43,
+   "detect": 53.36,
+   "track": 0.15,
+   "pose": 8.34,
+   "total": 62.32,
    "n_sampled": 394.0
   },
   "model_load": {
-   "detector": 11.6,
+   "detector": 11.9,
    "pose": 0.4
   },
   "n_frames": 394,
-  "n_tracks": 13,
+  "n_tracks": 11,
   "track_lengths": [
    393,
    197,
    162,
    107,
-   71,
-   47
+   96,
+   44
   ],
   "dets_per_class_per_frame": {
-   "bag": 0.0,
-   "cash": 0.09,
+   "cash": 0.03,
    "counting_machine": 1.06,
+   "cup": 0.15,
+   "document": 0.0,
    "laptop": 1.1,
-   "person": 2.82,
-   "phone": 0.31,
-   "storage": 2.02
+   "person": 2.81,
+   "phone": 0.32,
+   "storage": 2.03
   }
  },
  "40": {
   "video_id": 40,
   "duration_s": 25.266667,
-  "wall_s": 29.9,
+  "wall_s": 19.1,
   "from_cache": false,
   "timings": {
-   "decode": 0.68,
-   "detect": 27.23,
-   "track": 0.06,
-   "pose": 1.81,
-   "total": 29.83,
+   "decode": 0.17,
+   "detect": 17.65,
+   "track": 0.04,
+   "pose": 1.13,
+   "total": 19.01,
    "n_sampled": 127.0
   },
   "model_load": {
-   "detector": 11.6,
+   "detector": 11.9,
    "pose": 0.4
   },
   "n_frames": 127,
-  "n_tracks": 5,
+  "n_tracks": 4,
   "track_lengths": [
    123,
    20,
-   8,
-   5,
+   7,
    5
   ],
   "dets_per_class_per_frame": {
-   "bag": 0.21,
-   "cash": 0.09,
-   "counting_machine": 1.67,
-   "laptop": 1.19,
-   "person": 1.39,
-   "phone": 0.17,
+   "bag": 0.23,
+   "cash": 0.01,
+   "counting_machine": 1.8,
+   "cup": 0.2,
+   "laptop": 1.17,
+   "person": 1.35,
+   "phone": 0.11,
    "storage": 1.39
   }
  },
  "43": {
   "video_id": 43,
   "duration_s": 23.366667,
-  "wall_s": 28.2,
+  "wall_s": 17.9,
   "from_cache": false,
   "timings": {
-   "decode": 0.53,
-   "detect": 25.54,
-   "track": 0.05,
-   "pose": 1.96,
-   "total": 28.1,
+   "decode": 0.14,
+   "detect": 16.21,
+   "track": 0.03,
+   "pose": 1.45,
+   "total": 17.85,
    "n_sampled": 117.0
   },
   "model_load": {
-   "detector": 11.6,
+   "detector": 11.9,
    "pose": 0.4
   },
   "n_frames": 117,
   "n_tracks": 3,
   "track_lengths": [
    116,
-   40,
-   33
+   34,
+   34
   ],
   "dets_per_class_per_frame": {
    "bag": 0.01,
-   "cash": 0.29,
-   "counting_machine": 1.83,
-   "id_card": 0.14,
+   "cash": 0.2,
+   "counting_machine": 1.85,
+   "cup": 0.27,
+   "id_card": 0.15,
    "laptop": 1.0,
-   "person": 1.64,
+   "person": 1.62,
    "phone": 0.02,
-   "storage": 1.96
+   "storage": 1.94
   }
  },
  "44": {
   "video_id": 44,
   "duration_s": 20.433333,
-  "wall_s": 26.8,
+  "wall_s": 16.7,
   "from_cache": false,
   "timings": {
-   "decode": 0.28,
-   "detect": 23.19,
-   "track": 0.05,
-   "pose": 3.11,
-   "total": 26.65,
+   "decode": 0.13,
+   "detect": 14.1,
+   "track": 0.03,
+   "pose": 2.3,
+   "total": 16.57,
    "n_sampled": 103.0
   },
   "model_load": {
-   "detector": 11.6,
+   "detector": 11.9,
    "pose": 0.4
   },
   "n_frames": 103,
   "n_tracks": 4,
   "track_lengths": [
    102,
-   94,
-   52,
-   49
+   90,
+   53,
+   48
   ],
   "dets_per_class_per_frame": {
-   "cash": 0.17,
-   "counting_machine": 1.68,
+   "cash": 0.16,
+   "counting_machine": 1.78,
+   "cup": 0.09,
    "id_card": 0.13,
    "laptop": 1.04,
-   "person": 2.92,
-   "phone": 0.1,
+   "person": 2.88,
+   "phone": 0.05,
    "storage": 1.99
   }
  },
  "45": {
   "video_id": 45,
   "duration_s": 33.333021,
-  "wall_s": 41.0,
+  "wall_s": 25.2,
   "from_cache": false,
   "timings": {
-   "decode": 0.6,
-   "detect": 36.58,
-   "track": 0.06,
-   "pose": 3.5,
-   "total": 40.81,
+   "decode": 0.19,
+   "detect": 22.51,
+   "track": 0.05,
+   "pose": 2.31,
+   "total": 25.08,
    "n_sampled": 167.0
   },
   "model_load": {
-   "detector": 11.6,
+   "detector": 11.9,
    "pose": 0.4
   },
   "n_frames": 167,
-  "n_tracks": 4,
+  "n_tracks": 3,
   "track_lengths": [
    166,
-   58,
-   51,
-   37
+   83,
+   48
   ],
   "dets_per_class_per_frame": {
-   "bag": 0.2,
+   "bag": 0.18,
    "cash": 0.44,
-   "counting_machine": 1.46,
-   "id_card": 0.08,
+   "counting_machine": 1.5,
+   "cup": 0.05,
+   "id_card": 0.05,
    "laptop": 1.0,
-   "person": 1.9,
-   "phone": 0.38,
-   "storage": 1.84
+   "person": 1.8,
+   "phone": 0.36,
+   "storage": 1.85
   }
  },
  "46": {
   "video_id": 46,
   "duration_s": 19.133021,
-  "wall_s": 23.7,
+  "wall_s": 14.9,
   "from_cache": false,
   "timings": {
-   "decode": 0.4,
-   "detect": 21.19,
-   "track": 0.04,
-   "pose": 1.88,
-   "total": 23.56,
+   "decode": 0.12,
+   "detect": 13.29,
+   "track": 0.02,
+   "pose": 1.36,
+   "total": 14.81,
    "n_sampled": 96.0
   },
   "model_load": {
-   "detector": 11.6,
+   "detector": 11.9,
    "pose": 0.4
   },
   "n_frames": 96,
-  "n_tracks": 4,
+  "n_tracks": 3,
   "track_lengths": [
    95,
-   61,
-   9,
-   8
+   50,
+   28
   ],
   "dets_per_class_per_frame": {
    "bag": 0.03,
-   "cash": 0.35,
+   "cash": 0.18,
    "counting_machine": 1.51,
-   "id_card": 0.05,
+   "cup": 0.8,
+   "id_card": 0.06,
    "laptop": 1.0,
-   "person": 1.84,
+   "person": 1.83,
+   "phone": 0.11,
    "storage": 1.99
   }
  },
@@ -1447,16 +1485,16 @@
   "wall_s": 0.1,
   "from_cache": true,
   "timings": {
-   "decode": 0.64,
-   "detect": 69.88,
-   "track": 0.17,
-   "pose": 12.16,
-   "total": 82.93,
+   "decode": 0.4,
+   "detect": 49.37,
+   "track": 0.14,
+   "pose": 9.29,
+   "total": 59.25,
    "n_sampled": 364.0,
    "cache_hit": 1.0
   },
   "model_load": {
-   "detector": 11.6,
+   "detector": 11.9,
    "pose": 0.4
   },
   "n_frames": 364,
@@ -1464,20 +1502,21 @@
   "track_lengths": [
    363,
    246,
-   209,
-   203,
+   210,
+   196,
    89,
    62
   ],
   "dets_per_class_per_frame": {
    "bag": 0.01,
-   "cash": 0.17,
-   "counting_machine": 1.04,
-   "id_card": 0.03,
+   "cash": 0.13,
+   "counting_machine": 1.07,
+   "cup": 0.35,
+   "id_card": 0.02,
    "laptop": 1.0,
-   "person": 3.5,
-   "phone": 0.56,
-   "storage": 1.62
+   "person": 3.51,
+   "phone": 0.43,
+   "storage": 1.45
   }
  },
  "48": {
@@ -1486,37 +1525,38 @@
   "wall_s": 0.1,
   "from_cache": true,
   "timings": {
-   "decode": 0.67,
-   "detect": 71.04,
-   "track": 0.17,
-   "pose": 12.78,
-   "total": 84.74,
+   "decode": 0.4,
+   "detect": 48.62,
+   "track": 0.15,
+   "pose": 9.4,
+   "total": 58.6,
    "n_sampled": 358.0,
    "cache_hit": 1.0
   },
   "model_load": {
-   "detector": 11.6,
+   "detector": 11.9,
    "pose": 0.4
   },
   "n_frames": 358,
-  "n_tracks": 13,
+  "n_tracks": 15,
   "track_lengths": [
    357,
    303,
-   185,
-   178,
-   85,
-   66
+   206,
+   160,
+   79,
+   49
   ],
   "dets_per_class_per_frame": {
    "bag": 0.03,
    "cash": 0.06,
-   "counting_machine": 1.07,
-   "id_card": 0.13,
-   "laptop": 1.01,
+   "counting_machine": 1.09,
+   "cup": 0.18,
+   "id_card": 0.15,
+   "laptop": 1.0,
    "person": 3.7,
-   "phone": 1.04,
-   "storage": 1.51
+   "phone": 1.0,
+   "storage": 1.32
   }
  }
 }
