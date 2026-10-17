@@ -27,6 +27,7 @@ perception:
       storage: ["metal cabinet", "grey metal box", "locker"]          # safe / cabinet / drawer unit
       counting_machine: ["black printer", "black office machine", "money counting machine"]
       laptop: ["laptop"]
+      cup: ["paper coffee cup", "drink bottle", "food package"]       # personal items / eating at the desk
     landmark_classes: ["counting_machine", "storage", "laptop"]       # static objects; small objects inside them are suppressed
     input_short_side: 480              # detector input: shortest side in px (0 = processor default 800)
     box_threshold: 0.30
@@ -41,6 +42,7 @@ perception:
       storage: 0.35
       counting_machine: 0.40
       laptop: 0.30
+      cup: 0.35
     cross_class_iou: 0.50              # overlapping boxes of different classes: keep the higher score
     class_max_area_frac:               # hand-held objects cannot be large (fraction of the frame area)
       cash: 0.03
@@ -48,6 +50,7 @@ perception:
       id_card: 0.01
       phone: 0.01
       bag: 0.12
+      cup: 0.015
     detect_every_n: 1                  # run the detector on every n-th sampled frame
     min_box_area_frac: 0.0003
     max_boxes_per_class: 8
@@ -73,6 +76,8 @@ roles:
   counter_margin_frac: 0.04            # band around the counter line that counts as "at the window"
   client_max_dist_frac: 0.40           # a track is a window candidate only if it comes within this fraction of the frame diagonal of the cashier
   client_band_frac: 0.15               # ... and within this fraction of the diagonal of the counter line (people behind glass walls stay "other")
+  client_sit_radius_frac: 0.05         # a window candidate must hold a position within this radius (seated at the desk)
+  zone_min_radius_frac: 0.08           # lower bound of the cashier-zone radius
   reach_frac: 0.10                     # arm extension toward the other side of the counter that counts as a reach (fraction of the diagonal)
   collector_bag_iou: 0.05
   min_track_frames: 5
@@ -83,14 +88,31 @@ rules:
   counting_min_cycles: 3
   counting_hand_speed_px_s: 40.0
   unattended_cash_s: 4.0               # cash visible with no cashier hand nearby for this long
+  unattended_min_cash_score: 0.35
   left_zone_min_s: 1.5                 # cashier outside own zone for this long while a client is present
-  phone_min_s: 1.0
-  intrusion_min_s: 0.6
+  service_established_s: 2.0           # cashier must have been in the zone this long before "left" can fire
+  phone_min_s: 2.0
+  phone_min_score: 0.45
+  phone_radius_frac: 0.045
+  intrusion_min_s: 1.5
   handover_max_gap_s: 1.0              # cash near hand A then hand B within this gap = handover
   id_check_window_s: 20.0
   bag_check_window_s: 15.0
   merge_events_within_s: 3.0           # candidates of one type closer than this are merged
   max_violations_per_video: 6
+  # departures / empty workplace
+  empty_room_after_s: 2.5              # room must stay empty this long after the cashier walks out
+  securing_min_s: 5.0                  # cumulative hands-at-safe time before departure that counts as "secured"
+  securing_lookback_s: 18.0
+  storage_dwell_radius_frac: 0.09      # wrist within this radius of the storage centre counts as safe interaction
+  empty_start_s: 2.5                   # workplace empty this long at video start -> entry mode
+  workplace_near_frac: 0.16            # body within this radius of a workplace anchor counts as "at the workplace"
+  entry_min_s: 1.5
+  # personal items
+  cup_min_s: 2.0
+  # counting (reworked)
+  counting_machine_min_s: 1.2
+  counting_cash_fraction: 0.25         # share of periodic-motion window frames with cash near the cashier's hands
 
 vlm:
   enabled: true
@@ -133,4 +155,4 @@ time:
 cache:
   enabled: true
   dir: data/cache
-  pipeline_version: "p2"               # bump to invalidate perception caches
+  pipeline_version: "p3"               # bump to invalidate perception caches

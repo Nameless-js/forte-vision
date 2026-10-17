@@ -49,6 +49,9 @@ class Calibration:
     workplace_objects: dict[str, tuple[float, float]]  # median centers of static objects
     storage_point: Optional[tuple[float, float]]  # safe / drawer location if seen
     counting_machine_point: Optional[tuple[float, float]]
+    window_anchor: Optional[tuple[float, float]] = None  # median seated position of the nearest client
+    cashier_client_dist: float = 0.0  # ||cashier_center - window_anchor|| (det px)
+    zone_radius: float = 0.0  # radius of the cashier zone around cashier_center (det px)
     method: str = "presence+static+early+objects+cash"
     notes: list[str] = field(default_factory=list)
 
@@ -70,6 +73,9 @@ class Calibration:
             "storage_point_norm": None if self.storage_point is None else [round(self.storage_point[0] / self.frame_w, 3), round(self.storage_point[1] / self.frame_h, 3)],
             "counting_machine_point_norm": None if self.counting_machine_point is None else [round(self.counting_machine_point[0] / self.frame_w, 3), round(self.counting_machine_point[1] / self.frame_h, 3)],
             "track_scores": {str(k): {kk: (round(vv, 3) if isinstance(vv, float) else vv) for kk, vv in v.items()} for k, v in self.track_scores.items()},
+            "window_anchor_norm": None if self.window_anchor is None else [round(self.window_anchor[0] / self.frame_w, 3), round(self.window_anchor[1] / self.frame_h, 3)],
+            "cashier_client_dist_frac": round(self.cashier_client_dist / self.diag, 3) if self.diag else 0.0,
+            "zone_radius_frac": round(self.zone_radius / self.diag, 3) if self.diag else 0.0,
             "method": self.method,
             "notes": self.notes,
         }
@@ -81,8 +87,20 @@ class Calibration:
         return float((p[0] - self.counter_point[0]) * self.counter_normal[0] + (p[1] - self.counter_point[1]) * self.counter_normal[1])
 
     def in_cashier_zone(self, p) -> bool:
-        """Inside the (dilated) hull of the cashier's body positions AND on the cashier's side of the counter."""
-        return self.signed_dist_to_counter(p) > 0 and _point_in_polygon(p, self.cashier_hull)
+        """Within the zone radius of the cashier's seat, or at a workplace anchor (safe / counting machine).
+
+        Radius-based instead of hull/half-plane: it does not depend on the counter-line estimate, so a noisy
+        client-cluster direction cannot make the cashier 'leave' their own zone.
+        """
+        if math.hypot(p[0] - self.cashier_center[0], p[1] - self.cashier_center[1]) <= self.zone_radius:
+            return True
+        for anchor in (self.storage_point, self.counting_machine_point):
+            if anchor is not None and math.hypot(p[0] - anchor[0], p[1] - anchor[1]) <= 0.7 * self.zone_radius:
+                return True
+        return False
+
+    def dist_to_cashier(self, p) -> float:
+        return math.hypot(p[0] - self.cashier_center[0], p[1] - self.cashier_center[1])
 
 
 # ---------------------------------------------------------------- geometry
@@ -199,7 +217,7 @@ def calibrate(frames: list[FrameDetections], poses: list[FramePoses], tracks: di
         track_scores[tid] = {"presence": presence, "static": s_static, "early": s_early, "objects": s_obj, "cash": s_cash, "score": score, "n": st.n, "median": [med[0], med[1]]}
 
     if not track_scores:
-        return Calibration(frame_w, frame_h, diag, None, 0.0, {}, (frame_w / 2, frame_h / 2), [], (frame_w / 2, frame_h / 2), (0.0, 1.0), 0.0, [], [], [], workplace, workplace.get("storage"), workplace.get("counting_machine"), notes=["no tracks"])
+        return Calibration(frame_w, frame_h, diag, None, 0.0, {}, (frame_w / 2, frame_h / 2), [], (frame_w / 2, frame_h / 2), (0.0, 1.0), 0.0, [], [], [], workplace, workplace.get("storage"), workplace.get("counting_machine"), zone_radius=0.1 * diag, notes=["no tracks"])
 
     cashier = max(track_scores, key=lambda k: track_scores[k]["score"])
     cs = track_scores[cashier]
@@ -216,44 +234,52 @@ def calibrate(frames: list[FrameDetections], poses: list[FramePoses], tracks: di
     med_w = float(np.median([b[2] - b[0] for b in st.boxes])) if st.boxes else 0.1 * diag
     hull = _dilate_polygon(hull, max(0.5 * med_w, float(cfg.get("cashier_zone_dilate_frac", 0.12)) * diag))
 
-    # counter line: between the cashier cluster and the positions of the people who come within reach of the
-    # cashier ("window candidates"); far-away people (e.g. seen through a glass wall) are ignored
+    # ---- window anchor: the median SEATED position of the nearest sustained visitor -------------------
+    # For every other track collect its positions while within reach of the cashier; a window candidate must
+    # hold a stable position there (seated at the desk), which excludes people walking past or seen through
+    # the glass wall. The closest candidate's seated median becomes the window anchor; the counter line is
+    # the perpendicular bisector between the cashier seat and that anchor.
     others = [t for t in track_scores if t != cashier]
     reach = float(cfg.get("client_max_dist_frac", 0.40)) * diag
+    sit_r = float(cfg.get("client_sit_radius_frac", 0.05)) * diag
     candidates: list[int] = []
-    opts = []
+    cand_medians: dict[int, tuple[float, float]] = {}
     for t in others:
         near = [p for p in (_body_point(b) for b in tracks[t].boxes) if math.hypot(p[0] - c_center[0], p[1] - c_center[1]) <= reach]
-        if len(near) >= max(3, 0.1 * tracks[t].n):
-            candidates.append(t)
-            opts.extend(near)
-    if opts:
-        o = np.asarray(opts)
-        o_center = (float(np.median(o[:, 0])), float(np.median(o[:, 1])))
-        v = np.array([c_center[0] - o_center[0], c_center[1] - o_center[1]])
-        nv = np.linalg.norm(v)
-        normal = (v / nv) if nv > 1e-6 else np.array([0.0, 1.0])
-        # refine: place the line at the midpoint between the closest cashier point and closest other point along the normal
-        proj_c = (cpts - np.array(c_center)) @ normal
-        proj_o = (o - np.array(c_center)) @ normal
-        edge_c = float(np.percentile(proj_c, 10))  # cashier's near edge
-        edge_o = float(np.percentile(proj_o, 90))  # others' near edge (negative side)
-        mid = (edge_c + edge_o) / 2.0
-        point = (c_center[0] + normal[0] * mid, c_center[1] + normal[1] * mid)
-        sep = (edge_c - edge_o) / diag
-        counter_conf = float(min(1.0, max(0.0, 0.5 + sep / 0.1)))
+        if len(near) < max(3, 0.1 * tracks[t].n):
+            continue
+        arr = np.asarray(near)
+        med = (float(np.median(arr[:, 0])), float(np.median(arr[:, 1])))
+        stable = sum(1 for p in near if math.hypot(p[0] - med[0], p[1] - med[1]) <= sit_r)
+        if stable < max(3, 0.3 * len(near)):
+            continue  # never settles near the cashier -> passer-by / background person
+        candidates.append(t)
+        cand_medians[t] = med
+    if candidates:
+        # weight by time spent seated, prefer the closest anchor
+        anchor_t = min(candidates, key=lambda t: math.hypot(cand_medians[t][0] - c_center[0], cand_medians[t][1] - c_center[1]))
+        window_anchor = cand_medians[anchor_t]
+        v = np.array([c_center[0] - window_anchor[0], c_center[1] - window_anchor[1]])
+        dist_cc = float(np.linalg.norm(v))
+        normal = (v / dist_cc) if dist_cc > 1e-6 else np.array([0.0, 1.0])
+        point = ((c_center[0] + window_anchor[0]) / 2.0, (c_center[1] + window_anchor[1]) / 2.0)
+        counter_conf = float(min(1.0, dist_cc / (0.15 * diag)))
         counter_normal = (float(normal[0]), float(normal[1]))
     else:
-        # no other people: line perpendicular to the cashier->storage direction, just in front of the cashier
+        # no visitors: line perpendicular to the cashier->storage direction, just in front of the cashier
+        window_anchor = None
+        dist_cc = 0.30 * diag
         sp = workplace.get("counting_machine") or workplace.get("storage")
         normal = np.array([0.0, 1.0])
         if sp is not None:
             v = np.array([c_center[0] - sp[0], c_center[1] - sp[1]])
             if np.linalg.norm(v) > 1e-6:
                 normal = v / np.linalg.norm(v)
-        point = (c_center[0] - normal[0] * 0.12 * diag, c_center[1] - normal[1] * 0.12 * diag)
+        point = (c_center[0] - normal[0] * 0.15 * diag, c_center[1] - normal[1] * 0.15 * diag)
         counter_conf = 0.2
         counter_normal = (float(normal[0]), float(normal[1]))
+    # cashier zone radius: between the seat and the midline, at least a body width
+    zone_radius = max(0.45 * dist_cc, 0.6 * med_w, float(cfg.get("zone_min_radius_frac", 0.08)) * diag)
 
     # clients / collectors / others: a window candidate must actually come close to the counter line
     bag_iou = float(cfg.get("collector_bag_iou", 0.05))
@@ -294,7 +320,8 @@ def calibrate(frames: list[FrameDetections], poses: list[FramePoses], tracks: di
             notes.append(f"cashier margin small: {cs['score']:.3f} vs {second:.3f}")
     return Calibration(
         frame_w, frame_h, diag, cashier, cs["score"], track_scores, c_center, [tuple(map(float, p)) for p in hull], point, counter_normal, counter_conf,
-        clients, collectors, rest, workplace, storage, workplace.get("counting_machine"), notes=notes
+        clients, collectors, rest, workplace, storage, workplace.get("counting_machine"),
+        window_anchor=window_anchor, cashier_client_dist=dist_cc, zone_radius=zone_radius, notes=notes
     )
 
 

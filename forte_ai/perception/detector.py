@@ -16,8 +16,8 @@ import numpy as np
 
 log = logging.getLogger(__name__)
 
-ENGINE_CLASSES = ("person", "cash", "bag", "document", "id_card", "phone", "storage", "counting_machine", "laptop")
-SMALL_OBJECT_CLASSES = ("cash", "bag", "document", "id_card", "phone")
+ENGINE_CLASSES = ("person", "cash", "bag", "document", "id_card", "phone", "storage", "counting_machine", "laptop", "cup")
+SMALL_OBJECT_CLASSES = ("cash", "bag", "document", "id_card", "phone", "cup")
 
 
 @dataclass

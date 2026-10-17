@@ -50,6 +50,7 @@ class FrameState:
     id_card_visible: bool
     counting_machine_active: bool  # a cashier hand near the counting machine with cash near it
     n_people: int
+    cup_near_cashier_hand: bool = False  # cup / bottle / food package in the cashier's hand
 
 
 def _hands(fp: FramePoses, tid: int, thr: float) -> tuple[list, list, bool]:
@@ -79,6 +80,8 @@ def build_frame_states(pr: PerceptionResult, cal: Calibration, cfg: dict) -> lis
     diag = cal.diag
     kthr = float(cfg.get("kpt_threshold", 0.3))
     hand_r = float(cfg.get("hand_radius_frac", 0.06)) * diag
+    phone_r = float(cfg.get("phone_radius_frac", 0.045)) * diag
+    phone_score = float(cfg.get("phone_min_score", 0.45))
     body_r = float(cfg.get("body_radius_frac", 0.10)) * diag
     band = float(cfg.get("counter_margin_frac", 0.06)) * diag
     storage_r = float(cfg.get("storage_radius_frac", 0.10)) * diag
@@ -102,12 +105,19 @@ def build_frame_states(pr: PerceptionResult, cal: Calibration, cfg: dict) -> lis
                 c_hands = _hand_fallback(cbox)
         client_ids, at_window, over_counter, in_zone_non_cashier, coll_ids = [], [], [], [], []
         client_hands: dict[int, list] = {}
+        intrusion_depth = 0.25 * max(cal.cashier_client_dist, 0.15 * diag)
         for tid, box in assigned.items():
             if tid == cashier:
                 continue
             bp = ((box[0] + box[2]) / 2, box[1] + 0.6 * (box[3] - box[1]))
-            if cal.in_cashier_zone(bp):
-                in_zone_non_cashier.append(tid)
+            # intrusion is body-based and guarded: the cashier must be visible in the same frame (otherwise
+            # "the intruder" is usually the cashier herself after a track-id switch), the box must not be a
+            # duplicate detection of the cashier (IoU), and the body must be clearly PAST the midline toward
+            # the cashier seat or inside the seat radius — leaning over the desk from the client side is normal.
+            if c_present and _iou(box, cbox) < 0.3:
+                sd = cal.signed_dist_to_counter(bp)
+                if sd > intrusion_depth or cal.dist_to_cashier(bp) <= 1.0 * cal.zone_radius:
+                    in_zone_non_cashier.append(tid)
             if tid in collectors:
                 coll_ids.append(tid)
             if tid in clients or tid in collectors:
@@ -125,7 +135,11 @@ def build_frame_states(pr: PerceptionResult, cal: Calibration, cfg: dict) -> lis
                 if ok and any(cal.signed_dist_to_counter(h) > band * 0.5 or (cal.signed_dist_to_counter(h) - k_body) >= reach for h in hs):
                     over_counter.append(tid)
         cash = fd.by_class("cash")
-        phones = fd.by_class("phone")
+        phones = [d for d in fd.by_class("phone") if d.score >= phone_score]
+        # a "phone" box adjacent to / inside a static landmark (laptop screen corner, counting-machine
+        # display) is a known false positive of the open-vocabulary detector
+        landmarks = fd.by_class("laptop") + fd.by_class("counting_machine") + fd.by_class("storage")
+        phones = [p for p in phones if not any(_iou(p.xyxy, lm.xyxy) > 0.05 or _dist_point_box(((p.xyxy[0] + p.xyxy[2]) / 2, (p.xyxy[1] + p.xyxy[3]) / 2), lm.xyxy) < 0.015 * diag for lm in landmarks)]
         bags = fd.by_class("bag")
         docs = fd.by_class("document") + fd.by_class("id_card")
         all_client_hands = [h for hs in client_hands.values() for h in hs]
@@ -157,7 +171,7 @@ def build_frame_states(pr: PerceptionResult, cal: Calibration, cfg: dict) -> lis
                 cash_on_counter=cash_on_counter,
                 cash_on_cashier_side=cash_cashier_side,
                 cash_near_storage=cash_near_storage,
-                phone_near_cashier_hand=c_present and _near(c_hands, phones, hand_r),
+                phone_near_cashier_hand=c_present and c_pose_ok and _near(c_hands, phones, phone_r),
                 phone_near_cashier_body=c_present and any(_iou(cbox, p.xyxy) > 0 or _dist_point_box(((p.xyxy[0] + p.xyxy[2]) / 2, (p.xyxy[1] + p.xyxy[3]) / 2), cbox) <= body_r * 0.5 for p in phones),
                 bag=bags,
                 bag_near_collector=any(_near(client_hands.get(t, []), bags, hand_r * 1.5) for t in coll_ids),
@@ -166,6 +180,7 @@ def build_frame_states(pr: PerceptionResult, cal: Calibration, cfg: dict) -> lis
                 id_card_visible=bool(fd.by_class("id_card")),
                 counting_machine_active=machine_active,
                 n_people=len(assigned),
+                cup_near_cashier_hand=c_present and c_pose_ok and _near(c_hands, fd.by_class("cup"), phone_r),
             )
         )
     return states

@@ -71,3 +71,17 @@ Install toolchain → `data/labels.csv` → `analysis/inventory.md` → commit s
 - `data/labels.csv`: 42 rows (22 violation / 20 clean), every row matched to a file; LOVO groups = 40 (two duplicate-content pairs).
 - `analysis/inventory.md`: 42 files, 293 MB, 1444 s total; all **464×848 portrait** h264 ≈30 fps, no audio; durations 11.6–142.5 s (median 22.7 s). Longest: Х-14 142.5 s, Х-39 78.7 s, Х-4 72.7 s.
 - Phase 2 pulled forward (independent of GPU work): acts №231, №14, №88 and Law 191-IV fetched from the uchet.kz mirror, split by clause into `kb/laws/*.json` (152 clauses of the Rules №231); `kb/rule_cards.json` with 11 cards; verbatim-quote test green (`tests/test_kb.py`). `SOURCES.md` written.
+
+## §1–§5 — Taxonomy, perception, M1 baseline and first iterations (2026-10-18, night)
+
+- **Phase 1**: 42 per-video frame reviews written by a 43-agent workflow (`analysis/review/NN.md`; 41/42 done, id 44 pending — workflow resumed). Team taxonomy derived and stored in `analysis/taxonomy.json`: 7 observed types + 2 reserve. Key finding: 4 departure-type violations have NO client in frame; 4 intrusion videos have an EMPTY workplace at start; clean videos contain legitimate departures (valuables secured first) — the discriminators are documented in VIOLATION_TYPES.md.
+- **Phase 3**: perception cached for all 42 videos. Grounding DINO tiny at 480 px short side (measured 111–127 ms/frame at batch 2–4; dets/frame stable), scene prompts chosen with `scripts/prompt_probe.py` (e.g. counting machine = "black printer" 0.78–0.82 vs "money counting machine" 0.46; safe = "grey metal box"; cash = "banknotes"/"money"). Cross-class suppression + per-class area caps added. Longest video (142.5 s): 167 s perception wall → within the 240 s budget pre-VLM.
+- **Phase 4**: behaviour-based calibration rewritten after visual QA: window anchor = nearest sustained seated visitor; counter line = perpendicular bisector cashier↔anchor; cashier zone = radius around the seat + workplace anchors. Flip/rotation invariance covered by unit tests.
+- **Phase 5 iterations** (no VLM, config threshold / LOVO on fitted threshold):
+  | iter | recall | FP clean | notes |
+  |---|---|---|---|
+  | 001 | 13/22 (LOVO 16/22) | 17 | M1 baseline, naive rules; phone/left/intrusion over-fire |
+  | 002 | 10/22 (13) | 10 (11) | new calibration; strict phone; established-service guard |
+  | 003 | 7/22 (10) | 6 (8) | body-depth intrusion + co-occurrence/IoU guards |
+  | → M2 | — | — | full rule rewrite from the reviewed taxonomy (R1a/R1b, R6 episode-based, R9b, R10 empty-start entry, counting with cash-fraction, cup class added — perception cache p3 rebuilding) |
+- Git: tag `m1-baseline` at iter_001 commit.

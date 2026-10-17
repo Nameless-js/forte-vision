@@ -1,0 +1,1240 @@
+[
+ {
+  "video_id": 1,
+  "label": "violation",
+  "t_label": 22.0,
+  "group": "767f2a65c96f8253bbe8e2f9d700e2a3",
+  "team_type": null,
+  "candidates": [
+   {
+    "type_id": "no_id_check",
+    "t_event": 14.0,
+    "t_window": [
+     0.0,
+     15.0
+    ],
+    "confidence": 0.446,
+    "facts": [
+     "передача наличных на 14.0 с без предъявления документа в предшествующие 20 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R7"
+   },
+   {
+    "type_id": "no_id_check",
+    "t_event": 22.6,
+    "t_window": [
+     2.6,
+     23.6
+    ],
+    "confidence": 0.443,
+    "facts": [
+     "передача наличных на 22.6 с без предъявления документа в предшествующие 20 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R7"
+   }
+  ]
+ },
+ {
+  "video_id": 2,
+  "label": "violation",
+  "t_label": 10.0,
+  "group": "cdf8c6d946765256427f68ffa89974f1",
+  "team_type": null,
+  "candidates": []
+ },
+ {
+  "video_id": 3,
+  "label": "no_violation",
+  "t_label": null,
+  "group": "c5efdc077357191503d132c9b0ccca1d",
+  "team_type": null,
+  "candidates": [
+   {
+    "type_id": "two_clients_cash_mixed",
+    "t_event": 14.0,
+    "t_window": [
+     14.0,
+     16.8
+    ],
+    "confidence": 0.69,
+    "facts": [
+     "два клиента у окна и наличные на столе 14.0–16.8 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R9"
+   },
+   {
+    "type_id": "issue_without_count",
+    "t_event": 14.6,
+    "t_window": [
+     0.0,
+     16.6
+    ],
+    "confidence": 0.75,
+    "facts": [
+     "передача наличных кассир→клиент на 14.6 с (cashier_reach+meet+cash)",
+     "пересчёт за предыдущие 15 с не зафиксирован"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R5"
+   },
+   {
+    "type_id": "no_id_check",
+    "t_event": 14.6,
+    "t_window": [
+     0.0,
+     15.6
+    ],
+    "confidence": 0.45,
+    "facts": [
+     "передача наличных на 14.6 с без предъявления документа в предшествующие 20 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R7"
+   },
+   {
+    "type_id": "unauthorized_in_cash_zone",
+    "t_event": 18.4,
+    "t_window": [
+     18.4,
+     20.0
+    ],
+    "confidence": 0.76,
+    "facts": [
+     "посторонний/рука клиента в зоне кассира 18.4–20.0 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R4"
+   }
+  ]
+ },
+ {
+  "video_id": 4,
+  "label": "violation",
+  "t_label": 57.0,
+  "group": "fdd5aa51aefe4b42dd4d318bbbd3f207",
+  "team_type": null,
+  "candidates": []
+ },
+ {
+  "video_id": 5,
+  "label": "no_violation",
+  "t_label": null,
+  "group": "304e8be8155a1f6529fe86ba88d05668",
+  "team_type": null,
+  "candidates": [
+   {
+    "type_id": "phone_at_workplace",
+    "t_event": 10.0,
+    "t_window": [
+     10.0,
+     15.8
+    ],
+    "confidence": 0.85,
+    "facts": [
+     "телефон у руки кассира 10.0–15.8 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R3"
+   }
+  ]
+ },
+ {
+  "video_id": 8,
+  "label": "no_violation",
+  "t_label": null,
+  "group": "dacb4cf5da210be8550081264ca31317",
+  "team_type": null,
+  "candidates": [
+   {
+    "type_id": "no_id_check",
+    "t_event": 3.6,
+    "t_window": [
+     0.0,
+     4.6
+    ],
+    "confidence": 0.434,
+    "facts": [
+     "передача наличных на 3.6 с без предъявления документа в предшествующие 20 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R7"
+   },
+   {
+    "type_id": "unauthorized_in_cash_zone",
+    "t_event": 3.6,
+    "t_window": [
+     3.6,
+     5.4
+    ],
+    "confidence": 0.78,
+    "facts": [
+     "посторонний/рука клиента в зоне кассира 3.6–5.4 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R4"
+   },
+   {
+    "type_id": "no_id_check",
+    "t_event": 9.8,
+    "t_window": [
+     0.0,
+     10.8
+    ],
+    "confidence": 0.429,
+    "facts": [
+     "передача наличных на 9.8 с без предъявления документа в предшествующие 20 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R7"
+   },
+   {
+    "type_id": "unauthorized_in_cash_zone",
+    "t_event": 28.2,
+    "t_window": [
+     28.2,
+     38.0
+    ],
+    "confidence": 0.9,
+    "facts": [
+     "посторонний/рука клиента в зоне кассира 28.2–38.0 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R4"
+   },
+   {
+    "type_id": "no_id_check",
+    "t_event": 30.4,
+    "t_window": [
+     10.4,
+     31.4
+    ],
+    "confidence": 0.447,
+    "facts": [
+     "передача наличных на 30.4 с без предъявления документа в предшествующие 20 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R7"
+   },
+   {
+    "type_id": "cashier_left_during_service",
+    "t_event": 31.2,
+    "t_window": [
+     31.2,
+     38.0
+    ],
+    "confidence": 0.95,
+    "facts": [
+     "кассир вне рабочей зоны 31.2–38.0 с (6.8 с)",
+     "клиент у окна 0.6–38.0 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R1"
+   }
+  ]
+ },
+ {
+  "video_id": 10,
+  "label": "no_violation",
+  "t_label": null,
+  "group": "cc15799ee16a1c9d15fdbd7531d046bf",
+  "team_type": null,
+  "candidates": []
+ },
+ {
+  "video_id": 11,
+  "label": "violation",
+  "t_label": 18.0,
+  "group": "52d8217b15bc14b128e5d36d675bb98a",
+  "team_type": null,
+  "candidates": []
+ },
+ {
+  "video_id": 12,
+  "label": "no_violation",
+  "t_label": null,
+  "group": "5c78378409c487c886b479d6fe561d0d",
+  "team_type": null,
+  "candidates": []
+ },
+ {
+  "video_id": 13,
+  "label": "violation",
+  "t_label": 47.0,
+  "group": "1fb32d10e1499480865e6b72199c6a3d",
+  "team_type": null,
+  "candidates": []
+ },
+ {
+  "video_id": 14,
+  "label": "no_violation",
+  "t_label": null,
+  "group": "91f6d6e30c28c1d899ce874a06444561",
+  "team_type": null,
+  "candidates": [
+   {
+    "type_id": "no_id_check",
+    "t_event": 0.2,
+    "t_window": [
+     0.0,
+     1.2
+    ],
+    "confidence": 0.435,
+    "facts": [
+     "передача наличных на 0.2 с без предъявления документа в предшествующие 20 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R7"
+   },
+   {
+    "type_id": "unauthorized_in_cash_zone",
+    "t_event": 0.2,
+    "t_window": [
+     0.2,
+     39.0
+    ],
+    "confidence": 0.9,
+    "facts": [
+     "посторонний/рука клиента в зоне кассира 0.2–39.0 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R4"
+   },
+   {
+    "type_id": "accept_without_count",
+    "t_event": 1.0,
+    "t_window": [
+     0.2,
+     1.0
+    ],
+    "confidence": 0.67,
+    "facts": [
+     "приём наличных клиент→кассир на 0.2 с",
+     "пересчёт до 1.0 с не зафиксирован"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R6"
+   },
+   {
+    "type_id": "no_id_check",
+    "t_event": 29.4,
+    "t_window": [
+     9.4,
+     30.4
+    ],
+    "confidence": 0.435,
+    "facts": [
+     "передача наличных на 29.4 с без предъявления документа в предшествующие 20 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R7"
+   },
+   {
+    "type_id": "unauthorized_in_cash_zone",
+    "t_event": 43.6,
+    "t_window": [
+     43.6,
+     44.8
+    ],
+    "confidence": 0.72,
+    "facts": [
+     "посторонний/рука клиента в зоне кассира 43.6–44.8 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R4"
+   },
+   {
+    "type_id": "unauthorized_in_cash_zone",
+    "t_event": 48.6,
+    "t_window": [
+     48.6,
+     112.0
+    ],
+    "confidence": 0.9,
+    "facts": [
+     "посторонний/рука клиента в зоне кассира 48.6–112.0 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R4"
+   },
+   {
+    "type_id": "accept_without_count",
+    "t_event": 56.6,
+    "t_window": [
+     56.0,
+     56.6
+    ],
+    "confidence": 0.7,
+    "facts": [
+     "приём наличных клиент→кассир на 56.0 с",
+     "пересчёт до 56.6 с не зафиксирован"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R6"
+   },
+   {
+    "type_id": "two_clients_cash_mixed",
+    "t_event": 63.0,
+    "t_window": [
+     63.0,
+     65.6
+    ],
+    "confidence": 0.68,
+    "facts": [
+     "два клиента у окна и наличные на столе 63.0–65.6 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R9"
+   },
+   {
+    "type_id": "cashier_left_during_service",
+    "t_event": 103.2,
+    "t_window": [
+     103.2,
+     109.0
+    ],
+    "confidence": 0.95,
+    "facts": [
+     "кассир вне рабочей зоны 103.2–109.0 с (5.8 с)",
+     "клиент у окна 48.6–112.0 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R1"
+   },
+   {
+    "type_id": "unauthorized_in_cash_zone",
+    "t_event": 117.8,
+    "t_window": [
+     117.8,
+     119.2
+    ],
+    "confidence": 0.74,
+    "facts": [
+     "посторонний/рука клиента в зоне кассира 117.8–119.2 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R4"
+   },
+   {
+    "type_id": "unauthorized_in_cash_zone",
+    "t_event": 130.4,
+    "t_window": [
+     130.4,
+     133.2
+    ],
+    "confidence": 0.88,
+    "facts": [
+     "посторонний/рука клиента в зоне кассира 130.4–133.2 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R4"
+   }
+  ]
+ },
+ {
+  "video_id": 15,
+  "label": "violation",
+  "t_label": 15.0,
+  "group": "d4e7c11733f8a6982fce711cf62c6a90",
+  "team_type": null,
+  "candidates": [
+   {
+    "type_id": "unauthorized_in_cash_zone",
+    "t_event": 0.4,
+    "t_window": [
+     0.4,
+     7.8
+    ],
+    "confidence": 0.9,
+    "facts": [
+     "посторонний/рука клиента в зоне кассира 0.4–7.8 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R4"
+   },
+   {
+    "type_id": "no_id_check",
+    "t_event": 6.0,
+    "t_window": [
+     0.0,
+     7.0
+    ],
+    "confidence": 0.449,
+    "facts": [
+     "передача наличных на 6.0 с без предъявления документа в предшествующие 20 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R7"
+   },
+   {
+    "type_id": "cashier_left_during_service",
+    "t_event": 6.8,
+    "t_window": [
+     6.8,
+     20.8
+    ],
+    "confidence": 0.95,
+    "facts": [
+     "кассир вне рабочей зоны 6.8–20.8 с (14.0 с)",
+     "клиент у окна 0.4–20.0 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R1"
+   }
+  ]
+ },
+ {
+  "video_id": 16,
+  "label": "no_violation",
+  "t_label": null,
+  "group": "d4d0dce8ff94ba59eb6be0780b18339e",
+  "team_type": null,
+  "candidates": []
+ },
+ {
+  "video_id": 17,
+  "label": "violation",
+  "t_label": 7.0,
+  "group": "1cff94bb96d75439b00365a07adee716",
+  "team_type": null,
+  "candidates": [
+   {
+    "type_id": "no_id_check",
+    "t_event": 7.8,
+    "t_window": [
+     0.0,
+     8.8
+    ],
+    "confidence": 0.445,
+    "facts": [
+     "передача наличных на 7.8 с без предъявления документа в предшествующие 20 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R7"
+   }
+  ]
+ },
+ {
+  "video_id": 18,
+  "label": "violation",
+  "t_label": 20.0,
+  "group": "abebea33f273d52bd3f50fb57c5444b9",
+  "team_type": null,
+  "candidates": [
+   {
+    "type_id": "no_id_check",
+    "t_event": 11.2,
+    "t_window": [
+     0.0,
+     12.2
+    ],
+    "confidence": 0.45,
+    "facts": [
+     "передача наличных на 11.2 с без предъявления документа в предшествующие 20 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R7"
+   },
+   {
+    "type_id": "no_id_check",
+    "t_event": 19.2,
+    "t_window": [
+     0.0,
+     20.2
+    ],
+    "confidence": 0.45,
+    "facts": [
+     "передача наличных на 19.2 с без предъявления документа в предшествующие 20 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R7"
+   }
+  ]
+ },
+ {
+  "video_id": 19,
+  "label": "no_violation",
+  "t_label": null,
+  "group": "595c577e53299940a5c557bf84c795a2",
+  "team_type": null,
+  "candidates": [
+   {
+    "type_id": "no_id_check",
+    "t_event": 12.8,
+    "t_window": [
+     0.0,
+     13.8
+    ],
+    "confidence": 0.449,
+    "facts": [
+     "передача наличных на 12.8 с без предъявления документа в предшествующие 20 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R7"
+   }
+  ]
+ },
+ {
+  "video_id": 20,
+  "label": "violation",
+  "t_label": 5.0,
+  "group": "c19c3785b4a311ee97a6d0df1e9bddd6",
+  "team_type": null,
+  "candidates": []
+ },
+ {
+  "video_id": 21,
+  "label": "no_violation",
+  "t_label": null,
+  "group": "7356dd59916c98eae91b2710b15ccb27",
+  "team_type": null,
+  "candidates": [
+   {
+    "type_id": "unauthorized_in_cash_zone",
+    "t_event": 8.4,
+    "t_window": [
+     8.4,
+     11.6
+    ],
+    "confidence": 0.9,
+    "facts": [
+     "посторонний/рука клиента в зоне кассира 8.4–11.6 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R4"
+   }
+  ]
+ },
+ {
+  "video_id": 22,
+  "label": "violation",
+  "t_label": 14.0,
+  "group": "b88d9942288015ffe424d5a50f206ab2",
+  "team_type": null,
+  "candidates": [
+   {
+    "type_id": "unauthorized_in_cash_zone",
+    "t_event": 6.4,
+    "t_window": [
+     6.4,
+     8.2
+    ],
+    "confidence": 0.78,
+    "facts": [
+     "посторонний/рука клиента в зоне кассира 6.4–8.2 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R4"
+   },
+   {
+    "type_id": "unauthorized_in_cash_zone",
+    "t_event": 11.2,
+    "t_window": [
+     11.2,
+     13.0
+    ],
+    "confidence": 0.78,
+    "facts": [
+     "посторонний/рука клиента в зоне кассира 11.2–13.0 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R4"
+   }
+  ]
+ },
+ {
+  "video_id": 23,
+  "label": "no_violation",
+  "t_label": null,
+  "group": "cc739e64be12fc0acdeb582d4fdc0463",
+  "team_type": null,
+  "candidates": [
+   {
+    "type_id": "unauthorized_in_cash_zone",
+    "t_event": 2.4,
+    "t_window": [
+     2.4,
+     6.4
+    ],
+    "confidence": 0.9,
+    "facts": [
+     "посторонний/рука клиента в зоне кассира 2.4–6.4 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R4"
+   }
+  ]
+ },
+ {
+  "video_id": 24,
+  "label": "violation",
+  "t_label": 8.0,
+  "group": "b18427a9a72818c2768fbf501ec2d9e3",
+  "team_type": null,
+  "candidates": [
+   {
+    "type_id": "no_id_check",
+    "t_event": 0.2,
+    "t_window": [
+     0.0,
+     1.2
+    ],
+    "confidence": 0.45,
+    "facts": [
+     "передача наличных на 0.2 с без предъявления документа в предшествующие 20 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R7"
+   },
+   {
+    "type_id": "unauthorized_in_cash_zone",
+    "t_event": 0.2,
+    "t_window": [
+     0.2,
+     7.6
+    ],
+    "confidence": 0.9,
+    "facts": [
+     "посторонний/рука клиента в зоне кассира 0.2–7.6 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R4"
+   },
+   {
+    "type_id": "cash_left_unattended",
+    "t_event": 7.2,
+    "t_window": [
+     7.2,
+     14.6
+    ],
+    "confidence": 0.652,
+    "facts": [
+     "наличные видны без рук кассира рядом 7.2–14.6 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R2"
+   }
+  ]
+ },
+ {
+  "video_id": 25,
+  "label": "no_violation",
+  "t_label": null,
+  "group": "8661055b1e0d0d2b083347eff3b581f7",
+  "team_type": null,
+  "candidates": [
+   {
+    "type_id": "no_id_check",
+    "t_event": 0.2,
+    "t_window": [
+     0.0,
+     1.2
+    ],
+    "confidence": 0.45,
+    "facts": [
+     "передача наличных на 0.2 с без предъявления документа в предшествующие 20 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R7"
+   },
+   {
+    "type_id": "unauthorized_in_cash_zone",
+    "t_event": 0.2,
+    "t_window": [
+     0.2,
+     8.2
+    ],
+    "confidence": 0.9,
+    "facts": [
+     "посторонний/рука клиента в зоне кассира 0.2–8.2 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R4"
+   }
+  ]
+ },
+ {
+  "video_id": 26,
+  "label": "violation",
+  "t_label": 9.0,
+  "group": "23bc05eb011f80545a6009d98836baa6",
+  "team_type": null,
+  "candidates": [
+   {
+    "type_id": "unauthorized_in_cash_zone",
+    "t_event": 0.2,
+    "t_window": [
+     0.2,
+     8.6
+    ],
+    "confidence": 0.9,
+    "facts": [
+     "посторонний/рука клиента в зоне кассира 0.2–8.6 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R4"
+   }
+  ]
+ },
+ {
+  "video_id": 27,
+  "label": "no_violation",
+  "t_label": null,
+  "group": "9183adf045efbbc3cb115605e9ca704b",
+  "team_type": null,
+  "candidates": [
+   {
+    "type_id": "no_id_check",
+    "t_event": 0.2,
+    "t_window": [
+     0.0,
+     1.2
+    ],
+    "confidence": 0.45,
+    "facts": [
+     "передача наличных на 0.2 с без предъявления документа в предшествующие 20 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R7"
+   },
+   {
+    "type_id": "unauthorized_in_cash_zone",
+    "t_event": 0.2,
+    "t_window": [
+     0.2,
+     8.8
+    ],
+    "confidence": 0.9,
+    "facts": [
+     "посторонний/рука клиента в зоне кассира 0.2–8.8 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R4"
+   },
+   {
+    "type_id": "accept_without_count",
+    "t_event": 3.4,
+    "t_window": [
+     0.2,
+     3.4
+    ],
+    "confidence": 0.7,
+    "facts": [
+     "приём наличных клиент→кассир на 0.2 с",
+     "пересчёт до 3.4 с не зафиксирован"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R6"
+   },
+   {
+    "type_id": "cashier_left_during_service",
+    "t_event": 8.2,
+    "t_window": [
+     8.2,
+     26.4
+    ],
+    "confidence": 0.95,
+    "facts": [
+     "кассир вне рабочей зоны 8.2–26.4 с (18.2 с)",
+     "клиент у окна 0.2–25.2 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R1"
+   }
+  ]
+ },
+ {
+  "video_id": 28,
+  "label": "violation",
+  "t_label": 7.0,
+  "group": "545c045acd070acb09ff2594f1b44577",
+  "team_type": null,
+  "candidates": []
+ },
+ {
+  "video_id": 29,
+  "label": "no_violation",
+  "t_label": null,
+  "group": "4c92ba52ec957d0ecf81a09f66817b29",
+  "team_type": null,
+  "candidates": []
+ },
+ {
+  "video_id": 30,
+  "label": "violation",
+  "t_label": 13.0,
+  "group": "0608eca654509fddf4bb0dc799e2e6de",
+  "team_type": null,
+  "candidates": [
+   {
+    "type_id": "unauthorized_in_cash_zone",
+    "t_event": 11.6,
+    "t_window": [
+     11.6,
+     13.8
+    ],
+    "confidence": 0.82,
+    "facts": [
+     "посторонний/рука клиента в зоне кассира 11.6–13.8 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R4"
+   },
+   {
+    "type_id": "unauthorized_in_cash_zone",
+    "t_event": 15.8,
+    "t_window": [
+     15.8,
+     18.6
+    ],
+    "confidence": 0.88,
+    "facts": [
+     "посторонний/рука клиента в зоне кассира 15.8–18.6 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R4"
+   }
+  ]
+ },
+ {
+  "video_id": 31,
+  "label": "no_violation",
+  "t_label": null,
+  "group": "442dc88203d3715c5293e7da2156bd35",
+  "team_type": null,
+  "candidates": [
+   {
+    "type_id": "unauthorized_in_cash_zone",
+    "t_event": 2.4,
+    "t_window": [
+     2.4,
+     6.8
+    ],
+    "confidence": 0.9,
+    "facts": [
+     "посторонний/рука клиента в зоне кассира 2.4–6.8 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R4"
+   },
+   {
+    "type_id": "unauthorized_in_cash_zone",
+    "t_event": 12.0,
+    "t_window": [
+     12.0,
+     13.0
+    ],
+    "confidence": 0.7,
+    "facts": [
+     "посторонний/рука клиента в зоне кассира 12.0–13.0 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R4"
+   },
+   {
+    "type_id": "unauthorized_in_cash_zone",
+    "t_event": 17.0,
+    "t_window": [
+     17.0,
+     19.0
+    ],
+    "confidence": 0.8,
+    "facts": [
+     "посторонний/рука клиента в зоне кассира 17.0–19.0 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R4"
+   }
+  ]
+ },
+ {
+  "video_id": 32,
+  "label": "violation",
+  "t_label": 5.0,
+  "group": "e00ced6c40089f399ab909d11629a5df",
+  "team_type": null,
+  "candidates": [
+   {
+    "type_id": "unauthorized_in_cash_zone",
+    "t_event": 13.4,
+    "t_window": [
+     13.4,
+     15.0
+    ],
+    "confidence": 0.76,
+    "facts": [
+     "посторонний/рука клиента в зоне кассира 13.4–15.0 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R4"
+   }
+  ]
+ },
+ {
+  "video_id": 33,
+  "label": "violation",
+  "t_label": 6.0,
+  "group": "5575e411e2810a72703890f0b2443c10",
+  "team_type": null,
+  "candidates": [
+   {
+    "type_id": "unauthorized_in_cash_zone",
+    "t_event": 9.8,
+    "t_window": [
+     9.8,
+     14.2
+    ],
+    "confidence": 0.9,
+    "facts": [
+     "посторонний/рука клиента в зоне кассира 9.8–14.2 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R4"
+   }
+  ]
+ },
+ {
+  "video_id": 34,
+  "label": "violation",
+  "t_label": 13.0,
+  "group": "a91d22affe251b634dc0d7fd63235c9e",
+  "team_type": null,
+  "candidates": [
+   {
+    "type_id": "two_clients_cash_mixed",
+    "t_event": 9.2,
+    "t_window": [
+     9.2,
+     12.0
+    ],
+    "confidence": 0.69,
+    "facts": [
+     "два клиента у окна и наличные на столе 9.2–12.0 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R9"
+   }
+  ]
+ },
+ {
+  "video_id": 35,
+  "label": "no_violation",
+  "t_label": null,
+  "group": "d19984330918f5f57453950acce2118a",
+  "team_type": null,
+  "candidates": []
+ },
+ {
+  "video_id": 37,
+  "label": "no_violation",
+  "t_label": null,
+  "group": "189e0353de852ff8f2ab3cd977db2a0f",
+  "team_type": null,
+  "candidates": []
+ },
+ {
+  "video_id": 38,
+  "label": "violation",
+  "t_label": 33.0,
+  "group": "e5a64fff53efade025ae10e6bbd047df",
+  "team_type": null,
+  "candidates": [
+   {
+    "type_id": "two_clients_cash_mixed",
+    "t_event": 37.2,
+    "t_window": [
+     37.2,
+     40.4
+    ],
+    "confidence": 0.71,
+    "facts": [
+     "два клиента у окна и наличные на столе 37.2–40.4 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R9"
+   },
+   {
+    "type_id": "two_clients_cash_mixed",
+    "t_event": 45.2,
+    "t_window": [
+     45.2,
+     48.8
+    ],
+    "confidence": 0.73,
+    "facts": [
+     "два клиента у окна и наличные на столе 45.2–48.8 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R9"
+   }
+  ]
+ },
+ {
+  "video_id": 39,
+  "label": "no_violation",
+  "t_label": null,
+  "group": "5fd1b371c742b676b6c029d16c2e2198",
+  "team_type": null,
+  "candidates": []
+ },
+ {
+  "video_id": 40,
+  "label": "violation",
+  "t_label": 17.0,
+  "group": "612cf89dc4e7213143242bc409949ded",
+  "team_type": null,
+  "candidates": []
+ },
+ {
+  "video_id": 43,
+  "label": "no_violation",
+  "t_label": null,
+  "group": "d14976d777c2ecddbfd6f31f2359f4e0",
+  "team_type": null,
+  "candidates": []
+ },
+ {
+  "video_id": 44,
+  "label": "violation",
+  "t_label": 16.0,
+  "group": "c41b35b2ac643cf436b0f6d548d5c163",
+  "team_type": null,
+  "candidates": [
+   {
+    "type_id": "unauthorized_in_cash_zone",
+    "t_event": 0.2,
+    "t_window": [
+     0.2,
+     20.4
+    ],
+    "confidence": 0.9,
+    "facts": [
+     "посторонний/рука клиента в зоне кассира 0.2–20.4 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R4"
+   },
+   {
+    "type_id": "no_id_check",
+    "t_event": 0.4,
+    "t_window": [
+     0.0,
+     1.4
+    ],
+    "confidence": 0.45,
+    "facts": [
+     "передача наличных на 0.4 с без предъявления документа в предшествующие 20 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R7"
+   }
+  ]
+ },
+ {
+  "video_id": 45,
+  "label": "no_violation",
+  "t_label": null,
+  "group": "3ba888f705c81cad73bc45ece2077ff4",
+  "team_type": null,
+  "candidates": []
+ },
+ {
+  "video_id": 46,
+  "label": "violation",
+  "t_label": 11.0,
+  "group": "e27b34f262cc51c90b44deda61422f56",
+  "team_type": null,
+  "candidates": []
+ },
+ {
+  "video_id": 47,
+  "label": "violation",
+  "t_label": 68.0,
+  "group": "fdd5aa51aefe4b42dd4d318bbbd3f207",
+  "team_type": null,
+  "candidates": []
+ },
+ {
+  "video_id": 48,
+  "label": "no_violation",
+  "t_label": null,
+  "group": "304e8be8155a1f6529fe86ba88d05668",
+  "team_type": null,
+  "candidates": [
+   {
+    "type_id": "phone_at_workplace",
+    "t_event": 10.0,
+    "t_window": [
+     10.0,
+     15.8
+    ],
+    "confidence": 0.85,
+    "facts": [
+     "телефон у руки кассира 10.0–15.8 с"
+    ],
+    "source": "rules",
+    "vlm": null,
+    "rule_id": "R3"
+   }
+  ]
+ }
+]

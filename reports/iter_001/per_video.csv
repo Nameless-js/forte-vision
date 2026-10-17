@@ -1,0 +1,43 @@
+video_id,label,t_label,team_type,pred_cfg,pred_fit,pred_lovo,lovo_thr,t_pred_lovo,dt_lovo,pred_type_lovo,type_ok_lovo,elapsed_s,top_candidates
+1,violation,22.0,,no_violation,violation,violation,0.25,22.6,0.6,no_id_check,,0.1,no_id_check@14.0:0.45; no_id_check@22.6:0.44
+2,violation,10.0,,violation,violation,violation,0.25,11.6,1.6,phone_at_workplace,,0.2,phone_at_workplace@11.6:0.76
+3,no_violation,,,violation,violation,violation,0.25,,,,,0.1,unauthorized_in_cash_zone@18.4:0.76; no_id_check@16.8:0.45
+4,violation,57.0,,violation,violation,violation,0.25,60.8,3.8,phone_at_workplace,,0.7,phone_at_workplace@12.2:0.85; phone_at_workplace@60.8:0.85; phone_at_workplace@67.6:0.85; phone_at_workplace@21.0:0.74
+5,no_violation,,,violation,violation,violation,0.25,,,,,0.8,phone_at_workplace@8.0:0.85; phone_at_workplace@31.6:0.85; phone_at_workplace@38.8:0.79; phone_at_workplace@69.4:0.76; phone_at_workplace@21.0:0.71
+8,no_violation,,,violation,violation,violation,0.25,,,,,0.4,cashier_left_during_service@27.4:0.95; unauthorized_in_cash_zone@28.2:0.90; cashier_left_during_service@2.2:0.88; phone_at_workplace@14.6:0.73; no_id_check@28.2:0.45
+10,no_violation,,,no_violation,no_violation,no_violation,0.25,,,,,0.0,
+11,violation,18.0,,no_violation,no_violation,no_violation,0.25,,,,,0.0,
+12,no_violation,,,violation,violation,violation,0.25,,,,,0.3,phone_at_workplace@28.8:0.70; unauthorized_in_cash_zone@31.4:0.68
+13,violation,47.0,,violation,violation,violation,0.25,58.6,11.6,cashier_left_during_service,,0.3,cashier_left_during_service@58.6:0.90; phone_at_workplace@0.6:0.68
+14,no_violation,,,violation,violation,violation,0.25,,,,,1.1,cashier_left_during_service@0.0:0.95; unauthorized_in_cash_zone@48.6:0.90; unauthorized_in_cash_zone@76.4:0.90; phone_at_workplace@72.6:0.85; cashier_left_during_service@131.2:0.83
+15,violation,15.0,,violation,violation,violation,0.25,6.8,8.2,cashier_left_during_service,,0.1,cashier_left_during_service@6.8:0.95
+16,no_violation,,,violation,violation,violation,0.25,,,,,0.1,phone_at_workplace@9.8:0.78
+17,violation,7.0,,no_violation,violation,violation,0.25,7.8,0.8,no_id_check,,0.0,no_id_check@7.8:0.44
+18,violation,20.0,,no_violation,violation,violation,0.25,19.4,0.6,no_id_check,,0.0,no_id_check@11.2:0.45; no_id_check@19.4:0.45
+19,no_violation,,,violation,violation,violation,0.25,,,,,0.3,phone_at_workplace@7.6:0.82; phone_at_workplace@32.8:0.76; no_id_check@12.8:0.45
+20,violation,5.0,,violation,violation,violation,0.25,8.4,3.4,phone_at_workplace,,0.1,phone_at_workplace@8.4:0.68
+21,no_violation,,,violation,violation,violation,0.25,,,,,0.1,phone_at_workplace@7.8:0.85
+22,violation,14.0,,no_violation,no_violation,no_violation,0.25,,,,,0.0,
+23,no_violation,,,no_violation,no_violation,no_violation,0.25,,,,,0.0,
+24,violation,8.0,,violation,violation,violation,0.25,6.4,1.6,cashier_left_during_service,,0.6,cashier_left_during_service@6.4:0.95; unauthorized_in_cash_zone@0.2:0.90; cashier_left_during_service@0.2:0.82; two_clients_cash_mixed@0.4:0.73; phone_at_workplace@2.6:0.70
+25,no_violation,,,violation,violation,violation,0.25,,,,,0.5,cashier_left_during_service@5.8:0.95; unauthorized_in_cash_zone@0.2:0.90; phone_at_workplace@0.2:0.85; two_clients_cash_mixed@0.4:0.69; cash_left_unattended@5.8:0.63
+26,violation,9.0,,violation,violation,violation,0.25,8.4,0.6,phone_at_workplace,,0.5,cashier_left_during_service@10.4:0.95; unauthorized_in_cash_zone@0.2:0.90; phone_at_workplace@0.6:0.85; phone_at_workplace@8.4:0.71; accept_without_count@3.4:0.70
+27,no_violation,,,violation,violation,violation,0.25,,,,,0.2,cashier_left_during_service@8.2:0.95; phone_at_workplace@0.4:0.85
+28,violation,7.0,,no_violation,no_violation,no_violation,0.25,,,,,0.0,
+29,no_violation,,,violation,violation,violation,0.25,,,,,0.4,unauthorized_in_cash_zone@5.4:0.84; cashier_left_during_service@10.6:0.83; phone_at_workplace@1.2:0.70; unauthorized_in_cash_zone@1.6:0.66
+30,violation,13.0,,violation,violation,violation,0.25,11.6,1.4,unauthorized_in_cash_zone,,0.2,unauthorized_in_cash_zone@11.6:0.82; unauthorized_in_cash_zone@15.8:0.68
+31,no_violation,,,violation,violation,violation,0.25,,,,,0.3,cashier_left_during_service@0.0:0.95; unauthorized_in_cash_zone@2.4:0.90; phone_at_workplace@13.0:0.85
+32,violation,5.0,,violation,violation,violation,0.25,9.2,4.2,phone_at_workplace,,0.1,phone_at_workplace@9.2:0.84
+33,violation,6.0,,violation,violation,violation,0.25,9.8,3.8,unauthorized_in_cash_zone,,0.1,unauthorized_in_cash_zone@9.8:0.90
+34,violation,13.0,,no_violation,no_violation,no_violation,0.25,,,,,0.0,
+35,no_violation,,,violation,violation,violation,0.25,,,,,0.3,phone_at_workplace@12.6:0.71; phone_at_workplace@19.8:0.71
+37,no_violation,,,violation,violation,violation,0.25,,,,,0.1,phone_at_workplace@8.2:0.76
+38,violation,33.0,,violation,violation,violation,0.25,36.4,3.4,phone_at_workplace,,0.8,phone_at_workplace@29.0:0.81; phone_at_workplace@51.0:0.81; phone_at_workplace@41.2:0.79; phone_at_workplace@7.2:0.76; phone_at_workplace@36.4:0.73
+39,no_violation,,,violation,violation,violation,0.25,,,,,0.6,phone_at_workplace@39.8:0.85; phone_at_workplace@3.6:0.78; phone_at_workplace@15.6:0.74; phone_at_workplace@0.2:0.71; phone_at_workplace@10.4:0.68
+40,violation,17.0,,no_violation,no_violation,no_violation,0.25,,,,,0.0,
+43,no_violation,,,no_violation,no_violation,no_violation,0.25,,,,,0.0,
+44,violation,16.0,,violation,violation,violation,0.25,13.8,2.2,phone_at_workplace,,0.2,cashier_left_during_service@0.0:0.95; unauthorized_in_cash_zone@0.2:0.90; phone_at_workplace@13.8:0.78; no_id_check@12.0:0.44
+45,no_violation,,,violation,violation,violation,0.25,,,,,0.2,phone_at_workplace@25.4:0.79; phone_at_workplace@20.8:0.73
+46,violation,11.0,,no_violation,no_violation,no_violation,0.25,,,,,0.0,
+47,violation,68.0,,violation,violation,violation,0.25,67.6,0.4,phone_at_workplace,,0.6,phone_at_workplace@12.2:0.85; phone_at_workplace@60.8:0.85; phone_at_workplace@67.6:0.85; phone_at_workplace@21.0:0.74
+48,no_violation,,,violation,violation,violation,0.25,,,,,0.8,phone_at_workplace@8.0:0.85; phone_at_workplace@31.6:0.85; phone_at_workplace@38.8:0.79; phone_at_workplace@69.4:0.76; phone_at_workplace@21.0:0.71

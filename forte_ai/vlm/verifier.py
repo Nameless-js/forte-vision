@@ -206,6 +206,8 @@ class VLMVerifier:
 
 # ---------------------------------------------------------------------- decision helpers
 CONTRADICTION = {
+    "workplace_left_unsecured": ("cashier_left", {"no"}),
+    "personal_items_at_workplace": ("phone_visible", set()),  # judged by description only
     # type_id -> (answer key, values that contradict the candidate)
     "issue_without_count": ("counted_money", {"yes"}),
     "accept_without_count": ("counted_money", {"yes"}),
@@ -220,6 +222,7 @@ CONTRADICTION = {
 }
 
 SUPPORT = {
+    "workplace_left_unsecured": ("cashier_left", {"yes"}),
     "issue_without_count": ("counted_money", {"no"}),
     "accept_without_count": ("counted_money", {"no"}),
     "cashier_left_during_service": ("cashier_left", {"yes"}),

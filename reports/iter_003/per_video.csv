@@ -1,0 +1,43 @@
+video_id,label,t_label,team_type,pred_cfg,pred_fit,pred_lovo,lovo_thr,t_pred_lovo,dt_lovo,pred_type_lovo,type_ok_lovo,elapsed_s,top_candidates
+1,violation,22.0,,no_violation,violation,violation,0.25,22.6,0.6,no_id_check,,0.1,no_id_check@14.0:0.45; no_id_check@22.6:0.44
+2,violation,10.0,,no_violation,no_violation,no_violation,0.25,,,,,0.0,
+3,no_violation,,,violation,violation,violation,0.25,,,,,0.2,issue_without_count@14.6:0.75; two_clients_cash_mixed@14.0:0.69; no_id_check@14.6:0.45
+4,violation,57.0,,no_violation,no_violation,no_violation,0.25,,,,,0.2,
+5,no_violation,,,violation,violation,violation,0.25,,,,,0.2,phone_at_workplace@10.0:0.85
+8,no_violation,,,violation,violation,violation,0.25,,,,,0.2,cashier_left_during_service@31.2:0.95; unauthorized_in_cash_zone@0.6:0.90; no_id_check@30.4:0.45; no_id_check@3.6:0.43; no_id_check@9.8:0.43
+10,no_violation,,,no_violation,no_violation,no_violation,0.25,,,,,0.0,
+11,violation,18.0,,no_violation,no_violation,no_violation,0.25,,,,,0.0,
+12,no_violation,,,no_violation,no_violation,no_violation,0.25,,,,,0.0,
+13,violation,47.0,,no_violation,no_violation,no_violation,0.25,,,,,0.1,
+14,no_violation,,,violation,violation,violation,0.25,,,,,1.2,cashier_left_during_service@103.2:0.95; unauthorized_in_cash_zone@0.2:0.90; unauthorized_in_cash_zone@50.6:0.90; unauthorized_in_cash_zone@57.2:0.90; unauthorized_in_cash_zone@109.2:0.90
+15,violation,15.0,,violation,violation,violation,0.25,6.8,8.2,cashier_left_during_service,,0.1,cashier_left_during_service@6.8:0.95; no_id_check@6.0:0.45
+16,no_violation,,,no_violation,no_violation,no_violation,0.25,,,,,0.0,
+17,violation,7.0,,no_violation,violation,violation,0.25,7.8,0.8,no_id_check,,0.0,no_id_check@7.8:0.45
+18,violation,20.0,,no_violation,violation,violation,0.25,19.2,0.8,no_id_check,,0.0,no_id_check@11.2:0.45; no_id_check@19.2:0.45
+19,no_violation,,,no_violation,violation,violation,0.25,,,,,0.1,no_id_check@12.8:0.45
+20,violation,5.0,,no_violation,no_violation,no_violation,0.25,,,,,0.0,
+21,no_violation,,,no_violation,no_violation,no_violation,0.25,,,,,0.0,
+22,violation,14.0,,no_violation,no_violation,no_violation,0.25,,,,,0.0,
+23,no_violation,,,no_violation,no_violation,no_violation,0.25,,,,,0.0,
+24,violation,8.0,,violation,violation,violation,0.25,7.2,0.8,cash_left_unattended,,0.1,cash_left_unattended@7.2:0.65; no_id_check@0.2:0.45
+25,no_violation,,,no_violation,violation,violation,0.25,,,,,0.0,no_id_check@0.2:0.45
+26,violation,9.0,,violation,violation,violation,0.25,12.4,3.4,unauthorized_in_cash_zone,,0.2,unauthorized_in_cash_zone@0.2:0.90; unauthorized_in_cash_zone@12.4:0.76
+27,no_violation,,,violation,violation,violation,0.25,,,,,0.3,cashier_left_during_service@8.2:0.95; accept_without_count@3.4:0.70; no_id_check@0.2:0.45
+28,violation,7.0,,no_violation,no_violation,no_violation,0.25,,,,,0.0,
+29,no_violation,,,no_violation,no_violation,no_violation,0.25,,,,,0.0,
+30,violation,13.0,,no_violation,no_violation,no_violation,0.25,,,,,0.0,
+31,no_violation,,,no_violation,no_violation,no_violation,0.25,,,,,0.0,
+32,violation,5.0,,no_violation,no_violation,no_violation,0.25,,,,,0.0,
+33,violation,6.0,,violation,violation,violation,0.25,10.4,4.4,unauthorized_in_cash_zone,,0.1,unauthorized_in_cash_zone@10.4:0.90
+34,violation,13.0,,violation,violation,violation,0.25,9.2,3.8,two_clients_cash_mixed,,0.2,two_clients_cash_mixed@9.2:0.69
+35,no_violation,,,no_violation,no_violation,no_violation,0.25,,,,,0.1,
+37,no_violation,,,no_violation,no_violation,no_violation,0.25,,,,,0.0,
+38,violation,33.0,,violation,violation,violation,0.25,37.2,4.2,two_clients_cash_mixed,,0.3,two_clients_cash_mixed@45.2:0.73; two_clients_cash_mixed@37.2:0.71
+39,no_violation,,,no_violation,no_violation,no_violation,0.25,,,,,0.1,
+40,violation,17.0,,no_violation,no_violation,no_violation,0.25,,,,,0.0,
+43,no_violation,,,no_violation,no_violation,no_violation,0.25,,,,,0.0,
+44,violation,16.0,,violation,violation,violation,0.25,0.4,15.6,unauthorized_in_cash_zone,,0.1,unauthorized_in_cash_zone@0.4:0.90; no_id_check@0.4:0.45
+45,no_violation,,,no_violation,no_violation,no_violation,0.25,,,,,0.0,
+46,violation,11.0,,no_violation,no_violation,no_violation,0.25,,,,,0.0,
+47,violation,68.0,,no_violation,no_violation,no_violation,0.25,,,,,0.1,
+48,no_violation,,,violation,violation,violation,0.25,,,,,0.3,phone_at_workplace@10.0:0.85

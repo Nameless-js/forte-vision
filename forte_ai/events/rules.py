@@ -1,11 +1,27 @@
 """Layer B rules: small temporal conditions over frame primitives -> candidates with exact timecodes.
 
+Rule set M2, derived from the frame review of all 42 training videos (analysis/review/, analysis/taxonomy.json).
+Violation families observed in the data:
+  R1a cashier leaves while a client is at the window           -> cashier_left_during_service
+  R1b cashier walks out, room left empty, workplace not secured -> workplace_left_unsecured / cash_left_unattended
+  R2  cash lies on the cashier's side with nobody at it         -> cash_left_unattended
+  R3  phone in the cashier's hand                               -> phone_at_workplace
+  R3b cup/bottle/food in the cashier's hand                     -> personal_items_at_workplace
+  R4  another person deep in the cashier's zone while she works -> unauthorized_in_cash_zone
+  R10 a person enters an EMPTY cash workplace and settles there -> unauthorized_in_cash_zone
+  R5  cash issued to the client with no counting shortly before -> issue_without_count
+  R6  cash accepted and not counted while the client is present -> accept_without_count
+  R7  cash handover with no ID/document shown before            -> no_id_check (conservative)
+  R8  collector bag taken with no inspection/document           -> collection_bag_unchecked
+  R9  second client while the first operation's cash is out     -> two_clients_cash_mixed
+
 Timecode policy (documented in VIOLATION_TYPES.md):
   * action violation  -> t_event = first sampled frame where the condition becomes true;
-  * omission          -> t_event = the action that should have been preceded by the skipped step
-                         (the handover without counting / without an ID check, the storing without counting).
-All thresholds come from configs/*.yaml (section `rules`). Nothing here uses pixel coordinates directly:
-distances are fractions of the frame diagonal, sides are relative to the calibrated counter line.
+  * omission          -> t_event = the moment of the action that should have been preceded by the skipped
+    step (the handover without counting; the client walking away with the cash never counted; the storing
+    without counting).
+All thresholds come from configs/*.yaml (section `rules`); distances are fractions of the frame diagonal,
+sides are relative to the per-video calibration. No pixel constants.
 """
 
 from __future__ import annotations
@@ -49,10 +65,15 @@ class EventSummary:
     counting: list[Segment]
     cashier_absent: list[Segment]
     phone: list[Segment]
+    cup: list[Segment]
     intrusion: list[Segment]
     cash_visible: list[Segment]
     id_shown: list[Segment]
     bag_handling: list[Segment]
+    storage_dwell: list[Segment]
+    room_empty: list[Segment]
+    departures: list[float]
+    empty_start: bool
     hand_speed: np.ndarray
 
     def to_dict(self) -> dict:
@@ -63,10 +84,15 @@ class EventSummary:
             "counting": seg(self.counting),
             "cashier_absent": seg(self.cashier_absent),
             "phone": seg(self.phone),
+            "cup": seg(self.cup),
             "intrusion": seg(self.intrusion),
             "cash_visible": seg(self.cash_visible),
             "id_shown": seg(self.id_shown),
             "bag_handling": seg(self.bag_handling),
+            "storage_dwell": seg(self.storage_dwell),
+            "room_empty": seg(self.room_empty),
+            "departures": [round(t, 2) for t in self.departures],
+            "empty_start": self.empty_start,
         }
 
 
@@ -92,8 +118,16 @@ def _any_in(segs: list[Segment], t0: float, t1: float, min_dur: float = 0.0) -> 
     return None
 
 
+def _cum_in(segs: list[Segment], t0: float, t1: float) -> float:
+    """Cumulative overlap duration of segments with [t0, t1]."""
+    total = 0.0
+    for s in segs:
+        total += max(0.0, min(s.end, t1) - max(s.start, t0))
+    return total
+
+
 # ---------------------------------------------------------------------- event extraction
-def extract_events(states: list[FrameState], cal: Calibration, cfg: dict, fps: float) -> EventSummary:
+def extract_events(states: list[FrameState], cal: Calibration, cfg: dict, fps: float, duration: float) -> EventSummary:
     times = [s.t for s in states]
     n = len(states)
     diag = cal.diag
@@ -112,47 +146,101 @@ def extract_events(states: list[FrameState], cal: Calibration, cfg: dict, fps: f
                 coll = True
         episodes.append(Episode(seg.start, seg.end, seg.k_start, seg.k_end, ids, coll))
 
-    # ---- cashier absent from own zone
+    # ---- cashier absent from own zone / room empty
     absent = _smooth([not (s.cashier_present and s.cashier_in_zone) for s in states], smooth_k)
     cashier_absent = runs(absent, times, min_duration=float(cfg.get("left_zone_min_s", 1.5)), max_gap_frames=gap)
+    room_empty = runs(_smooth([s.n_people == 0 for s in states], smooth_k), times, min_duration=0.6, max_gap_frames=gap)
 
-    # ---- phone in the cashier's hand
-    phone = runs(_smooth([s.phone_near_cashier_hand for s in states], smooth_k), times, min_duration=float(cfg.get("phone_min_s", 1.0)), max_gap_frames=gap)
+    # ---- phone / cup in the cashier's hand
+    phone = runs(_smooth([s.phone_near_cashier_hand for s in states], smooth_k), times, min_duration=float(cfg.get("phone_min_s", 2.0)), max_gap_frames=gap)
+    cup = runs(_smooth([getattr(s, "cup_near_cashier_hand", False) for s in states], smooth_k), times, min_duration=float(cfg.get("cup_min_s", 2.0)), max_gap_frames=gap)
 
-    # ---- non-cashier inside the cashier zone / hand deep over the counter
-    intr_flags = [bool(s.non_cashier_in_zone) or bool(s.client_hand_over_counter) for s in states]
-    intrusion = runs(_smooth(intr_flags, smooth_k), times, min_duration=float(cfg.get("intrusion_min_s", 0.6)), max_gap_frames=gap)
+    # ---- non-cashier body deep in the cashier zone (hand reaches are handovers, not intrusions)
+    intr_flags = [bool(s.non_cashier_in_zone) for s in states]
+    intrusion = runs(_smooth(intr_flags, smooth_k), times, min_duration=float(cfg.get("intrusion_min_s", 1.5)), max_gap_frames=gap)
 
-    # ---- cash visible (anywhere), id/document shown near hands, bag handling
+    # ---- cash visible, id/document shown near hands, bag handling, hands at the safe
     cash_visible = runs(_smooth([bool(s.cash) for s in states], smooth_k), times, min_duration=0.0, max_gap_frames=gap)
     id_shown = runs(_smooth([s.document_near_hands or s.id_card_visible for s in states], smooth_k), times, min_duration=float(cfg.get("id_min_s", 0.6)), max_gap_frames=gap)
     bag_handling = runs(_smooth([s.bag_near_cashier_hand or s.bag_near_collector for s in states], smooth_k), times, min_duration=0.4, max_gap_frames=gap)
+    storage_r = float(cfg.get("storage_dwell_radius_frac", 0.09)) * diag
+    sp = cal.storage_point
+    sd_flags = []
+    for s in states:
+        ok = False
+        if sp is not None and s.cashier_present:
+            pts = list(s.cashier_hands)
+            if s.cashier_box is not None:
+                b = s.cashier_box
+                pts.append(((b[0] + b[2]) / 2.0, b[1] + 0.5 * (b[3] - b[1])))
+            ok = any(math.hypot(p[0] - sp[0], p[1] - sp[1]) <= storage_r for p in pts)
+        sd_flags.append(ok)
+    storage_dwell = runs(_smooth(sd_flags, smooth_k), times, min_duration=0.6, max_gap_frames=gap)
 
-    # ---- counting: periodic hand motion of the cashier over the desk (or counting machine use)
+    # ---- counting: machine use (sustained) OR periodic hand motion with cash at the hands
     speed = hand_motion_energy(states, window_frames=1) * fps / diag  # fraction of diagonal per second
     win = max(4, int(round(float(cfg.get("counting_window_frames_s", 2.0)) * fps)))
     s_min = float(cfg.get("counting_hand_speed_frac_s", 0.03))
     p_min = float(cfg.get("counting_periodicity_min", 0.30))
+    cash_frac_min = float(cfg.get("counting_cash_fraction", 0.25))
+    machine_runs = runs(
+        _smooth([s.counting_machine_active for s in states], smooth_k), times, min_duration=float(cfg.get("counting_machine_min_s", 1.2)), max_gap_frames=gap
+    )
+    in_machine = [False] * n
+    for seg in machine_runs:
+        for k in range(seg.k_start, seg.k_end + 1):
+            in_machine[k] = True
     count_flags = []
     for i in range(n):
         a, b = max(0, i - win // 2), min(n, i + win // 2 + 1)
         seg = speed[a:b]
         s = states[i]
-        hands_over_desk = s.cashier_present and bool(s.cashier_hands) and all(cal.signed_dist_to_counter(h) > -0.5 * float(cfg.get("counter_margin_frac", 0.06)) * diag for h in s.cashier_hands)
+        cash_frac = sum(1 for j in range(a, b) if states[j].cash_near_cashier_hand) / max(1, b - a)
         periodic = float(np.mean(seg)) >= s_min and periodicity(seg, fps) >= p_min
-        count_flags.append(bool(s.counting_machine_active) or (periodic and hands_over_desk and True))
+        count_flags.append(in_machine[i] or (periodic and s.cashier_present and cash_frac >= cash_frac_min))
     counting = runs(_smooth(count_flags, smooth_k), times, min_duration=float(cfg.get("counting_min_duration_s", 1.5)), max_gap_frames=gap)
 
-    # ---- handovers: reach events across the counter line
+    # ---- departures: the cashier goes absent and the room empties (and stays empty)
+    empty_after = float(cfg.get("empty_room_after_s", 2.5))
+    departures: list[float] = []
+    for seg in cashier_absent:
+        tail = [s for s in states if seg.start <= s.t <= min(seg.start + max(empty_after, seg.duration), duration)]
+        if not tail:
+            continue
+        empty_frac = sum(1 for s in tail if s.n_people == 0) / len(tail)
+        till_end = seg.end >= duration - 1.0
+        if empty_frac >= 0.5 and (till_end or seg.duration >= empty_after):
+            departures.append(seg.start)
+
+    # ---- empty start: nobody at the workplace during the first seconds
+    empty_start_s = float(cfg.get("empty_start_s", 2.5))
+    near_r = float(cfg.get("workplace_near_frac", 0.16)) * diag
+    anchors = [p for p in [cal.counting_machine_point, cal.storage_point] if p is not None]
+    if not anchors:
+        anchors = [cal.cashier_center]
+
+    def at_workplace(s: FrameState) -> bool:
+        pts = []
+        if s.cashier_box is not None:
+            b = s.cashier_box
+            pts.append(((b[0] + b[2]) / 2.0, b[1] + 0.6 * (b[3] - b[1])))
+        for tid, hs in s.client_hands.items():
+            pts.extend(hs)
+        return any(math.hypot(p[0] - a[0], p[1] - a[1]) <= near_r for p in pts for a in anchors)
+
+    head = [s for s in states if s.t <= empty_start_s]
+    empty_start = bool(head) and not any(s.n_people > 0 and at_workplace(s) for s in head) and not any(s.n_people > 0 for s in head[: max(1, len(head) // 2)])
+
     handovers = _detect_handovers(states, cal, cfg, fps)
-    return EventSummary(episodes, handovers, counting, cashier_absent, phone, intrusion, cash_visible, id_shown, bag_handling, speed)
+    return EventSummary(
+        episodes, handovers, counting, cashier_absent, phone, cup, intrusion, cash_visible, id_shown, bag_handling,
+        storage_dwell, room_empty, departures, empty_start, speed
+    )
 
 
 def _detect_handovers(states: list[FrameState], cal: Calibration, cfg: dict, fps: float) -> list[Handover]:
     """A handover is an active REACH across the counter: the cashier extends a wrist well ahead of the torso
-    toward the client side (or across the line), or a client does the same toward the cashier side. Wrists
-    meeting near the line and cash seen near the hands (within ±1 s) only add evidence — two people seated
-    across a desk keep their hands close all the time, so proximity alone is not an event."""
+    toward the client side (or across the line), or a client does the same toward the cashier side."""
     diag = cal.diag
     band = float(cfg.get("reach_band_frac", 0.08)) * diag
     meet = float(cfg.get("hands_meet_frac", 0.05)) * diag
@@ -170,8 +258,6 @@ def _detect_handovers(states: list[FrameState], cal: Calibration, cfg: dict, fps
             c_body = body_sd(s.cashier_box)
             for ch in s.cashier_hands:
                 sd = cal.signed_dist_to_counter(ch)
-                # a reach = wrist crosses the counter line, or wrist is extended far ahead of the torso
-                # AND is close to / past the line (normal seated hands stay well on the cashier side)
                 if sd < -0.5 * band or ((c_body - sd) >= reach and sd <= 0.5 * band):
                     rc = True
             for hs in s.client_hands.values():
@@ -196,7 +282,6 @@ def _detect_handovers(states: list[FrameState], cal: Calibration, cfg: dict, fps
         lo, hi = max(0, seg.k_start - w1), min(n - 1, seg.k_end + w1)
         with_cash = any(cash_any[k] for k in range(lo, hi + 1))
         met = any(meets[k] for k in ks)
-        # direction from cash possession before/after the reach (3 s windows)
         before = states[max(0, seg.k_start - int(3 * fps)) : seg.k_start]
         after = states[seg.k_end + 1 : min(n, seg.k_end + 1 + int(3 * fps))]
         c_before = sum(1 for s in before if s.cash_near_cashier_hand)
@@ -221,10 +306,11 @@ def _detect_handovers(states: list[FrameState], cal: Calibration, cfg: dict, fps
 
 # ---------------------------------------------------------------------- rules
 def run_rules(states: list[FrameState], cal: Calibration, cfg: dict, fps: float, duration: float) -> tuple[list[Candidate], EventSummary]:
-    ev = extract_events(states, cal, cfg, fps)
+    ev = extract_events(states, cal, cfg, fps, duration)
     cands: list[Candidate] = []
     base = cfg.get("base_confidence", {}) or {}
     diag = cal.diag
+    dt = states[1].t - states[0].t if len(states) > 1 else 1.0 / max(fps, 1.0)
 
     def episode_at(t: float) -> Optional[Episode]:
         for e in ev.episodes:
@@ -232,103 +318,219 @@ def run_rules(states: list[FrameState], cal: Calibration, cfg: dict, fps: float,
                 return e
         return None
 
-    # 1. cashier left the workplace during service (action)
-    for seg in ev.cashier_absent:
-        ep = episode_at(seg.start) or episode_at(seg.end)
-        if ep is None:
-            continue
-        if seg.start < ep.start + 0.5 and seg.end < ep.start + 1.0:
-            continue  # absent before the client arrived
-        conf = float(base.get("cashier_left_during_service", 0.75)) + min(0.2, 0.04 * seg.duration)
-        cands.append(
-            Candidate(
-                "cashier_left_during_service",
-                seg.start,
-                (seg.start, seg.end),
-                min(0.98, conf),
-                [f"кассир вне рабочей зоны {seg.start:.1f}–{seg.end:.1f} с ({seg.duration:.1f} с)", f"клиент у окна {ep.start:.1f}–{ep.end:.1f} с"],
-                rule_id="R1",
+    # ---------------- R10: entry into an unattended cash workplace ----------------
+    if ev.empty_start:
+        near_r = float(cfg.get("workplace_near_frac", 0.16)) * diag
+        anchors = [p for p in [cal.counting_machine_point, cal.storage_point] if p is not None] or [cal.cashier_center]
+        flags = []
+        for s in states:
+            pts = []
+            if s.cashier_box is not None:
+                b = s.cashier_box
+                pts.append(((b[0] + b[2]) / 2.0, b[1] + 0.6 * (b[3] - b[1])))
+            for hs in s.client_hands.values():
+                pts.extend(hs)
+            flags.append(any(math.hypot(p[0] - a[0], p[1] - a[1]) <= near_r for p in pts for a in anchors))
+        segs = runs(_smooth(flags, 3), [s.t for s in states], min_duration=float(cfg.get("entry_min_s", 1.5)), max_gap_frames=max(1, int(fps)))
+        if segs:
+            first = segs[0]
+            conf = float(base.get("entry_unattended", 0.8)) + min(0.15, 0.02 * sum(s.duration for s in segs))
+            cands.append(
+                Candidate(
+                    "unauthorized_in_cash_zone",
+                    first.start,
+                    (first.start, segs[-1].end),
+                    min(0.95, conf),
+                    [
+                        f"рабочее место пустовало в начале видео (первые {cfg.get('empty_start_s', 2.5)} с)",
+                        f"вошедший находится у кассового оборудования {first.start:.1f}–{first.end:.1f} с",
+                    ],
+                    rule_id="R10",
+                )
             )
-        )
 
-    # 2. cash left unattended: cash visible on the cashier side with the cashier away or hands far from it (action)
+    # ---------------- R1a / R1b: the cashier leaves ----------------
+    established_s = float(cfg.get("service_established_s", 2.0))
+    securing_min = float(cfg.get("securing_min_s", 5.0))
+    lookback = float(cfg.get("securing_lookback_s", 18.0))
+    for seg in ev.cashier_absent:
+        if ev.empty_start:
+            break  # the "cashier" of an empty-start video is the entrant; R10 covers it
+        pre_all = [s for s in states if s.t < seg.start and s.cashier_present and s.cashier_in_zone]
+        if len(pre_all) * dt < max(3.0, 0.15 * seg.start):
+            continue  # the cashier was barely ever there before -> unreliable identity
+        during = [s for s in states if seg.start <= s.t <= seg.end]
+        if not during:
+            continue
+        ep = episode_at(seg.start)
+        client_during = sum(1 for s in during if s.client_at_window) >= 0.5 * len(during)
+        if ep is not None and seg.start >= ep.start + 0.5 and client_during:
+            pre = [s for s in states if ep.start <= s.t < seg.start and s.cashier_present and s.cashier_in_zone]
+            if len(pre) * dt >= established_s:
+                conf = float(base.get("cashier_left_during_service", 0.8)) + min(0.15, 0.03 * seg.duration)
+                cands.append(
+                    Candidate(
+                        "cashier_left_during_service", seg.start, (seg.start, seg.end), min(0.95, conf),
+                        [f"кассир вне рабочей зоны {seg.start:.1f}–{seg.end:.1f} с", f"клиент у окна {ep.start:.1f}–{ep.end:.1f} с"],
+                        rule_id="R1a",
+                    )
+                )
+            continue
+        # R1b: departure with the room left empty
+        if seg.start not in ev.departures:
+            continue
+        secured = _cum_in(ev.storage_dwell, seg.start - lookback, seg.start)
+        after_end = min(duration, seg.start + 6.0)
+        cash_after = any(
+            (s.cash_on_cashier_side or s.cash_on_counter) for s in states if seg.start <= s.t <= after_end
+        )
+        facts = [f"кассир выходит из помещения на {seg.start:.1f} с; помещение остаётся пустым до {seg.end:.1f} с"]
+        if cash_after:
+            type_id = "cash_left_unattended"
+            conf = float(base.get("cash_left_unattended_depart", 0.9))
+            facts.append("на столе остаются наличные")
+        elif secured >= securing_min:
+            type_id = "workplace_left_unsecured"
+            conf = float(base.get("workplace_left_secured", 0.45))
+            facts.append(f"перед уходом зафиксирована работа у сейфа ≈{secured:.1f} с (ценности, вероятно, убраны)")
+        else:
+            type_id = "workplace_left_unsecured"
+            conf = float(base.get("workplace_left_unsecured", 0.75))
+            facts.append(f"работа у сейфа перед уходом не зафиксирована (≈{secured:.1f} с)")
+        cands.append(Candidate(type_id, seg.start, (seg.start, seg.end), conf, facts, rule_id="R1b"))
+
+    # ---------------- R2: cash left unattended (cashier away or hands far) ----------------
     unatt_s = float(cfg.get("unattended_cash_s", 4.0))
     far = float(cfg.get("unattended_hand_dist_frac", 0.12)) * diag
+    min_score = float(cfg.get("unattended_min_cash_score", 0.35))
     flags = []
     for s in states:
-        if not s.cash_on_cashier_side and not s.cash_on_counter:
+        good_cash = [c for c in s.cash if c.score >= min_score]
+        if not good_cash or not (s.cash_on_cashier_side or s.cash_on_counter):
             flags.append(False)
             continue
         if not s.cashier_present or not s.cashier_in_zone:
             flags.append(True)
             continue
-        # cashier present: cash far from every hand
         hands = s.cashier_hands
-        d = min((min(math.hypot(h[0] - (c.xyxy[0] + c.xyxy[2]) / 2, h[1] - (c.xyxy[1] + c.xyxy[3]) / 2) for h in hands) for c in s.cash), default=0.0) if hands else 0.0
+        d = min((min(math.hypot(h[0] - (c.xyxy[0] + c.xyxy[2]) / 2, h[1] - (c.xyxy[1] + c.xyxy[3]) / 2) for h in hands) for c in good_cash), default=0.0) if hands else 0.0
         flags.append(bool(hands) and d > far)
     for seg in runs(_smooth(flags, 3), [s.t for s in states], min_duration=unatt_s, max_gap_frames=max(1, int(fps))):
-        conf = float(base.get("cash_left_unattended", 0.55)) + min(0.25, 0.03 * (seg.duration - unatt_s))
+        conf = float(base.get("cash_left_unattended", 0.6)) + min(0.25, 0.03 * (seg.duration - unatt_s))
         cands.append(Candidate("cash_left_unattended", seg.start, (seg.start, seg.end), min(0.95, conf), [f"наличные видны без рук кассира рядом {seg.start:.1f}–{seg.end:.1f} с"], rule_id="R2"))
 
-    # 3. phone in the cashier's hand (action)
+    # ---------------- R3 / R3b: phone, personal items ----------------
     for seg in ev.phone:
-        conf = float(base.get("phone_at_workplace", 0.6)) + min(0.25, 0.08 * seg.duration)
-        cands.append(Candidate("phone_at_workplace", seg.start, (seg.start, seg.end), min(0.95, conf), [f"телефон у руки кассира {seg.start:.1f}–{seg.end:.1f} с"], rule_id="R3"))
+        conf = float(base.get("phone_at_workplace", 0.55)) + min(0.2, 0.05 * seg.duration)
+        cands.append(Candidate("phone_at_workplace", seg.start, (seg.start, seg.end), min(0.9, conf), [f"предмет, похожий на телефон, у руки кассира {seg.start:.1f}–{seg.end:.1f} с"], rule_id="R3"))
+    for seg in ev.cup:
+        conf = float(base.get("personal_items_at_workplace", 0.65)) + min(0.2, 0.05 * seg.duration)
+        cands.append(Candidate("personal_items_at_workplace", seg.start, (seg.start, seg.end), min(0.9, conf), [f"стакан/бутылка/еда у руки кассира {seg.start:.1f}–{seg.end:.1f} с"], rule_id="R3b"))
 
-    # 4. unauthorized person / hand in the cashier zone (action)
+    # ---------------- R4: another person deep in the cashier zone ----------------
     for seg in ev.intrusion:
-        conf = float(base.get("unauthorized_in_cash_zone", 0.6)) + min(0.3, 0.1 * seg.duration)
-        cands.append(Candidate("unauthorized_in_cash_zone", seg.start, (seg.start, seg.end), min(0.95, conf), [f"посторонний/рука клиента в зоне кассира {seg.start:.1f}–{seg.end:.1f} с"], rule_id="R4"))
+        conf = float(base.get("unauthorized_in_cash_zone", 0.65)) + min(0.25, 0.08 * seg.duration)
+        cands.append(Candidate("unauthorized_in_cash_zone", seg.start, (seg.start, seg.end), min(0.95, conf), [f"посторонний в зоне кассира {seg.start:.1f}–{seg.end:.1f} с"], rule_id="R4"))
 
-    # 5/6. handovers without counting (omission): t_event = the handover
+    # ---------------- R5: issue without counting ----------------
     cw = float(cfg.get("counting_window_s", 15.0))
     for h in ev.handovers:
-        if h.direction == "cashier_to_client" or (h.direction == "unknown" and "+cash" in h.evidence):
-            cnt = _any_in(ev.counting, h.t - cw, h.t)
-            if cnt is None:
+        if h.direction == "cashier_to_client" and "+cash" in h.evidence:
+            if _any_in(ev.counting, h.t - cw, h.t) is None:
                 conf = float(base.get("issue_without_count", 0.5)) + 0.25 * h.strength
-                cands.append(Candidate("issue_without_count", h.t, (max(0.0, h.t - cw), h.t + 2.0), min(0.95, conf), [f"передача наличных кассир→клиент на {h.t:.1f} с ({h.evidence})", f"пересчёт за предыдущие {cw:.0f} с не зафиксирован"], rule_id="R5"))
-        if h.direction == "client_to_cashier":
-            # storing (cash near storage or cash disappears) after the handover without counting in between
-            t_store = None
-            for s in states:
-                if s.t > h.t + 0.5 and s.t <= h.t + 25.0 and (s.cash_near_storage or (not s.cash and s.t > h.t + 3.0)):
-                    t_store = s.t
-                    break
-            t_end = t_store if t_store is not None else min(duration, h.t + 15.0)
-            if _any_in(ev.counting, h.t, t_end) is None:
-                conf = float(base.get("accept_without_count", 0.5)) + 0.2 * h.strength
-                cands.append(Candidate("accept_without_count", t_end, (h.t, t_end), min(0.9, conf), [f"приём наличных клиент→кассир на {h.t:.1f} с", f"пересчёт до {t_end:.1f} с не зафиксирован"], rule_id="R6"))
+                cands.append(Candidate("issue_without_count", h.t, (max(0.0, h.t - cw), h.t + 2.0), min(0.9, conf), [f"передача наличных кассир→клиент на {h.t:.1f} с ({h.evidence})", f"пересчёт за предыдущие {cw:.0f} с не зафиксирован"], rule_id="R5"))
 
-    # 7. handover without an ID shown before it (omission) — conservative, needs a cash handover
+    # ---------------- R6: cash acquired during an episode, no counting while the counter-party is present --
+    for ep in ev.episodes:
+        acq: Optional[float] = None
+        how = ""
+        for h in ev.handovers:
+            if h.direction == "client_to_cashier" and ep.start - 1.0 <= h.t <= ep.end + 1.0 and "+cash" in h.evidence:
+                acq, how = h.t, f"приём наличных на {h.t:.1f} с"
+                break
+        if acq is None and ep.is_collector:
+            seg = _any_in(ev.cash_visible, ep.start, ep.end + 5.0, min_dur=0.4)
+            if seg is not None:
+                acq, how = seg.start, f"наличные появляются у кассира на {seg.start:.1f} с (инкассация)"
+        if acq is None:
+            continue
+        t_party_gone = ep.end
+        counted = _any_in(ev.counting, acq - 1.0, t_party_gone + 1.0) is not None
+        if counted:
+            continue
+        # t_event: storing moment if seen, else the moment the counter-party walks away, else shortly after
+        t_store = None
+        for s in states:
+            if acq + 0.5 < s.t <= min(duration, acq + 30.0) and s.cash_near_storage:
+                t_store = s.t
+                break
+        if t_store is not None and t_store <= t_party_gone + 5.0:
+            t_event = t_store
+        elif t_party_gone < duration - 1.5:
+            t_event = t_party_gone
+        else:
+            t_event = min(duration - 0.5, acq + 2.0)
+        conf = float(base.get("accept_without_count", 0.6)) + (0.1 if ep.is_collector else 0.0)
+        cands.append(
+            Candidate(
+                "accept_without_count", t_event, (acq, min(duration, t_event + 2.0)), min(0.9, conf),
+                [how, f"пересчёт в присутствии {'инкассатора' if ep.is_collector else 'клиента'} (до {t_party_gone:.1f} с) не зафиксирован"],
+                rule_id="R6",
+            )
+        )
+
+    # ---------------- R7: cash handover without an ID shown before (conservative) ----------------
     idw = float(cfg.get("id_check_window_s", 20.0))
     for h in ev.handovers:
         if "+cash" not in h.evidence:
             continue
         ep = episode_at(h.t)
-        t0 = ep.start if ep else h.t - idw
-        if _any_in(ev.id_shown, min(t0, h.t - idw), h.t) is None:
-            conf = float(base.get("no_id_check", 0.35)) + 0.1 * h.strength
-            cands.append(Candidate("no_id_check", h.t, (max(0.0, h.t - idw), h.t + 1.0), min(0.8, conf), [f"передача наличных на {h.t:.1f} с без предъявления документа в предшествующие {idw:.0f} с"], rule_id="R7"))
+        if ep is None:
+            continue  # no client episode -> no ID requirement applies
+        t0 = min(ep.start, h.t - idw)
+        if _any_in(ev.id_shown, t0, h.t) is None:
+            conf = float(base.get("no_id_check", 0.4)) + 0.05 * h.strength
+            cands.append(Candidate("no_id_check", h.t, (max(0.0, t0), h.t + 1.0), min(0.75, conf), [f"передача наличных на {h.t:.1f} с без предъявления документа с начала обслуживания"], rule_id="R7"))
 
-    # 8. collection bag handed over without inspection / document (omission)
+    # ---------------- R8: collector bag without inspection / document ----------------
     bw = float(cfg.get("bag_check_window_s", 15.0))
     for ep in [e for e in ev.episodes if e.is_collector]:
-        bags = [b for b in ev.bag_handling if _overlaps(b.start, b.end, ep.start, ep.end)]
+        bags = [b for b in ev.bag_handling if _overlaps(b.start, b.end, ep.start - 2.0, ep.end + 2.0)]
         if not bags:
             continue
         first = bags[0]
         inspected = sum(b.duration for b in bags) >= float(cfg.get("bag_inspect_min_s", 3.0))
         doc = _any_in(ev.id_shown, first.start - bw, first.end + bw)
         if not inspected and doc is None:
-            conf = float(base.get("collection_bag_unchecked", 0.5))
+            conf = float(base.get("collection_bag_unchecked", 0.55))
             cands.append(Candidate("collection_bag_unchecked", first.start, (first.start, first.end), conf, [f"сумка инкассатора у рук {first.start:.1f}–{first.end:.1f} с без осмотра/документа"], rule_id="R8"))
 
-    # 9. two clients at the window with cash on the desk (action)
-    flags = [len(set(s.client_at_window)) >= 2 and (bool(s.cash) or s.cash_on_counter) for s in states]
+    # ---------------- R9: second client / cash of two clients ----------------
+    # Variant A: two visitors at the window simultaneously while the operation is live
+    flags = [s.cashier_present and len(set(s.client_at_window)) >= 2 for s in states]
+    cash_flags = [bool(s.cash) or s.cash_on_counter for s in states]
     for seg in runs(_smooth(flags, 3), [s.t for s in states], min_duration=float(cfg.get("two_clients_min_s", 1.5)), max_gap_frames=max(1, int(fps))):
-        conf = float(base.get("two_clients_cash_mixed", 0.55)) + min(0.2, 0.05 * seg.duration)
-        cands.append(Candidate("two_clients_cash_mixed", seg.start, (seg.start, seg.end), min(0.9, conf), [f"два клиента у окна и наличные на столе {seg.start:.1f}–{seg.end:.1f} с"], rule_id="R9"))
+        with_cash = any(cash_flags[k] for k in range(seg.k_start, seg.k_end + 1))
+        conf = (0.7 if with_cash else float(base.get("two_clients_no_cash", 0.55))) + min(0.15, 0.04 * seg.duration)
+        facts = [f"два посетителя у окна одновременно {seg.start:.1f}–{seg.end:.1f} с" + (", наличные на столе" if with_cash else "")]
+        cands.append(Candidate("two_clients_cash_mixed", seg.start, (seg.start, seg.end), min(0.9, conf), facts, rule_id="R9a"))
+    # Variant B: a new episode begins while the previous operation's cash is still out (not stored)
+    for i, ep in enumerate(ev.episodes):
+        if i == 0:
+            continue
+        prev = ev.episodes[i - 1]
+        stored_between = any(prev.end <= s.t <= ep.start and s.cash_near_storage for s in states)
+        window = [s for s in states if ep.start - 2.0 <= s.t <= ep.start + 3.0]
+        cash_out = sum(1 for s in window if s.cash_on_cashier_side or s.cash_on_counter) >= max(2, 0.25 * len(window))
+        if cash_out and not stored_between:
+            conf = float(base.get("two_clients_prev_cash", 0.7))
+            cands.append(
+                Candidate(
+                    "two_clients_cash_mixed", ep.start, (max(0.0, ep.start - 2.0), ep.start + 3.0), conf,
+                    [f"новый посетитель с {ep.start:.1f} с, при этом наличные предыдущей операции не убраны"],
+                    rule_id="R9b",
+                )
+            )
 
     return merge_candidates(cands, float(cfg.get("merge_events_within_s", 3.0))), ev
 
