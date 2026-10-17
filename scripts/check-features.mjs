@@ -1,0 +1,18 @@
+import assert from 'node:assert/strict';
+import {build} from 'esbuild';
+import {createRequire} from 'node:module';
+const result=await build({entryPoints:['src/benchmark.ts'],bundle:true,write:false,platform:'node',format:'cjs'});
+const module={exports:{}};new Function('require','module','exports',result.outputFiles[0].text)(createRequire(import.meta.url),module,module.exports);
+const {metrics}=module.exports;
+const sample=(expected,predicted,extra={})=>({id:'test',kind:'original',file:{},expected,expected_time:'',state:'done',result:{status:'done',verdict:predicted,violations:predicted==='violation'?[{timecode_sec:12}]:[]},...extra});
+const all=[sample('violation','violation',{expected_time:'10'}),sample('no_violation','no_violation'),sample('no_violation','violation'),sample('violation','no_violation'),sample('','violation'),sample('violation','violation',{state:'failed'}),sample('violation','violation',{result:{status:'done',demo:true,verdict:'violation',violations:[]}})];
+const stats=metrics(all);
+assert.equal(stats.total,7);assert.equal(stats.completed,5);assert.equal(stats.evaluated,4);assert.equal(stats.failed,1);
+assert.deepEqual([stats.tp,stats.tn,stats.fp,stats.fn],[1,1,1,1]);assert.equal(stats.accuracy,.5);assert.equal(stats.mean_time_error,2);assert.equal(stats.timing_count,1);
+assert.equal(metrics([]).accuracy,null);assert.equal(metrics([]).mean_time_error,null);
+assert.equal(metrics([sample('violation','violation',{expected_time:''})]).timing_count,0);
+assert.equal(metrics([sample('violation','violation',{expected_time:'-1'})]).timing_count,0);
+assert.equal(metrics([sample('violation','violation',{expected_time:'0',result:{status:'done',verdict:'violation',violations:[{timecode_sec:.3},{timecode_sec:20}]}})]).mean_time_error,.3);
+const duplicates=metrics([sample('violation','violation',{sha256:'same'}),sample('violation','violation',{sha256:'same'})]);
+assert.equal(duplicates.evaluated,1);assert.equal(duplicates.duplicate_count,1);assert.equal(duplicates.completed,2);
+console.log('PASS benchmark confusion matrix, failed/unlabelled/demo exclusion, empty metrics, timestamp boundaries');

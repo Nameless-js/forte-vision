@@ -16,6 +16,8 @@ from dotenv import load_dotenv
 from .storage import create_repository
 from fastapi.staticfiles import StaticFiles
 from .model_adapter import analyze_video
+from .media_routes import media_router
+from .checks import validate_checks
 
 ROOT = Path(__file__).resolve().parent.parent
 load_dotenv(ROOT / '.env', override=False)
@@ -40,6 +42,7 @@ def validate_result(value):
     for event in events:
         if not isinstance(event.get('type'),str) or not event['type'].strip() or not isinstance(event.get('description'),str) or not event['description'].strip():
             raise ValueError('Событию нужны type и description')
+        validate_checks(event.get('checks', []))
         timestamp = event.get('timecode_sec')
         if not isinstance(timestamp,(int,float)) or not 0 <= timestamp < float('inf'):
             raise ValueError('Некорректный таймкод')
@@ -162,6 +165,8 @@ async def demo_job(data: DemoRequest):
 async def list_jobs(limit: int = Query(default=30,ge=1,le=100)):
     return {'jobs':[{k:v for k,v in row.items() if k not in ('violations',)} |
                     {'event_count':len(row.get('violations',[]))} for row in await repository.list(limit)]}
+
+app.include_router(media_router(authorize, DATA, MAX_BYTES))
 
 if (ROOT / 'dist').exists():
     app.mount('/', StaticFiles(directory=ROOT/'dist',html=True),name='frontend')

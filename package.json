@@ -9,7 +9,8 @@
     "preview": "vite preview --host 127.0.0.1",
     "db:start": "powershell -NoProfile -File scripts/start-database.ps1",
     "db:configure": "powershell -NoProfile -File scripts/configure-local.ps1",
-    "check:i18n": "node scripts/check-translations.mjs"
+    "check:i18n": "node scripts/check-translations.mjs",
+    "check:features": "node scripts/check-features.mjs"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",
