@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://forte-ai/result.schema.json",
+  "title": "ForteBank cash-desk analysis result (ТЗ §10 contract + engine extras)",
+  "type": "object",
+  "required": ["job_id", "status", "verdict", "violations"],
+  "properties": {
+    "job_id": { "type": "string", "minLength": 1 },
+    "status": { "type": "string", "enum": ["processing", "done", "failed"] },
+    "verdict": { "type": "string", "enum": ["no_violation", "violation"] },
+    "violations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["type", "timecode_sec", "description", "evidence_frames"],
+        "properties": {
+          "type": { "type": "string", "minLength": 3 },
+          "timecode_sec": { "type": "number", "minimum": 0 },
+          "description": { "type": "string", "minLength": 10 },
+          "evidence_frames": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 3,
+            "items": {
+              "type": "object",
+              "required": ["timestamp_sec", "image_base64"],
+              "properties": {
+                "timestamp_sec": { "type": "number", "minimum": 0 },
+                "image_base64": { "type": "string", "minLength": 100, "pattern": "^[A-Za-z0-9+/]+={0,2}$" }
+              },
+              "additionalProperties": true
+            }
+          },
+          "type_id": { "type": "string" },
+          "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+          "rule": {
+            "type": "object",
+            "required": ["document", "clause", "quote", "url"],
+            "properties": {
+              "document": { "type": "string", "minLength": 5 },
+              "clause": { "type": "string", "minLength": 1 },
+              "quote": { "type": "string", "minLength": 5 },
+              "url": { "type": "string", "pattern": "^https://adilet\\.zan\\.kz/rus/docs/" }
+            }
+          },
+          "facts": { "type": "array", "items": { "type": "string" } },
+          "t_window": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 }
+        },
+        "additionalProperties": true
+      }
+    },
+    "engine_version": { "type": "string" },
+    "stage_timings": { "type": "object", "additionalProperties": { "type": "number" } },
+    "calibration": { "type": "object" },
+    "profile": { "type": "string" },
+    "video": { "type": "object" },
+    "error": { "type": "string" }
+  },
+  "additionalProperties": true,
+  "allOf": [
+    {
+      "if": { "properties": { "verdict": { "const": "no_violation" } } },
+      "then": { "properties": { "violations": { "maxItems": 0 } } }
+    },
+    {
+      "if": { "properties": { "verdict": { "const": "violation" }, "status": { "const": "done" } } },
+      "then": { "properties": { "violations": { "minItems": 1 } } }
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+# --- data hygiene: never commit videos or extracted frames ---
+public/
+*.mov
+*.MOV
+*.mp4
+*.avi
+*.mkv
+data/cache/
+data/pseudo_labels/
+data/frames/
+data/augmented/
+analysis/frames/
+analysis/review/*.png
+analysis/review/*.jpg
+analysis/review/*.jpeg
+analysis/**/*.png
+analysis/**/*.jpg
+analysis/**/*.jpeg
+reports/**/evidence/
+reports/**/*.jpg
+reports/**/*.jpeg
+reports/**/*.png
+reports/**/*_result.json
+reports/**/results/
+server/uploads/
+server/*.db
+server/*.sqlite
+*.sqlite3
+models/
+weights/
+hf_cache/
+runs/
+
+# --- python ---
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# --- misc ---
+.DS_Store
+Thumbs.db
+*.log
+.env
+tmp/
+
+# raw fetched act pages (re-fetch with scripts/kb_build.py --fetch)
+data/laws_raw/

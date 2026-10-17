@@ -1,0 +1,21 @@
+# NVIDIA >= 16 GB
+profile: gpu-large
+device: cuda
+video:
+  sample_fps: 5.0
+  max_side: 1080
+perception:
+  detector:
+    model_id: IDEA-Research/grounding-dino-base
+    batch_size: 4
+    fp16: true
+  pose:
+    mode: balanced
+vlm:
+  enabled: true
+  model_id: Qwen/Qwen3-VL-8B-Instruct
+  dtype: bfloat16
+  load_in_4bit: false
+  frames_per_query: 8
+  catch_all:
+    max_windows: 24

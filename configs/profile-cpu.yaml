@@ -1,0 +1,18 @@
+# No GPU (or Apple MPS): smaller inputs, no VLM, template descriptions
+profile: cpu
+device: cpu
+video:
+  sample_fps: 3.0
+  max_side: 720
+perception:
+  detector:
+    model_id: IDEA-Research/grounding-dino-tiny
+    batch_size: 1
+    fp16: false
+    detect_every_n: 1
+  pose:
+    mode: lightweight
+vlm:
+  enabled: false
+  catch_all:
+    enabled: false

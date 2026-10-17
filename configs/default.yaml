@@ -1,0 +1,117 @@
+# forte_ai default configuration. ALL thresholds live here (never in code).
+# Profile overlays (configs/profile-*.yaml) override keys; `profile: auto` picks one from the hardware.
+engine_version: "0.1.0"
+profile: auto            # auto | gpu-large | gpu-small | cpu
+seed: 42
+device: auto             # auto | cuda | cpu
+
+video:
+  sample_fps: 5.0        # perception sampling rate (3.0 on cpu profile)
+  max_side: 960          # frames are resized so that max(h, w) <= max_side before detection
+  evidence_max_width: 1280
+  evidence_jpeg_quality: 85
+
+perception:
+  detector:
+    backend: grounding_dino            # grounding_dino | owlv2 | rtdetr
+    model_id: IDEA-Research/grounding-dino-tiny
+    # open-vocabulary prompts per engine class (lower-case, '.'-joined into one text query)
+    prompts:
+      person: ["person"]
+      cash: ["banknote", "stack of banknotes", "paper money"]
+      bag: ["bag", "cash bag", "sack"]
+      document: ["paper document", "sheet of paper", "receipt"]
+      id_card: ["id card", "plastic card", "passport"]
+      phone: ["mobile phone", "smartphone"]
+      cash_drawer: ["cash drawer", "money tray"]
+      counting_machine: ["banknote counting machine"]
+    box_threshold: 0.30
+    text_threshold: 0.25
+    class_thresholds:                  # per-class overrides of box_threshold
+      person: 0.35
+      cash: 0.28
+      phone: 0.30
+    detect_every_n: 1                  # run the detector on every n-th sampled frame
+    min_box_area_frac: 0.0003
+    max_boxes_per_class: 8
+    batch_size: 2
+    fp16: true
+  tracker:
+    backend: bytetrack                 # supervision.ByteTrack (MIT)
+    track_activation_threshold: 0.30
+    lost_track_buffer: 25              # frames (at sample_fps)
+    minimum_matching_threshold: 0.80
+    minimum_consecutive_frames: 2
+  pose:
+    backend: rtmlib                    # rtmlib | none
+    mode: lightweight                  # rtmlib Wholebody/Body mode: performance | lightweight | balanced
+    model: body                        # body (17 kp) | wholebody (133 kp)
+    every_n: 1
+    kpt_threshold: 0.30
+
+roles:
+  calibration_seconds: 12.0            # initial window used to find the cashier; keeps updating afterwards
+  cashier_min_presence: 0.50           # share of sampled frames the cashier track must be present in
+  cashier_zone_dilate_frac: 0.12       # dilation of the cashier hull, fraction of frame diagonal
+  counter_margin_frac: 0.04            # band around the counter line that counts as "at the window"
+  client_max_dist_frac: 0.45           # a track is a client only if within this distance of the counter line
+  collector_bag_iou: 0.05
+  min_track_frames: 5
+
+rules:
+  counting_window_s: 15.0              # look-back window for a counting segment before a handover
+  counting_min_duration_s: 1.5         # minimum duration of periodic hand motion over cash
+  counting_min_cycles: 3
+  counting_hand_speed_px_s: 40.0
+  unattended_cash_s: 4.0               # cash visible with no cashier hand nearby for this long
+  left_zone_min_s: 1.5                 # cashier outside own zone for this long while a client is present
+  phone_min_s: 1.0
+  intrusion_min_s: 0.6
+  handover_max_gap_s: 1.0              # cash near hand A then hand B within this gap = handover
+  id_check_window_s: 20.0
+  bag_check_window_s: 15.0
+  merge_events_within_s: 3.0           # candidates of one type closer than this are merged
+  max_violations_per_video: 6
+
+vlm:
+  enabled: true
+  model_id: Qwen/Qwen3-VL-2B-Instruct
+  dtype: bfloat16                      # bfloat16 | float16
+  load_in_4bit: false
+  frames_per_query: 6
+  window_half_s: 4.0
+  max_pixels: 360000                   # per-frame visual token budget (~600x600)
+  max_new_tokens: 220
+  temperature: 0.0
+  verify_candidates: true
+  reject_below_confidence: 0.35        # a candidate the VLM contradicts with confidence >= this is dropped
+  catch_all:
+    enabled: true
+    window_s: 10.0
+    stride_s: 10.0
+    min_repeats: 2                     # hit must repeat on two adjacent windows
+    max_windows: 16
+    confidence: 0.55
+
+verdict:
+  threshold: 0.50                      # calibrated by scripts/calibrate.py (LOVO)
+  per_type_thresholds: {}
+  evidence_frames: 3                   # 1..3 (clean frame at t, annotated at t, clean at t+1 s)
+
+time:
+  deadline_s: 240
+  vlm_cutoff_s: 200
+  hard_limit_s: 300
+  progress_stage_weights:              # for on_progress fractions
+    decode: 0.05
+    detect: 0.45
+    track_pose: 0.15
+    roles: 0.05
+    rules: 0.05
+    vlm: 0.20
+    report: 0.05
+
+cache:
+  enabled: true
+  dir: data/cache
+  pipeline_version: "p1"               # bump to invalidate perception caches
