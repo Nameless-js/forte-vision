@@ -1,0 +1,144 @@
+/* Tokens are scoped to the banking interface to preserve the game themes. */
+.bank-mode {
+  --card: 0 0% 100%;
+  --ring: 0 100% 45%;
+  --input: 0 0% 85%;
+  --muted: 0 0% 90%;
+  --accent: 0 100% 45%;
+  --border: 0 0% 85%;
+  --chart1: 0 100% 45%;
+  --chart2: 0 0% 30%;
+  --chart3: 0 0% 50%;
+  --chart4: 0 0% 70%;
+  --chart5: 0 0% 90%;
+  --radius: 0.75rem;
+  --popover: 0 0% 96%;
+  --primary: 0 100% 45%;
+  --secondary: 0 0% 20%;
+  --background: 0 0% 96%;
+  --foreground: 0 0% 10%;
+  --destructive: 0 100% 45%;
+  --sidebar-ring: 0 100% 45%;
+  --sidebar-accent: 0 0% 85%;
+  --sidebar-border: 0 0% 85%;
+  --card-foreground: 0 0% 10%;
+  --sidebar-primary: 0 100% 45%;
+  --muted-foreground: 0 0% 45%;
+  --accent-foreground: 0 0% 100%;
+  --popover-foreground: 0 0% 10%;
+  --primary-foreground: 0 0% 100%;
+  --sidebar-background: 0 0% 92%;
+  --sidebar-foreground: 0 0% 10%;
+  --secondary-foreground: 0 0% 100%;
+  --destructive-foreground: 0 0% 100%;
+  --sidebar-accent-foreground: 0 0% 10%;
+  --sidebar-primary-foreground: 0 0% 100%;
+}
+.dark .bank-mode, .bank-mode.dark {
+  --card: 0 0% 8%;
+  --ring: 0 100% 40%;
+  --input: 0 0% 20%;
+  --muted: 0 0% 15%;
+  --accent: 0 100% 40%;
+  --border: 0 0% 20%;
+  --chart1: 0 100% 40%;
+  --chart2: 0 0% 70%;
+  --chart3: 0 0% 50%;
+  --chart4: 0 0% 30%;
+  --chart5: 0 0% 15%;
+  --radius: 0rem;
+  --popover: 0 0% 0%;
+  --primary: 0 100% 40%;
+  --secondary: 0 0% 20%;
+  --background: 0 0% 0%;
+  --foreground: 0 0% 80%;
+  --destructive: 0 100% 40%;
+  --sidebar-ring: 0 100% 40%;
+  --sidebar-accent: 0 0% 15%;
+  --sidebar-border: 0 0% 20%;
+  --card-foreground: 0 0% 80%;
+  --sidebar-primary: 0 100% 40%;
+  --muted-foreground: 0 0% 50%;
+  --accent-foreground: 0 0% 100%;
+  --popover-foreground: 0 0% 80%;
+  --primary-foreground: 0 0% 100%;
+  --sidebar-background: 0 0% 5%;
+  --sidebar-foreground: 0 0% 80%;
+  --secondary-foreground: 0 0% 80%;
+  --destructive-foreground: 0 0% 100%;
+  --sidebar-accent-foreground: 0 0% 100%;
+  --sidebar-primary-foreground: 0 0% 100%;
+}
+
+.bank-mode {
+  --bank: hsl(var(--primary));
+  --bank-dark: hsl(var(--primary));
+  --charcoal: hsl(var(--foreground));
+  --line: hsl(var(--border));
+  --surface: hsl(var(--background));
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+.bank-mode .vibank-wordmark { font:650 38px/1 var(--font); letter-spacing:-2px; color:hsl(var(--primary)); }
+.bank-mode .vibank-tagline { font:500 9px/1.4 var(--font); letter-spacing:1.2px; margin-left:18px; padding-left:18px; border-left:1px solid hsl(var(--border)); color:hsl(var(--muted-foreground)); }
+.bank-mode .primary, .bank-mode .primary:hover:not(:disabled) { background:hsl(var(--primary)); border-color:hsl(var(--primary)); color:hsl(var(--primary-foreground)); }
+.bank-mode button:focus-visible, .bank-mode a:focus-visible, .bank-mode input:focus-visible, .bank-mode select:focus-visible, .bank-mode textarea:focus-visible { outline:2px solid hsl(var(--ring)); outline-offset:4px; }
+@media(max-width:760px) { .bank-mode .vibank-tagline { display:none; } }
+
+/* Reveal below-the-fold banking sections without changing their layout. */
+@media (prefers-reduced-motion: no-preference) {
+  .bank-mode :is(.status-strip, .section-heading, .feature-grid > article,
+    .workspace-title, .video-panel, .results-panel, .event-replay,
+    .counter-checks, .benchmark-lab, .station-note, footer) {
+    transition: opacity 600ms ease, translate 600ms cubic-bezier(.22, 1, .36, 1);
+  }
+  .bank-mode .bank-reveal-pending {
+    opacity: 0;
+    translate: 0 28px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bank-mode .bank-reveal-pending { opacity: 1; translate: none; }
+}
+
+.bank-mode .bank-analysis-loader {
+  display: grid;
+  place-items: center;
+  width: 112px;
+  height: 112px;
+  flex-shrink: 0;
+  border: 1px solid hsl(var(--border));
+  border-radius: 18px;
+  background: hsl(var(--background));
+}
+.bank-mode .bouncing-dots-fallback { color: hsl(var(--primary)); font-size: 28px; letter-spacing: 4px; }
+
+/* Grid tracks animate intrinsic content height in both directions. */
+.bank-mode .event-details {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition: grid-template-rows 360ms cubic-bezier(.22, 1, .36, 1), opacity 240ms ease;
+}
+.bank-mode .event-details.is-open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+.bank-mode .event-details-inner {
+  min-height: 0;
+  overflow: hidden;
+  transform: translateY(-6px);
+  transition: transform 360ms cubic-bezier(.22, 1, .36, 1);
+}
+.bank-mode .event-details.is-open .event-details-inner { transform: translateY(0); }
+.bank-mode .event-title-button {
+  display: block;
+  width: 100%;
+  padding: 0;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+}
+@media (prefers-reduced-motion: reduce) {
+  .bank-mode .event-details, .bank-mode .event-details-inner { transition: none; transform: none; }
+}

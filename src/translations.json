@@ -19,10 +19,10 @@
     "en": "Training example of a valuables transfer. A real conclusion requires analysis of the sequence of actions and a verified regulatory basis.",
     "kk": "Құндылықтарды беру оқиғасының оқу мысалы. Нақты қорытынды үшін әрекеттер ретін талдау және расталған нормативтік негіз қажет."
   },
-  "Forte Vision — внимание к каждой детали": {
-    "ru": "Forte Vision — внимание к каждой детали",
-    "en": "Forte Vision — attention to every detail",
-    "kk": "Forte Vision — әр бөлшекке назар"
+  "ViBank — внимание к каждой детали": {
+    "ru": "ViBank — внимание к каждой детали",
+    "en": "ViBank — attention to every detail",
+    "kk": "ViBank — әр бөлшекке назар"
   },
   "BlockWatch — каждый кадр имеет значение": {
     "ru": "BlockWatch — каждый кадр имеет значение",
@@ -64,10 +64,10 @@
     "en": "Connection error",
     "kk": "Қосылым қатесі"
   },
-  "Forte Vision, главная": {
-    "ru": "Forte Vision, главная",
-    "en": "Forte Vision, home",
-    "kk": "Forte Vision, басты бет"
+  "ViBank, главная": {
+    "ru": "ViBank, главная",
+    "en": "ViBank, home",
+    "kk": "ViBank, басты бет"
   },
   "BlockWatch, главная": {
     "ru": "BlockWatch, главная",
@@ -869,10 +869,10 @@
     "en": "Close",
     "kk": "Жабу"
   },
-  "Forte Vision — визуальный контроль с проверяемым результатом": {
-    "ru": "Forte Vision — визуальный контроль с проверяемым результатом",
-    "en": "Forte Vision — visual monitoring with verifiable results",
-    "kk": "Forte Vision — нәтижесі тексерілетін көрнекі бақылау"
+  "ViBank — визуальный контроль с проверяемым результатом": {
+    "ru": "ViBank — визуальный контроль с проверяемым результатом",
+    "en": "ViBank — visual monitoring with verifiable results",
+    "kk": "ViBank — нәтижесі тексерілетін көрнекі бақылау"
   },
   "Локальный контур": {
     "ru": "Локальный контур",
