@@ -100,3 +100,13 @@ Failure-analysis-driven loop, one systemic cause per iteration (reports/iter_005
 | 012 | seat-based R10, soft securing, R5w/R6b/R8/R12/R1c → VLM band | 17/22 | 13 | config-thr: 13/22 at 5 FP |
 Key lesson recorded in ASSUMPTIONS/LIMITATIONS: chairs/jackets/reflections yield person boxes up to 0.88 with
 hallucinated full pose; glass-door optics put real people at 0.35-0.55; only behavioural/temporal signals separate them.
+
+### Iterations 13-17 (2026-10-18) — Layer C (local VLM) and rule refinements
+| iter | change | config-thr recall / FP | LOVO recall / FP | notes |
+|---|---|---|---|---|
+| 013 | first VLM run: Qwen3-VL-2B, generative JSON checklist | 15/22 / 9 | 17/22 / 13 | VLM uninformative: same answers on true and false candidates (vlm_signal.md) |
+| 014 | contrastive A/B logit scoring, both orders (2B) | 15/22 / 10 | 16/22 / 13 | AUC 0.59; departures 0.63 |
+| 015 | same with Qwen3-VL-4B NF4 (vision tower bf16) | 15/22 / 8 | 16/22 / 13 | AUC 0.67; departures 0.77; mean 12.4 s/video |
+| 016 | 4B default + R10 empty start + laptop probe + disengage time | 18/22 / 8 | 19/22 / 14 | departures AUC 0.86, overall 0.72 |
+| 017 | anchor det-gating, at-window by distance, R9c visitor change, equipment-reach exclusion, laptop caps after VLM, cashier-owned phones, per-type VLM weights | **17/22 / 3** | **20/22 / 10** | accuracy 0.81 at config threshold |
+Remaining errors after 017 (config threshold): FN 1 (issue 0.44), 2 (no-id 0.43), 20 (open safe, no candidate), 22 (departure looks like a proper lock — paired with clean 23), 34 (acceptance handover undetected); FP 14 (cashier opening a bag herself), 19 (machine reach read as issue + false desk cash), 31 (cashier arriving = identical to 32 intruder).

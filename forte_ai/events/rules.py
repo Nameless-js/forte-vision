@@ -298,12 +298,29 @@ def _detect_handovers(states: list[FrameState], cal: Calibration, cfg: dict, fps
     def body_sd(box):
         return cal.signed_dist_to_counter(((box[0] + box[2]) / 2.0, box[1] + 0.6 * (box[3] - box[1])))
 
+    eq = [a for a in ([cal.counting_machine_point] + list(cal.storage_points)) if a is not None]
+    eq_r = float(cfg.get("equipment_hand_radius_frac", 0.06)) * diag
+    eq_box_r = float(cfg.get("equipment_box_radius_frac", 0.05)) * diag
+    eq_boxes = [b for k, b in (cal.workplace_boxes or {}).items() if k in ("counting_machine", "storage")]
+
+    def at_equipment(h) -> bool:
+        if any(math.hypot(h[0] - a[0], h[1] - a[1]) <= eq_r for a in eq):
+            return True
+        for b in eq_boxes:
+            dx = max(b[0] - h[0], 0.0, h[0] - b[2])
+            dy = max(b[1] - h[1], 0.0, h[1] - b[3])
+            if math.hypot(dx, dy) <= eq_box_r:
+                return True
+        return False
+
     reach_c, reach_k, meets, cash_any = [], [], [], []
     for s in states:
         rc = rk = mt = False
         if s.cashier_present and s.cashier_hands and s.client_ids and s.cashier_pose_ok:
             c_body = body_sd(s.cashier_box)
             for ch in s.cashier_hands:
+                if at_equipment(ch):
+                    continue  # reaching to the counting machine / safe is an equipment operation, not a handover
                 sd = cal.signed_dist_to_counter(ch)
                 if sd < -0.5 * band or ((c_body - sd) >= reach and sd <= 0.5 * band):
                     rc = True
@@ -675,9 +692,7 @@ def run_rules(states: list[FrameState], cal: Calibration, cfg: dict, fps: float,
     # Fires on bag handling during collector episodes, and (fallback) on sustained bag handling during any
     # episode when the collector classification failed — the discriminator is the missing document exchange.
     bw = float(cfg.get("bag_check_window_s", 15.0))
-    bag_eps = [e for e in ev.episodes if e.is_collector] or [
-        e for e in ev.episodes if _any_in(ev.bag_handling, e.start - 2.0, e.end + 2.0) is not None
-    ]
+    bag_eps = [e for e in ev.episodes if e.is_collector]  # no collector -> the cashier handles a bag herself (normal)
     for ep in bag_eps:
         bags = [b for b in ev.bag_handling if _overlaps(b.start, b.end, ep.start - 2.0, ep.end + 2.0)]
         if not bags:
@@ -751,6 +766,57 @@ def run_rules(states: list[FrameState], cal: Calibration, cfg: dict, fps: float,
                     rule_id="R9b",
                 )
             )
+
+    # ---------------- R9c: visitor change while the previous operation's cash is still out ----------------
+    # A NEW visitor track arrives at the window (coming from afar, i.e. through the door — not an id switch
+    # at the seat) shortly after the previous visitor was there, and cash is still visible on the cashier's
+    # side with no storing in between.
+    if cal.window_anchor is not None:
+        reach_r = float(cfg.get("window_reach_frac", 0.15)) * diag
+        first_at: dict = {}
+        last_at: dict = {}
+        first_pos: dict = {}
+        for st in states:
+            for tid in st.client_at_window:
+                first_at.setdefault(tid, st.t)
+                last_at[tid] = st.t
+        for st in states:
+            for tid, b in zip(st.valid_tracks, st.valid_bodies):
+                first_pos.setdefault(tid, b)
+        for t2_id, t2 in sorted(first_at.items(), key=lambda kv: kv[1]):
+            if t2 < 5.0:
+                continue
+            # the previous visitor must have LEFT the window shortly before (a real hand-over of the window has
+            # a gap of >= 0.6 s; a tracker id switch re-creates the track without a gap)
+            prev = [
+                t1 for t1, a1 in first_at.items()
+                if t1 != t2_id and a1 < t2 - 3.0 and 0.6 <= t2 - last_at.get(t1, -99.0) <= 8.0
+            ]
+            if not prev:
+                continue
+            stored = any(t2 - 8.0 <= st.t <= t2 and st.cash_near_storage for st in states)
+            near = [st for st in states if t2 - 8.0 <= st.t <= t2 + 6.0]
+            desk_r = 0.6 * cal.cashier_client_dist + 0.05 * diag
+
+            def on_desk(d) -> bool:
+                c = ((d.xyxy[0] + d.xyxy[2]) / 2.0, (d.xyxy[1] + d.xyxy[3]) / 2.0)
+                return math.hypot(c[0] - cal.counter_point[0], c[1] - cal.counter_point[1]) <= desk_r
+
+            cash_out = sum(1 for st in near if any(on_desk(d) for d in st.cash)) >= 3
+            if cash_out and not stored:
+                cands.append(
+                    Candidate(
+                        "two_clients_cash_mixed", t2, (max(0.0, t2 - 4.0), min(duration, t2 + 6.0)), float(base.get("two_clients_visitor_change", 0.62)),
+                        [f"новый посетитель подходит на {t2:.1f} с, предыдущий был у окна до {max(last_at[t] for t in prev):.1f} с", "наличные предыдущей операции остаются на столе"],
+                        rule_id="R9c",
+                        vlm_window=(max(0.0, t2 - 4.0), min(duration, t2 + 6.0)),
+                        vlm_choice=(
+                            "Подходит новый посетитель, а деньги предыдущей операции всё ещё лежат на столе кассира.",
+                            "Деньги предыдущей операции убраны до того, как подходит следующий посетитель.",
+                        ),
+                    )
+                )
+                break
 
     # ---------------- R11: note separated after a machine count and merged back (VLM-arbitrated) ----------
     # Pattern of video 44: the counting machine leaves a note in the hopper; the cashier holds it apart and

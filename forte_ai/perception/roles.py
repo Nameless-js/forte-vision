@@ -54,6 +54,7 @@ class Calibration:
     zone_radius: float = 0.0  # radius of the cashier zone around cashier_center (det px)
     storage_points: list = field(default_factory=list)  # all storage-unit cluster centres
     track_first_t: dict = field(default_factory=dict)  # track id -> first time seen (s)
+    workplace_boxes: dict = field(default_factory=dict)  # class -> median xyxy of the main cluster
     method: str = "presence+static+early+objects+cash"
     notes: list[str] = field(default_factory=list)
 
@@ -178,6 +179,7 @@ def calibrate(frames: list[FrameDetections], poses: list[FramePoses], tracks: di
     # units — e.g. the safe and a drawer pedestal — and mixing them into one median lands between them)
     workplace: dict[str, tuple[float, float]] = {}
     workplace_clusters: dict[str, list[tuple[float, float]]] = {}
+    workplace_boxes: dict[str, tuple] = {}
     for cls in WORKPLACE_CLASSES:
         cs = [_center(d.xyxy) for f in frames for d in f.by_class(cls)]
         if len(cs) < max(3, 0.10 * n_frames):
@@ -197,6 +199,10 @@ def calibrate(frames: list[FrameDetections], poses: list[FramePoses], tracks: di
         meds = [tuple(np.median(np.asarray(cl), axis=0).tolist()) for cl in sorted(clusters, key=len, reverse=True)]
         workplace_clusters[cls] = meds
         workplace[cls] = meds[0]
+        main = meds[0]
+        boxes_main = [d.xyxy for f in frames for d in f.by_class(cls) if math.hypot(_center(d.xyxy)[0] - main[0], _center(d.xyxy)[1] - main[1]) <= 0.10 * diag]
+        if boxes_main:
+            workplace_boxes[cls] = tuple(float(v) for v in np.median(np.asarray(boxes_main), axis=0))
 
     # per-track cues
     cash_centers_by_frame = [[_center(d.xyxy) for d in f.by_class("cash")] for f in frames]
@@ -326,8 +332,11 @@ def calibrate(frames: list[FrameDetections], poses: list[FramePoses], tracks: di
         cand_medians[t] = med
         cand_near[t] = stable
     if candidates:
-        # the main visitor = the one seated at the window the longest
-        anchor_t = max(candidates, key=lambda t: (cand_near[t], -math.hypot(cand_medians[t][0] - c_center[0], cand_medians[t][1] - c_center[1])))
+        # the main visitor = the one seated at the window the longest, among SOLIDLY detected people: a figure
+        # standing still behind the glass wall (det 0.5-0.65) otherwise wins on stillness alone
+        anchor_min_det = float(cfg.get("anchor_min_det_score", 0.62))
+        solid = [t for t in candidates if track_scores[t].get("det", 0.0) >= anchor_min_det] or candidates
+        anchor_t = max(solid, key=lambda t: (cand_near[t], -math.hypot(cand_medians[t][0] - c_center[0], cand_medians[t][1] - c_center[1])))
         window_anchor = cand_medians[anchor_t]
         v = np.array([c_center[0] - window_anchor[0], c_center[1] - window_anchor[1]])
         dist_cc = float(np.linalg.norm(v))
@@ -405,7 +414,7 @@ def calibrate(frames: list[FrameDetections], poses: list[FramePoses], tracks: di
         clients, collectors, rest, workplace, storage_near, workplace.get("counting_machine"),
         window_anchor=window_anchor, cashier_client_dist=dist_cc, zone_radius=zone_radius,
         storage_points=storage_pts or ([storage] if storage else []),
-        track_first_t={tid: float(st_.first_t) for tid, st_ in tracks.items()}, notes=notes
+        track_first_t={tid: float(st_.first_t) for tid, st_ in tracks.items()}, workplace_boxes=workplace_boxes, notes=notes
     )
 
 

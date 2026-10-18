@@ -32,6 +32,7 @@ class Candidate:
     vlm_expect: Optional[tuple] = None  # (answer_key, support_values, reject_values) override for judging
     vlm_choice: Optional[tuple] = None  # (violation statement, normal statement) override for choice mode
     vlm_window: Optional[tuple] = None  # (t0, t1) frames window for the verifier (default t_event ± half)
+    probes: dict = field(default_factory=dict)  # pixel-probe results (e.g. laptop screen state) applied after Layer C
 
     def key(self) -> tuple:
         return (self.type_id, round(self.t_event, 1))

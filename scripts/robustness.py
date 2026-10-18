@@ -64,6 +64,30 @@ def transform_frame(img: np.ndarray, variant: str) -> np.ndarray:
     return img
 
 
+def expected_point(variant: str, xn: float, yn: float, w: int, h: int) -> tuple[float, float]:
+    """Map a normalised point of the original frame into the normalised frame of the variant, using exactly
+    the transform applied in transform_frame (so role checks are geometry-aware, not just 'a cashier found')."""
+    x, y = xn * w, yn * h
+    if variant == "hflip":
+        return 1.0 - xn, yn
+    if variant.startswith("rot"):
+        ang = float(variant[3:])
+        M = cv2.getRotationMatrix2D((w / 2, h / 2), ang, 1.0)
+        xx = M[0, 0] * x + M[0, 1] * y + M[0, 2]
+        yy = M[1, 0] * x + M[1, 1] * y + M[1, 2]
+        return xx / w, yy / h
+    if variant == "persp":
+        d = 0.06
+        src = np.float32([[0, 0], [w, 0], [w, h], [0, h]])
+        dst = np.float32([[w * d, h * d * 0.5], [w * (1 - d * 0.5), 0], [w, h], [w * d * 0.5, h * (1 - d)]])
+        M = cv2.getPerspectiveTransform(src, dst)
+        v = M @ np.array([x, y, 1.0])
+        return float(v[0] / v[2]) / w, float(v[1] / v[2]) / h
+    if variant == "crop10":
+        return (xn - 0.05) / 0.9, (yn - 0.05) / 0.9
+    return xn, yn  # scale, brightness, re-encode keep normalised coordinates
+
+
 def make_variant(src: Path, variant: str, dst: Path) -> None:
     dst.parent.mkdir(parents=True, exist_ok=True)
     if dst.exists():
@@ -101,6 +125,8 @@ def main() -> int:
     ap.add_argument("--profile", default=None)
     ap.add_argument("--no-vlm", action="store_true")
     ap.add_argument("--only-make", action="store_true", help="only create the augmented files")
+    ap.add_argument("--perception-only", action="store_true", help="phase 1: only fill the perception cache for all variants")
+    ap.add_argument("--config", default=None, help="config overlay for the analyzer (phase 2)")
     ap.add_argument("--tol", type=float, default=3.0)
     a = ap.parse_args()
     logging.basicConfig(level=logging.WARNING)
@@ -119,10 +145,30 @@ def main() -> int:
     print(f"augmented files ready: {len(jobs)}")
     if a.only_make:
         return 0
+    if a.perception_only:
+        # phase 1: fill the perception cache for every variant (rule/VLM-independent, GPU-heavy)
+        from forte_ai.config import Config
+        from forte_ai.perception.pipeline import PerceptionEngine
+
+        eng = PerceptionEngine(Config.load(profile=a.profile))
+        t_all = time.time()
+        for i, (r, v, dst) in enumerate(jobs):
+            t0 = time.time()
+            try:
+                pr = eng.run(dst, use_cache=True)
+                status = "cache" if pr.from_cache else f"{time.time() - t0:.0f}s"
+            except Exception as e:  # noqa: BLE001
+                status = f"ERROR {e}"
+            print(f"[{i + 1}/{len(jobs)}] id {r.video_id:>2} {v:<9} {status}", flush=True)
+        print(f"perception cache filled for {len(jobs)} variants in {time.time() - t_all:.0f} s")
+        return 0
 
     from forte_ai.analyzer import Analyzer
 
-    an = Analyzer(config=({"vlm": {"enabled": False}} if a.no_vlm else None), profile=a.profile)
+    an = Analyzer(config=a.config, profile=a.profile)
+    if a.no_vlm:
+        an.cfg.set("vlm.enabled", False)
+        an.vlm = None
     base: dict[int, dict] = {}
     results = []
     for r in rows:
@@ -148,7 +194,14 @@ def main() -> int:
         # cashier role agreement: the cashier's normalised centre should map to the transformed position; we
         # check the weaker but transform-independent invariant that a cashier was found and has high presence
         cal_b, cal_v = b.get("calibration", {}), res.get("calibration", {})
-        role_ok = cal_v.get("cashier_track") is not None and cal_v.get("cashier_score", 0) >= 0.5 * max(0.01, cal_b.get("cashier_score", 0))
+        role_ok = False
+        if cal_v.get("cashier_track") is not None and cal_b.get("cashier_center_norm"):
+            bx, by = cal_b["cashier_center_norm"]
+            ex, ey = expected_point(v, bx, by, int(cal_b.get("frame_w", 464)), int(cal_b.get("frame_h", 848)))
+            vx, vy = cal_v["cashier_center_norm"]
+            fw, fh = int(cal_v.get("frame_w", 464)), int(cal_v.get("frame_h", 848))
+            dist = ((ex - vx) * fw) ** 2 + ((ey - vy) * fh) ** 2
+            role_ok = dist ** 0.5 <= 0.08 * (fw ** 2 + fh ** 2) ** 0.5
         results.append({"video_id": r.video_id, "label": r.label, "t_label": r.t_sec, "variant": v, "base_verdict": b["verdict"], "verdict": res["verdict"], "verdict_agree": verdict_agree, "base_t": b_ts, "var_t": v_ts, "dt": dt, "time_ok": (dt is not None and dt <= a.tol) if (r.label == "violation" and b_ts) else None, "role_ok": role_ok, "elapsed": round(time.time() - t0, 1), "error": err})
         print(f"id {r.video_id:>2} {v:<9} base={b['verdict']:<12} var={res['verdict']:<12} agree={verdict_agree} dt={dt} role_ok={role_ok} {err}", flush=True)
     n = len(results)

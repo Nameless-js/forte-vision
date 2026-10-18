@@ -83,6 +83,21 @@ def _near(points: Iterable[tuple], dets: Iterable[Detection], radius: float) -> 
     return False
 
 
+def _own_phones(phones: list[Detection], c_hands: list, k_hands: list, cal: Calibration) -> list[Detection]:
+    """Phone-like boxes that belong to the CASHIER: centre not on the client side of the counter and closer to
+    a cashier wrist than to any client wrist (a client's wallet/phone during a handover is not the cashier's)."""
+    out = []
+    for d in phones:
+        c = ((d.xyxy[0] + d.xyxy[2]) / 2.0, (d.xyxy[1] + d.xyxy[3]) / 2.0)
+        if cal.window_anchor is not None and cal.signed_dist_to_counter(c) < 0:
+            continue
+        dc = min((math.hypot(c[0] - h[0], c[1] - h[1]) for h in c_hands), default=1e9)
+        dk = min((math.hypot(c[0] - h[0], c[1] - h[1]) for h in k_hands), default=1e9)
+        if dc <= dk:
+            out.append(d)
+    return out
+
+
 def _cups(fd: FrameDetections, min_score: float) -> list[Detection]:
     """Cup/bottle/food detections that are confident and not just a re-labeled banknote stack or document."""
     others = fd.by_class("cash") + fd.by_class("document") + fd.by_class("id_card")
@@ -195,7 +210,14 @@ def build_frame_states(pr: PerceptionResult, cal: Calibration, cfg: dict) -> lis
             if tid in clients or tid in collectors:
                 client_ids.append(tid)
                 sd = cal.signed_dist_to_counter(bp)
-                if abs(sd) <= band * 2.5 or (sd < 0 and -sd <= 0.25 * diag):
+                if cal.window_anchor is not None:
+                    # "at the window" = within reach of the visitor seat (the anchor), not anywhere on the
+                    # client side — people behind the glass wall are on the client side too
+                    reach_r = float(cfg.get("window_reach_frac", 0.15)) * diag
+                    at_w = math.hypot(bp[0] - cal.window_anchor[0], bp[1] - cal.window_anchor[1]) <= reach_r
+                else:
+                    at_w = abs(sd) <= band * 2.5 or (sd < 0 and -sd <= 0.25 * diag)
+                if at_w:
                     at_window.append(tid)
                 hs, _, ok = _hands(fp, tid, kthr)
                 if not hs:
@@ -243,7 +265,7 @@ def build_frame_states(pr: PerceptionResult, cal: Calibration, cfg: dict) -> lis
                 cash_on_counter=cash_on_counter,
                 cash_on_cashier_side=cash_cashier_side,
                 cash_near_storage=cash_near_storage,
-                phone_near_cashier_hand=c_present and c_pose_ok and _near(c_hands, phones, phone_r),
+                phone_near_cashier_hand=c_present and c_pose_ok and _near(c_hands, _own_phones(phones, c_hands, all_client_hands, cal), phone_r),
                 phone_near_cashier_body=c_present and any(_iou(cbox, p.xyxy) > 0 or _dist_point_box(((p.xyxy[0] + p.xyxy[2]) / 2, (p.xyxy[1] + p.xyxy[3]) / 2), cbox) <= body_r * 0.5 for p in phones),
                 bag=bags,
                 bag_near_collector=any(_near(client_hands.get(t, []), bags, hand_r * 1.5) for t in coll_ids),

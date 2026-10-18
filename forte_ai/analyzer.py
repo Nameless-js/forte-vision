@@ -182,6 +182,8 @@ class Analyzer:
             candidates = self._vlm_stage(video_path, info, pr, cal, states, candidates, dl, vlm_info, cb)
             timings["vlm"] = time.time() - t
 
+        self._apply_probe_caps(candidates)
+
         # ---- 6. verdict + report
         t = time.time()
         self._progress(cb, 0.93, "Формирование отчёта")
@@ -289,7 +291,8 @@ class Analyzer:
             vlm_info["cached"] += int(cached)
             if p_v is None:
                 continue
-            delta = w * (2.0 * p_v - 1.0)
+            w_t = float((vcfg.get("type_weights", {}) or {}).get(c.type_id, w))
+            delta = w_t * (2.0 * p_v - 1.0)
             c.confidence = float(max(0.0, min(1.0, c.confidence + delta)))
             c.vlm = {"mode": "choice", "p_violation": round(float(p_v), 3), "delta": round(delta, 3), "window": [round(t0, 1), round(t1, 1)]}
             if p_v < 0.5:
@@ -393,7 +396,10 @@ class Analyzer:
             v = cv2.cvtColor(roi, cv2.COLOR_BGR2HSV)[..., 2]
             return float(np.mean(v > thr_v))
 
-        before = [x for x in (bright_at(t_dep - d) for d in (14.0, 10.0, 6.0)) if x is not None]
+        # "before" = was the screen ever lit during the work period (the lid may have been closed long before)
+        t_hi = max(0.0, t_dep - 3.0)
+        probes_t = sorted({round(t_hi * k / 5.0, 2) for k in range(0, 6)} | {max(0.0, t_dep - d) for d in (10.0, 6.0)})
+        before = [x for x in (bright_at(t) for t in probes_t if t <= t_hi) if x is not None]
         after = [x for x in (bright_at(t) for t in (t_dep + 2.0, t_dep + 4.0, duration - 0.3)) if x is not None and True]
         if not before or not after:
             return None
@@ -419,12 +425,27 @@ class Analyzer:
             except Exception as e:  # noqa: BLE001
                 log.warning("laptop probe failed: %s", e)
                 state = None
+            if state:
+                c.probes["laptop"] = state
             if state == "stays_on":
                 c.confidence = min(1.0, c.confidence + boost)
                 c.facts.append("экран ноутбука остаётся включённым (не заблокирован) после ухода кассира")
             elif state == "turned_off":
                 c.confidence = max(0.0, c.confidence - pen)
-                c.facts.append("перед уходом экран ноутбука погашен/заблокирован")
+                c.facts.append("перед уходом экран ноутбука погашен/заблокирован или ноутбук закрыт")
+
+    def _apply_probe_caps(self, candidates: list[Candidate]) -> None:
+        """Physical pixel evidence has the last word over the VLM for departures: a workstation locked/closed
+        before leaving caps the confidence below the verdict threshold; a screen left lit in the empty room
+        floors it above."""
+        cap = float(self.cfg.get("rules.laptop_turned_off_cap", 0.45))
+        floor = float(self.cfg.get("rules.laptop_stays_on_floor", 0.60))
+        for c in candidates:
+            st = c.probes.get("laptop")
+            if st == "turned_off":
+                c.confidence = min(c.confidence, cap)
+            elif st == "stays_on":
+                c.confidence = max(c.confidence, floor)
 
     # ------------------------------------------------------------------ drawing helpers
     @staticmethod

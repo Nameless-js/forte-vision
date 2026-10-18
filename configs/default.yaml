@@ -119,6 +119,13 @@ vlm:
   enabled: true
   mode: choice                         # choice (contrastive A/B logit scoring) | json (generative checklist)
   choice_weight: 0.35                  # confidence moves by choice_weight·(2·p_violation − 1)
+  # per-type override: zero where the VLM was measured uninformative on training candidates
+  # (reports/iter_016/vlm_signal.md: AUC ≤ 0.55 or no positives) — the VLM then only writes the description
+  type_weights:
+    no_id_check: 0.0
+    phone_at_workplace: 0.0
+    two_clients_cash_mixed: 0.0
+    unauthorized_in_cash_zone: 0.0
   describe: true                       # generate a neutral Russian description for reported violations
   describe_max_new_tokens: 90
   model_id: Qwen/Qwen3-VL-2B-Instruct
