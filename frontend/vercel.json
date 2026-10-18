@@ -4,20 +4,36 @@
   "outputDirectory": "dist",
   "routes": [
     {
-      "dest": "/deployment-health.json",
-      "src": "/api/health"
-    },
-    {
-      "dest": "/backend-unavailable.json",
-      "src": "/api/.*",
-      "status": 503
+      "src": "/api/(.*)",
+      "dest": "https://manor-rice-peripheral-blake.trycloudflare.com/api/$1",
+      "transforms": [
+        {
+          "type": "request.headers",
+          "op": "set",
+          "target": {
+            "key": "x-api-key"
+          },
+          "args": "$API_KEY",
+          "env": [
+            "API_KEY"
+          ]
+        },
+        {
+          "type": "response.headers",
+          "op": "set",
+          "target": {
+            "key": "cache-control"
+          },
+          "args": "no-store"
+        }
+      ]
     },
     {
       "handle": "filesystem"
     },
     {
-      "dest": "/index.html",
-      "src": "/.*"
+      "src": "/.*",
+      "dest": "/index.html"
     }
   ],
   "$schema": "https://openapi.vercel.sh/vercel.json"

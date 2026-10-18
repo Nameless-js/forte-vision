@@ -1,11 +1,76 @@
-# Vercel publication
+# Подключение Vercel к модели на ноутбуке
 
-Deploy from `frontend/`: `vercel deploy --prod`. Project: forte-vision.
-The deployment publishes the React interface only. The local GPU engine and local database remain on the workstation.
-The static `/api/health` reports offline; all other `/api/*` requests return HTTP 503 until a public analysis service is configured.
-The explicitly labelled demonstration mode works without the backend. Real model conclusions are never synthesized as a fallback.
+Сайт: https://forte-vision.vercel.app/
+Текущий API ноутбука: https://manor-rice-peripheral-blake.trycloudflare.com
 
-To connect production analysis, deploy the integrated Python backend (`frontend.backend.main:app`) on a persistent host with the model weights, appropriate CPU/GPU and persistent database. Keep its credentials server-side. Replace the offline API routes in `frontend/vercel.json` with routing to that HTTPS service, using a protected gateway for credentials and access controls. Keep large video uploads out of serverless function payloads. Do not upload `.env`, local data, videos or model weights to Vercel.
+## Как работает подключение
 
-Local run from repository root: `python scripts/start_app.py --port 5174 --api-port 8000`.
-Install web dependencies from `frontend/` with `npm ci`. Backend dependencies and model weights are separate; frontend builds do not prove model quality or availability.
+Браузер обращается к `/api/*` на своём сайте. Правило `frontend/vercel.json` пересылает
+этот запрос на HTTPS-туннель, сохраняя `/api/` и остальной путь. Vercel добавляет заголовок
+`X-API-Key` из **серверной** переменной `API_KEY`, заменяя присланное браузером значение.
+Cloudflared пересылает запрос в `http://127.0.0.1:8000`, где работает FastAPI и модель.
+Результаты заданий не кешируются (`Cache-Control: no-store`). Видеоданные проходят через
+Vercel и Cloudflare, а вычисления выполняются на ноутбуке.
+
+Используется внешний маршрут Vercel, отдельная serverless-функция для приёма видео не создаётся.
+Прямые междоменные fetch из браузера не нужны, поэтому CORS backend менять не требуется.
+
+## Однократные действия в Vercel
+
+1. Откройте Dashboard → проект **forte-vision** → **Settings → Environment Variables**.
+2. Добавьте переменную **API_KEY**, в значение вставьте только секрет после `API_KEY=` из
+   локального `frontend/.env`. Если на ноутбуке API_KEY переопределён переменной окружения,
+   используйте её действующее значение. Не добавляйте префикс `VITE_`: секрет не нужен браузеру.
+3. Выберите окружение **Production**. Сохраните переменную как Sensitive, если интерфейс
+   предлагает эту настройку.
+4. Проверьте **Settings → Build and Deployment → Root Directory: frontend**.
+   Framework: Vite; Build Command: `npm run build`; Output Directory: `dist`.
+5. **Deployments → последний деплой → меню ⋯ → Redeploy**. Используйте коммит с новым
+   маршрутом в `frontend/vercel.json`, а не старую версию с offline-заглушкой.
+6. Дождитесь **Ready** и откройте https://forte-vision.vercel.app/api/health.
+   Ожидается `status: ok`, `model: forte_ai`, `database_connected: true`.
+7. Откройте сайт, выберите русский язык, загрузите видео, выполните реальный анализ.
+   В поле ключа интерфейса ничего вводить не нужно: серверный маршрут добавляет ключ сам.
+
+Ключ не хранится в Git, JSON конфигурации или скомпилированном React. Если `/api/health`
+отвечает `ok`, но защищённые запросы возвращают 401, проверьте API_KEY в Production и
+повторно разверните актуальный коммит после изменения переменной.
+
+## Что должно работать на ноутбуке
+
+В первом PowerShell из корня репозитория:
+
+```powershell
+$env:FORTE_PROFILE = "gpu-small"
+.\.venv\Scripts\python.exe scripts/start_app.py
+```
+
+Во втором PowerShell — уже установленный cloudflared:
+
+```powershell
+.\cloudflared.exe tunnel --url http://127.0.0.1:8000
+```
+
+Имя EXE может отличаться: используйте фактическое имя скачанного файла. Не запускайте
+вторую копию туннеля, если текущая уже работает. Оставьте оба процесса запущенными,
+ноутбук подключённым к питанию/интернету и без сна. Настройка Vercel не переносит модель
+с ноутбука в облако. Для обычного анализа отдельный worker не требуется.
+
+## Если адрес туннеля изменился
+
+Quick Tunnel выдаёт временный адрес. Замените только хост в `dest` API-маршрута
+`frontend/vercel.json`, сохранив окончание `/api/$1`, и выполните новый deploy.
+API_KEY меняется только при изменении ключа самого backend. Старый URL не восстановится
+от одной перезагрузки страницы. Ошибка 502 требует сначала проверить локальный
+`http://127.0.0.1:8000/api/health` и затем состояние cloudflared.
+
+## Проверка состояния
+
+- Прямой health туннеля проверяет доступность Python и SQLite.
+- Health через Vercel проверяет ещё и маршрут опубликованного сайта.
+- Успешный GET `/api/v1/jobs` через сайт подтверждает передачу API-ключа.
+- Только завершённый анализ настоящего видео подтверждает работоспособность модели.
+
+Сохранённые offline JSON в `frontend/public/` — прежние статические артефакты; текущий
+API-маршрут их не использует. Пока серверная переменная и redeploy не выполнены, нельзя
+считать подключение опубликованного сайта завершённым.

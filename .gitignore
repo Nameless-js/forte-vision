@@ -76,3 +76,6 @@ node_modules/
 # Local CLI database runtime left from the previous layout
 /supabase/.temp/
 /supabase/
+
+# Local HTTPS tunnel client binary
+/cloudflared*.exe
