@@ -94,19 +94,20 @@ rules:
   phone_min_s: 2.0
   phone_min_score: 0.45
   phone_radius_frac: 0.045
-  intrusion_min_s: 1.5
+  intrusion_min_s: 2.5
   handover_max_gap_s: 1.0              # cash near hand A then hand B within this gap = handover
   id_check_window_s: 20.0
   bag_check_window_s: 15.0
+  two_clients_min_s: 4.0
   merge_events_within_s: 3.0           # candidates of one type closer than this are merged
   max_violations_per_video: 6
   # departures / empty workplace
-  empty_room_after_s: 2.5              # room must stay empty this long after the cashier walks out
+  empty_room_after_s: 6.0              # room must stay empty this long after the cashier walks out (or till video end)
   securing_min_s: 5.0                  # cumulative hands-at-safe time before departure that counts as "secured"
   securing_lookback_s: 18.0
   storage_dwell_radius_frac: 0.09      # wrist within this radius of the storage centre counts as safe interaction
   empty_start_s: 2.5                   # workplace empty this long at video start -> entry mode
-  workplace_near_frac: 0.16            # body within this radius of a workplace anchor counts as "at the workplace"
+  workplace_near_frac: 0.10           # body within this radius of a workplace anchor counts as "at the workplace"
   entry_min_s: 1.5
   # personal items
   cup_min_s: 2.0

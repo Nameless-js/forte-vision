@@ -53,6 +53,11 @@ class FrameState:
     cup_near_cashier_hand: bool = False  # cup / bottle / food package in the cashier's hand
     cashier_strong: bool = False  # the cashier box is backed by a solid person detection (not through glass)
     person_in_zone_any: bool = False  # ANY solidly-detected person body is inside the cashier zone
+    n_people_strong: int = 0  # VALID people (pose-backed or very solid detection) anywhere in the frame
+    track_ages: dict = field(default_factory=dict)  # track id -> seconds since the track first appeared
+    det_scores: dict = field(default_factory=dict)  # track id -> matched person-detection score this frame
+    valid_tracks: list = field(default_factory=list)  # track ids that look like real humans this frame
+    valid_bodies: list = field(default_factory=list)  # their body points
 
 
 def _hands(fp: FramePoses, tid: int, thr: float) -> tuple[list, list, bool]:
@@ -119,13 +124,39 @@ def build_frame_states(pr: PerceptionResult, cal: Calibration, cfg: dict) -> lis
                     best = max(best, d.score)
             return best
 
-        c_strong = c_present and det_score_of(cbox) >= strong_score
+        # ---- per-track validity: a REAL person is pose-backed (several solid body keypoints) or has a very
+        # confident detection. Chairs, jackets on chairs, reflections and figures behind the glass wall all
+        # produce person boxes around 0.4-0.6 with no coherent pose — the main source of phantom events.
+        pose_kpts: dict[int, int] = {}
+        for p in fp.poses:
+            if p.track_id is not None:
+                pose_kpts[p.track_id] = int((p.scores[5:11] >= kthr).sum())  # shoulders, elbows, wrists
+        pose_kpts_ok = {tid: n >= 3 for tid, n in pose_kpts.items()}
+        det_scores: dict[int, float] = {}
+        ages: dict[int, float] = {}
+        valid_tracks: list[int] = []
+        valid_bodies: list[tuple[float, float]] = []
         any_in_zone = False
+        n_room = 0  # people that count as "someone is in the room" (blocks departures)
         for _tid, _box in assigned.items():
+            sc = det_score_of(_box)
+            det_scores[_tid] = sc
+            st0 = pr.tracks.get(_tid)
+            ages[_tid] = (fd.t - st0.first_t) if st0 is not None else 0.0
+            kp = pose_kpts.get(_tid, 0)
+            is_valid = kp >= 3 or sc >= float(cfg.get("person_solid_score", 0.65))
+            # room occupancy needs more than a reflection / through-glass figure: a reasonably confident
+            # detection on top of the pose (people seen through the glass wall score ~0.35-0.5)
+            if (kp >= 3 and sc >= float(cfg.get("room_min_det", 0.55))) or sc >= float(cfg.get("person_solid_score", 0.65)):
+                n_room += 1
             _bp = ((_box[0] + _box[2]) / 2, _box[1] + 0.6 * (_box[3] - _box[1]))
-            if cal.in_cashier_zone(_bp) and det_score_of(_box) >= strong_score:
-                any_in_zone = True
-                break
+            if is_valid:
+                valid_tracks.append(_tid)
+                valid_bodies.append(_bp)
+                if cal.in_cashier_zone(_bp):
+                    any_in_zone = True
+        n_strong = n_room
+        c_strong = c_present and (cashier in valid_tracks)
         c_in_zone = False
         c_hands: list = []
         c_elbows: list = []
@@ -147,7 +178,15 @@ def build_frame_states(pr: PerceptionResult, cal: Calibration, cfg: dict) -> lis
             # "the intruder" is usually the cashier herself after a track-id switch), the box must not be a
             # duplicate detection of the cashier (IoU), and the body must be clearly PAST the midline toward
             # the cashier seat or inside the seat radius — leaning over the desk from the client side is normal.
-            if c_present and _iou(box, cbox) < 0.3:
+            if (
+                c_present
+                and _iou(box, cbox) < 0.3
+                and fd.t >= float(cfg.get("intrusion_warmup_s", 3.0))
+                and ages.get(tid, 0.0) >= float(cfg.get("intrusion_track_age_s", 2.0))
+                and pose_kpts.get(tid, 0) >= 6
+                and det_scores.get(tid, 0.0) >= float(cfg.get("intrusion_min_det", 0.60))
+                and cashier in valid_tracks
+            ):
                 sd = cal.signed_dist_to_counter(bp)
                 if sd > intrusion_depth or cal.dist_to_cashier(bp) <= 1.0 * cal.zone_radius:
                     in_zone_non_cashier.append(tid)
@@ -216,6 +255,11 @@ def build_frame_states(pr: PerceptionResult, cal: Calibration, cfg: dict) -> lis
                 cup_near_cashier_hand=c_present and c_pose_ok and _near(c_hands, _cups(fd, cup_score), phone_r),
                 cashier_strong=c_strong,
                 person_in_zone_any=any_in_zone,
+                n_people_strong=n_strong,
+                track_ages=ages,
+                det_scores=det_scores,
+                valid_tracks=valid_tracks,
+                valid_bodies=valid_bodies,
             )
         )
     return states

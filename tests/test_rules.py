@@ -14,6 +14,7 @@ from forte_ai.perception.roles import Calibration
 W, H = 464, 848
 FPS = 5.0
 CFG = {
+    "intrusion_warmup_s": 3.0,
     "counting_window_s": 15.0,
     "counting_min_duration_s": 1.5,
     "counting_hand_speed_frac_s": 0.03,
@@ -73,6 +74,9 @@ def state(k, t, cashier=True, in_zone=True, hands=None, client=True, client_hand
         n_people=(1 if cashier else 0) + (1 if client else 0),
         cashier_strong=cashier,
         person_in_zone_any=bool(cashier and in_zone) or intrusion,
+        n_people_strong=(1 if cashier else 0) + (1 if client else 0),
+        valid_tracks=([1] if cashier else []) + ([2] if client else []),
+        valid_bodies=([(230.0, 632.0)] if cashier else []) + ([(260.0, 330.0)] if client else []),
     )
 
 

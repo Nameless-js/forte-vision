@@ -1,0 +1,3 @@
+vlm:
+  catch_all:
+    enabled: false

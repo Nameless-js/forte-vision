@@ -199,6 +199,22 @@ def calibrate(frames: list[FrameDetections], poses: list[FramePoses], tracks: di
 
     # per-track cues
     cash_centers_by_frame = [[_center(d.xyxy) for d in f.by_class("cash")] for f in frames]
+    person_dets_by_index = {f.frame_index: [(d.xyxy, d.score) for d in f.by_class("person")] for f in frames}
+
+    def track_det_score(st: TrackState) -> float:
+        """Median matched person-detection score of a track — reflections in the glass stay low."""
+        idxs = st.frame_indices
+        step = max(1, len(idxs) // 40)
+        scores = []
+        for k in range(0, len(idxs), step):
+            best = 0.0
+            for box, sc in person_dets_by_index.get(idxs[k], []):
+                if _iou(st.boxes[k], box) >= 0.5:
+                    best = max(best, sc)
+            scores.append(best)
+        scores.sort()
+        return scores[len(scores) // 2] if scores else 0.0
+
     track_scores: dict[int, dict] = {}
     for tid, st in tracks.items():
         if st.n < int(cfg.get("min_track_frames", 5)):
@@ -232,8 +248,9 @@ def calibrate(frames: list[FrameDetections], poses: list[FramePoses], tracks: di
                 if best == tid:
                     mine += 1
         s_cash = (mine / total) if total >= 5 else 0.5
-        score = 0.30 * presence + 0.20 * s_static + 0.15 * s_early + 0.20 * s_obj + 0.15 * s_cash
-        track_scores[tid] = {"presence": presence, "static": s_static, "early": s_early, "objects": s_obj, "cash": s_cash, "score": score, "n": st.n, "median": [med[0], med[1]]}
+        det = track_det_score(st)
+        score = (0.30 * presence + 0.20 * s_static + 0.15 * s_early + 0.20 * s_obj + 0.15 * s_cash) * (0.6 + 0.4 * min(1.0, det / 0.65))
+        track_scores[tid] = {"presence": presence, "static": s_static, "early": s_early, "objects": s_obj, "cash": s_cash, "det": det, "score": score, "n": st.n, "median": [med[0], med[1]]}
 
     if not track_scores:
         return Calibration(frame_w, frame_h, diag, None, 0.0, {}, (frame_w / 2, frame_h / 2), [], (frame_w / 2, frame_h / 2), (0.0, 1.0), 0.0, [], [], [], workplace, workplace.get("storage"), workplace.get("counting_machine"), zone_radius=0.1 * diag, notes=["no tracks"])
@@ -242,7 +259,31 @@ def calibrate(frames: list[FrameDetections], poses: list[FramePoses], tracks: di
     cs = track_scores[cashier]
     st = tracks[cashier]
     cpts = np.asarray([_body_point(b) for b in st.boxes])
+    # The SEAT is the FIRST sustained stationary dwell of the cashier track, not the whole-track median:
+    # the staged clips always open with the cashier at the workplace, while later she may stand at the door
+    # for half the clip, which would drag a global median (and the zone) away from the desk. The room is so
+    # compressed in projection that anchor-radius filtering cannot separate seat from door.
     c_center = (float(np.median(cpts[:, 0])), float(np.median(cpts[:, 1])))
+    still_r = float(cfg.get("seat_still_radius_frac", 0.025)) * diag
+    seat_min_s = float(cfg.get("seat_min_still_s", 3.0))
+    if len(st.times) >= 5:
+        i = 0
+        n_pts = len(cpts)
+        while i < n_pts:
+            j = i
+            anchor = cpts[i]
+            while j + 1 < n_pts:
+                nxt = cpts[j + 1]
+                seg = cpts[i : j + 2]
+                med = np.median(seg, axis=0)
+                if math.hypot(nxt[0] - med[0], nxt[1] - med[1]) > still_r * 2.5:
+                    break
+                j += 1
+            if st.times[j] - st.times[i] >= seat_min_s:
+                seg = cpts[i : j + 1]
+                c_center = (float(np.median(seg[:, 0])), float(np.median(seg[:, 1])))
+                break
+            i = j + 1
     # zone: hull of the cashier's torso points (box centre + a point at 60 % height), dilated by a body-sized
     # margin. Full boxes are NOT used: an outstretched arm or the chair would swallow the client's seat.
     body_pts = []
@@ -266,7 +307,10 @@ def calibrate(frames: list[FrameDetections], poses: list[FramePoses], tracks: di
     candidates: list[int] = []
     cand_medians: dict[int, tuple[float, float]] = {}
     cand_near: dict[int, int] = {}
+    min_det = float(cfg.get("client_min_det_score", 0.52))
     for t in others:
+        if track_scores[t].get("det", 0.0) < min_det:
+            continue  # reflections in the glass / people behind it never reach solid detection scores
         near = [p for p in (_body_point(b) for b in tracks[t].boxes) if math.hypot(p[0] - c_center[0], p[1] - c_center[1]) <= reach]
         if len(near) < max(3, 0.1 * tracks[t].n):
             continue
@@ -303,8 +347,12 @@ def calibrate(frames: list[FrameDetections], poses: list[FramePoses], tracks: di
         point = (c_center[0] - normal[0] * 0.15 * diag, c_center[1] - normal[1] * 0.15 * diag)
         counter_conf = 0.2
         counter_normal = (float(normal[0]), float(normal[1]))
-    # cashier zone radius: between the seat and the midline, at least a body width
-    zone_radius = max(0.45 * dist_cc, 0.6 * med_w, float(cfg.get("zone_min_radius_frac", 0.08)) * diag)
+    # cashier zone radius: between the seat and the midline, at least a body width; with no visitor at all
+    # the fallback dist_cc is fictitious, so the zone shrinks to a body-scaled radius (early absence anchor)
+    if window_anchor is not None:
+        zone_radius = max(0.45 * dist_cc, 0.6 * med_w, float(cfg.get("zone_min_radius_frac", 0.08)) * diag)
+    else:
+        zone_radius = max(0.7 * med_w, float(cfg.get("zone_min_radius_frac", 0.08)) * diag)
 
     # clients / collectors / others: a window candidate must actually come close to the counter line
     bag_iou = float(cfg.get("collector_bag_iou", 0.05))

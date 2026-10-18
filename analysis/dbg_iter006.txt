@@ -1,0 +1,180 @@
+
+#### id 32 cashier=T1 center=(0.39, 0.37) zone_r=0.135 anchor=None dcc=0.3
+  machine=(0.52, 0.41) storages=[(0.69, 0.52), (0.53, 0.38), (0.18, 0.27)] laptop=None
+  dets(track):  {1: 0.7598, 4: 0.4559}
+  empty_start=False departures=[] absent=[]
+  intrusion=[] storage_dwell=[(4.4, 5.8)]
+    t=  2.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.02 ages={1: 0.6} dets={1: 0.75} intr=[]
+    t=  3.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.04 ages={1: 1.6} dets={1: 0.69} intr=[]
+    t=  4.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.04 ages={1: 2.6} dets={1: 0.71} intr=[]
+    t=  5.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.08 ages={1: 3.6} dets={1: 0.79} intr=[]
+    t=  6.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.05 ages={1: 4.6} dets={1: 0.68} intr=[]
+    t=  7.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.01 ages={1: 5.6} dets={1: 0.57} intr=[]
+    t=  8.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.02 ages={1: 6.6} dets={1: 0.83} intr=[]
+    t=  9.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.01 ages={1: 7.6} dets={1: 0.8} intr=[]
+    t= 10.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.05 ages={1: 8.6} dets={1: 0.8} intr=[]
+    t= 11.0 present=1 strong=0 in_zone=1 any_zone=0 nstrong=0 d_seat=0.11 ages={1: 9.6} dets={1: 0.46} intr=[]
+    t= 12.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.05 ages={1: 10.6} dets={1: 0.84} intr=[]
+
+#### id 33 cashier=T1 center=(0.41, 0.35) zone_r=0.135 anchor=None dcc=0.3
+  machine=(0.57, 0.41) storages=[(0.55, 0.36), (0.2, 0.31)] laptop=(0.2, 0.44)
+  dets(track):  {1: 0.5745, 3: 0.6749, 4: 0.4881}
+  empty_start=False departures=[] absent=[]
+  intrusion=[(12.0, 14.2)] storage_dwell=[(4.4, 5.2), (10.0, 14.2)]
+    t=  2.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.02 ages={1: 1.2} dets={1: 0.56} intr=[]
+    t=  3.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.03 ages={1: 2.2} dets={1: 0.63} intr=[]
+    t=  4.0 present=1 strong=0 in_zone=1 any_zone=0 nstrong=0 d_seat=0.04 ages={1: 3.2} dets={1: 0.47} intr=[]
+    t=  5.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.07 ages={1: 4.2} dets={1: 0.76} intr=[]
+    t=  6.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.06 ages={1: 5.2} dets={1: 0.59} intr=[]
+    t=  7.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.01 ages={1: 6.2} dets={1: 0.63} intr=[]
+    t=  8.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.01 ages={1: 7.2} dets={1: 0.67} intr=[]
+    t=  9.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.05 ages={1: 8.2} dets={1: 0.56} intr=[]
+    t= 10.0 present=1 strong=0 in_zone=1 any_zone=1 nstrong=1 d_seat=0.11 ages={1: 9.2, 3: 0.0} dets={1: 0.49, 3: 0.58} intr=[]
+    t= 11.0 present=1 strong=0 in_zone=1 any_zone=1 nstrong=1 d_seat=0.11 ages={1: 10.2, 3: 1.0} dets={1: 0.49, 3: 0.56} intr=[]
+    t= 12.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=2 d_seat=0.11 ages={1: 11.2, 3: 2.0, 4: 0.6} dets={1: 0.51, 3: 0.67, 4: 0.5} intr=[3]
+
+#### id 40 cashier=T1 center=(0.43, 0.35) zone_r=0.135 anchor=None dcc=0.3
+  machine=(0.57, 0.41) storages=[(0.55, 0.36), (0.25, 0.24)] laptop=(0.2, 0.44)
+  dets(track):  {1: 0.7079, 4: 0.3943, 6: 0.4271}
+  empty_start=False departures=[] absent=[]
+  intrusion=[] storage_dwell=[(4.0, 7.6)]
+    t=  2.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.04 ages={1: 1.2} dets={1: 0.77} intr=[]
+    t=  3.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.05 ages={1: 2.2} dets={1: 0.77} intr=[]
+    t=  4.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.07 ages={1: 3.2} dets={1: 0.81} intr=[]
+    t=  5.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.11 ages={1: 4.2} dets={1: 0.82} intr=[]
+    t=  6.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.1 ages={1: 5.2} dets={1: 0.81} intr=[]
+    t=  7.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.1 ages={1: 6.2} dets={1: 0.79} intr=[]
+    t=  8.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.03 ages={1: 7.2, 4: 0.2} dets={1: 0.67, 4: 0.38} intr=[]
+    t=  9.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.01 ages={1: 8.2, 4: 1.2} dets={1: 0.65, 4: 0.42} intr=[]
+    t= 10.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.0 ages={1: 9.2} dets={1: 0.71} intr=[]
+    t= 11.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.02 ages={1: 10.2} dets={1: 0.68} intr=[]
+    t= 12.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.0 ages={1: 11.2, 6: 0.4} dets={1: 0.67, 6: 0.43} intr=[]
+    t= 13.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.01 ages={1: 12.2, 6: 1.4} dets={1: 0.69, 6: 0.39} intr=[]
+    t= 14.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.01 ages={1: 13.2, 6: 2.4} dets={1: 0.69, 6: 0.39} intr=[]
+    t= 15.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.02 ages={1: 14.2, 6: 3.4} dets={1: 0.75, 6: 0.43} intr=[]
+    t= 16.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.01 ages={1: 15.2} dets={1: 0.76} intr=[]
+    t= 17.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.01 ages={1: 16.2} dets={1: 0.74} intr=[]
+    t= 18.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=2 d_seat=0.02 ages={1: 17.2, 7: 0.0} dets={1: 0.79, 7: 0.6} intr=[]
+    t= 19.0 present=1 strong=0 in_zone=1 any_zone=0 nstrong=0 d_seat=0.05 ages={1: 18.2} dets={1: 0.47} intr=[]
+    t= 20.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.05 ages={1: 19.2} dets={1: 0.73} intr=[]
+
+#### id 24 cashier=T1 center=(0.38, 0.37) zone_r=0.135 anchor=None dcc=0.3
+  machine=(0.24, 0.46) storages=[(0.16, 0.6), (0.51, 0.37)] laptop=(0.61, 0.42)
+  dets(track):  {1: 0.7105, 2: 0.5003}
+  empty_start=False departures=[12.6] absent=[(12.6, 14.6)]
+  intrusion=[] storage_dwell=[(0.2, 3.4)]
+    t=  4.0 present=1 strong=0 in_zone=1 any_zone=0 nstrong=0 d_seat=0.04 ages={1: 3.8, 2: 3.8} dets={1: 0.45, 2: 0.37} intr=[]
+    t=  5.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=2 d_seat=0.05 ages={1: 4.8, 2: 4.8} dets={1: 0.76, 2: 0.53} intr=[]
+    t=  6.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.03 ages={1: 5.8, 2: 5.8} dets={1: 0.78, 2: 0.42} intr=[]
+    t=  7.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=2 d_seat=0.01 ages={1: 6.8, 2: 6.8} dets={1: 0.73, 2: 0.52} intr=[]
+    t=  8.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.01 ages={1: 7.8, 2: 7.8} dets={1: 0.76, 2: 0.49} intr=[]
+    t=  9.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=2 d_seat=0.07 ages={1: 8.8, 2: 8.8} dets={1: 0.7, 2: 0.54} intr=[]
+    t= 10.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.07 ages={1: 9.8} dets={1: 0.88} intr=[]
+    t= 11.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.06 ages={1: 10.8} dets={1: 0.76} intr=[]
+    t= 12.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.04 ages={1: 11.8} dets={1: 0.84} intr=[]
+    t= 13.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.01 ages={1: 12.8, 4: 0.0} dets={1: 0.68, 4: 0.4} intr=[]
+    t= 14.0 present=0 strong=0 in_zone=0 any_zone=0 nstrong=0 d_seat=None ages={} dets={} intr=[]
+
+#### id 22 cashier=T1 center=(0.32, 0.34) zone_r=0.135 anchor=None dcc=0.3
+  machine=(0.19, 0.43) storages=[(0.12, 0.58), (0.49, 0.35), (0.13, 0.24)] laptop=(0.55, 0.4)
+  dets(track):  {1: 0.7741, 2: 0.6169, 3: 0.5029}
+  empty_start=False departures=[19.2] absent=[(19.2, 21.0)]
+  intrusion=[(3.0, 6.8)] storage_dwell=[(15.2, 16.6)]
+    t= 12.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.0 ages={1: 11.8} dets={1: 0.78} intr=[]
+    t= 13.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.0 ages={1: 12.8, 3: 1.8} dets={1: 0.78, 3: 0.37} intr=[]
+    t= 14.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=2 d_seat=0.02 ages={1: 13.8, 3: 2.8} dets={1: 0.75, 3: 0.72} intr=[3]
+    t= 15.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=2 d_seat=0.06 ages={1: 14.8, 3: 3.8} dets={1: 0.73, 3: 0.54} intr=[]
+    t= 16.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.08 ages={1: 15.8} dets={1: 0.81} intr=[]
+    t= 17.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.04 ages={1: 16.8} dets={1: 0.58} intr=[]
+    t= 18.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.03 ages={1: 17.8} dets={1: 0.77} intr=[]
+    t= 19.0 present=1 strong=0 in_zone=1 any_zone=0 nstrong=0 d_seat=0.01 ages={1: 18.8} dets={1: 0.48} intr=[]
+    t= 20.0 present=0 strong=0 in_zone=0 any_zone=0 nstrong=0 d_seat=None ages={} dets={} intr=[]
+
+#### id 35 cashier=T1 center=(0.48, 0.57) zone_r=0.08 anchor=(0.44, 0.39) dcc=0.161
+  machine=(0.64, 0.44) storages=[(0.83, 0.49), (0.25, 0.24)] laptop=(0.2, 0.47)
+  dets(track):  {1: 0.5802, 2: 0.7212, 3: 0.4018, 6: 0.4462, 7: 0.5301, 8: 0.4375}
+  empty_start=False departures=[] absent=[(40.4, 45.4)]
+  intrusion=[] storage_dwell=[(39.8, 41.6), (44.4, 47.4)]
+    t= 38.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=3 d_seat=0.0 ages={1: 37.8, 2: 37.2, 6: 32.8, 7: 29.6} dets={1: 0.63, 2: 0.74, 6: 0.45, 7: 0.61} intr=[]
+    t= 39.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=2 d_seat=0.01 ages={1: 38.8, 2: 38.2, 6: 33.8, 7: 30.6} dets={1: 0.57, 2: 0.73, 6: 0.42, 7: 0.46} intr=[]
+    t= 40.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=2 d_seat=0.04 ages={1: 39.8, 2: 39.2, 7: 31.6} dets={1: 0.51, 2: 0.69, 7: 0.44} intr=[]
+    t= 41.0 present=1 strong=0 in_zone=1 any_zone=0 nstrong=1 d_seat=0.03 ages={1: 40.8, 2: 40.2, 6: 35.8, 7: 32.6} dets={1: 0.47, 2: 0.7, 6: 0.39, 7: 0.4} intr=[]
+    t= 42.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=2 d_seat=0.01 ages={1: 41.8, 2: 41.2, 6: 36.8} dets={1: 0.56, 2: 0.74, 6: 0.45} intr=[]
+    t= 43.0 present=1 strong=0 in_zone=1 any_zone=0 nstrong=1 d_seat=0.03 ages={1: 42.8, 2: 42.2, 6: 37.8} dets={1: 0.47, 2: 0.71, 6: 0.37} intr=[]
+    t= 44.0 present=1 strong=0 in_zone=1 any_zone=0 nstrong=1 d_seat=0.03 ages={1: 43.8, 2: 43.2, 6: 38.8, 8: 0.6} dets={1: 0.45, 2: 0.72, 6: 0.46, 8: 0.49} intr=[]
+    t= 45.0 present=1 strong=0 in_zone=1 any_zone=0 nstrong=1 d_seat=0.04 ages={1: 44.8, 2: 44.2} dets={1: 0.48, 2: 0.71} intr=[]
+    t= 46.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=2 d_seat=0.04 ages={1: 45.8, 2: 45.2, 8: 2.6} dets={1: 0.52, 2: 0.72, 8: 0.43} intr=[]
+
+#### id 25 cashier=T1 center=(0.37, 0.37) zone_r=0.135 anchor=None dcc=0.3
+  machine=(0.24, 0.45) storages=[(0.16, 0.6), (0.51, 0.37)] laptop=(0.61, 0.42)
+  dets(track):  {1: 0.7718, 2: 0.5156, 4: 0.4803, 6: 0.5863, 7: 0.4893, 9: 0.3694}
+  empty_start=False departures=[29.0] absent=[(29.0, 31.6)]
+  intrusion=[(3.2, 5.6)] storage_dwell=[(0.2, 3.2)]
+    t=  2.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.11 ages={1: 1.8, 2: 1.8} dets={1: 0.6, 2: 0.46} intr=[]
+    t=  3.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=2 d_seat=0.11 ages={1: 2.8, 2: 2.8} dets={1: 0.57, 2: 0.57} intr=[2]
+    t=  4.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.04 ages={1: 3.8, 2: 3.8} dets={1: 0.79, 2: 0.46} intr=[]
+    t=  5.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=2 d_seat=0.05 ages={1: 4.8, 2: 4.8} dets={1: 0.8, 2: 0.77} intr=[2]
+    t=  6.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.03 ages={1: 5.8, 2: 5.8} dets={1: 0.72, 2: 0.48} intr=[]
+    t=  7.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.01 ages={1: 6.8} dets={1: 0.67} intr=[]
+    t=  8.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=2 d_seat=0.01 ages={1: 7.8, 4: 0.6} dets={1: 0.76, 4: 0.68} intr=[]
+    t=  9.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.01 ages={1: 8.8, 4: 1.6} dets={1: 0.75, 4: 0.48} intr=[]
+    t= 10.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.02 ages={1: 9.8} dets={1: 0.76} intr=[]
+
+#### id 8 cashier=T1 center=(0.34, 0.44) zone_r=0.135 anchor=None dcc=0.3
+  machine=(0.18, 0.48) storages=[(0.58, 0.41), (0.11, 0.64), (0.16, 0.28)] laptop=(0.56, 0.45)
+  dets(track):  {1: 0.6579, 2: 0.484, 4: 0.4789}
+  empty_start=False departures=[] absent=[(29.2, 30.8)]
+  intrusion=[(3.6, 5.2), (19.4, 25.2)] storage_dwell=[(29.0, 30.0)]
+    t= 17.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.0 ages={1: 16.8, 2: 16.4} dets={1: 0.59, 2: 0.41} intr=[]
+    t= 18.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.0 ages={1: 17.8, 2: 17.4} dets={1: 0.59, 2: 0.41} intr=[]
+    t= 19.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.01 ages={1: 18.8, 2: 18.4} dets={1: 0.53, 2: 0.5} intr=[]
+    t= 20.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=2 d_seat=0.02 ages={1: 19.8, 2: 19.4} dets={1: 0.76, 2: 0.62} intr=[2]
+    t= 21.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=2 d_seat=0.01 ages={1: 20.8, 2: 20.4} dets={1: 0.77, 2: 0.54} intr=[]
+    t= 22.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=2 d_seat=0.02 ages={1: 21.8, 2: 21.4} dets={1: 0.78, 2: 0.56} intr=[2]
+
+#### id 12 cashier=T2 center=(0.18, 0.36) zone_r=0.135 anchor=None dcc=0.3
+  machine=(0.18, 0.49) storages=[(0.57, 0.42)] laptop=(0.54, 0.47)
+  dets(track):  {1: 0.7567, 2: 0.5608, 3: 0.4424, 4: 0.4201, 5: 0.5537}
+  empty_start=False departures=[] absent=[]
+  intrusion=[(3.0, 17.2)] storage_dwell=[]
+    t=  1.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=2 d_seat=0.01 ages={1: 0.8, 2: 0.8} dets={1: 0.79, 2: 0.52} intr=[]
+    t=  2.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=2 d_seat=0.0 ages={1: 1.8, 2: 1.8} dets={1: 0.77, 2: 0.61} intr=[]
+    t=  3.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=2 d_seat=0.0 ages={1: 2.8, 2: 2.8} dets={1: 0.77, 2: 0.58} intr=[1]
+    t=  4.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=2 d_seat=0.0 ages={1: 3.8, 2: 3.8} dets={1: 0.76, 2: 0.61} intr=[1]
+    t=  5.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=2 d_seat=0.01 ages={1: 4.8, 2: 4.8} dets={1: 0.79, 2: 0.53} intr=[1]
+    t=  6.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=2 d_seat=0.0 ages={1: 5.8, 2: 5.8} dets={1: 0.74, 2: 0.53} intr=[1]
+
+#### id 30 cashier=T1 center=(0.38, 0.36) zone_r=0.08 anchor=(0.16, 0.36) dcc=0.107
+  machine=(0.51, 0.41) storages=[(0.69, 0.52), (0.53, 0.38), (0.19, 0.27)] laptop=(0.2, 0.42)
+  dets(track):  {1: 0.7188, 4: 0.7979, 5: 0.3964}
+  empty_start=False departures=[] absent=[]
+  intrusion=[] storage_dwell=[(0.4, 5.4), (13.0, 13.8)]
+    t= 11.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.02 ages={1: 10.6} dets={1: 0.68} intr=[]
+    t= 12.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.03 ages={1: 11.6} dets={1: 0.65} intr=[]
+    t= 13.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=3 d_seat=0.04 ages={1: 12.6, 4: 1.4, 5: 0.0} dets={1: 0.74, 4: 0.73, 5: 0.53} intr=[]
+    t= 14.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=2 d_seat=0.04 ages={1: 13.6, 4: 2.4} dets={1: 0.75, 4: 0.82} intr=[]
+    t= 15.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=2 d_seat=0.03 ages={1: 14.6, 4: 3.4} dets={1: 0.67, 4: 0.8} intr=[]
+    t= 16.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=2 d_seat=0.03 ages={1: 15.6, 4: 4.4, 5: 3.0} dets={1: 0.75, 4: 0.79, 5: 0.39} intr=[]
+    t= 17.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=2 d_seat=0.02 ages={1: 16.6, 4: 5.4} dets={1: 0.68, 4: 0.78} intr=[]
+    t= 18.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=2 d_seat=0.02 ages={1: 17.6, 4: 6.4, 5: 5.0} dets={1: 0.72, 4: 0.81, 5: 0.38} intr=[]
+
+#### id 14 cashier=T1 center=(0.36, 0.45) zone_r=0.08 anchor=(0.2, 0.32) dcc=0.132
+  machine=(0.18, 0.49) storages=[(0.57, 0.41), (0.11, 0.64)] laptop=(0.55, 0.45)
+  dets(track):  {1: 0.7556, 2: 0.6946, 3: 0.5056}
+  empty_start=False departures=[86.4] absent=[(82.4, 84.4), (86.4, 90.6), (92.0, 93.8)]
+  intrusion=[] storage_dwell=[(0.2, 44.6), (48.8, 50.8), (55.8, 57.0), (71.6, 74.0), (91.6, 92.4), (101.0, 102.0)]
+    t= 80.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.08 ages={1: 79.8, 3: 39.0} dets={1: 0.51, 3: 0.5} intr=[]
+    t= 81.0 present=1 strong=0 in_zone=1 any_zone=0 nstrong=1 d_seat=0.03 ages={1: 80.8, 3: 40.0} dets={1: 0.49, 3: 0.6} intr=[]
+    t= 82.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.02 ages={1: 81.8, 3: 41.0} dets={1: 0.51, 3: 0.45} intr=[]
+    t= 83.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.08 ages={1: 82.8, 3: 42.0} dets={1: 0.55, 3: 0.43} intr=[]
+    t= 84.0 present=1 strong=0 in_zone=1 any_zone=0 nstrong=1 d_seat=0.08 ages={1: 83.8, 3: 43.0} dets={1: 0.46, 3: 0.56} intr=[]
+    t= 85.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.02 ages={1: 84.8, 3: 44.0} dets={1: 0.51, 3: 0.49} intr=[]
+    t= 86.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.08 ages={1: 85.8, 3: 45.0} dets={1: 0.52, 3: 0.43} intr=[]
+    t= 87.0 present=1 strong=0 in_zone=1 any_zone=0 nstrong=0 d_seat=0.08 ages={1: 86.8, 3: 46.0} dets={1: 0.48, 3: 0.45} intr=[]
+    t= 88.0 present=1 strong=0 in_zone=1 any_zone=0 nstrong=0 d_seat=0.08 ages={1: 87.8, 3: 47.0} dets={1: 0.49, 3: 0.47} intr=[]
+    t= 89.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=2 d_seat=0.08 ages={1: 88.8, 3: 48.0} dets={1: 0.5, 3: 0.56} intr=[]
+    t= 90.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=1 d_seat=0.08 ages={1: 89.8, 3: 49.0} dets={1: 0.5, 3: 0.4} intr=[]
+    t= 91.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=2 d_seat=0.08 ages={1: 90.8, 3: 50.0} dets={1: 0.52, 3: 0.54} intr=[]
+    t= 92.0 present=1 strong=0 in_zone=1 any_zone=0 nstrong=0 d_seat=0.07 ages={1: 91.8, 3: 51.0} dets={1: 0.49, 3: 0.42} intr=[]
+    t= 93.0 present=1 strong=0 in_zone=1 any_zone=0 nstrong=0 d_seat=0.08 ages={1: 92.8, 3: 52.0} dets={1: 0.49, 3: 0.49} intr=[]
+    t= 94.0 present=1 strong=1 in_zone=1 any_zone=1 nstrong=2 d_seat=0.08 ages={1: 93.8, 3: 53.0} dets={1: 0.51, 3: 0.51} intr=[]

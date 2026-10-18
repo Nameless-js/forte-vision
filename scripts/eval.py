@@ -29,14 +29,14 @@ def next_iter_dir(reports: Path) -> Path:
     return reports / f"iter_{(max(nums) + 1 if nums else 1):03d}"
 
 
-def load_team_types(path: Path) -> dict[int, str]:
+def load_team_types(path: Path) -> tuple[dict[int, str], dict[str, str]]:
     if not path.exists():
-        return {}
+        return {}, {}
     d = json.loads(path.read_text(encoding="utf-8"))
     out = {}
     for a in d.get("assignments", []):
         out[int(a["id"])] = a["type_id"]
-    return out
+    return out, d.get("team_of", {})
 
 
 def hardware_string() -> str:
@@ -74,7 +74,7 @@ def main() -> int:
     rows = [r for r in read_labels_csv(Path(a.labels)) if r.split == "labeled" and r.path]
     if a.ids:
         rows = [r for r in rows if r.video_id in a.ids]
-    team = load_team_types(Path(a.taxonomy))
+    team, team_of = load_team_types(Path(a.taxonomy))
     overrides = {"vlm": {"enabled": False}} if a.no_vlm else None
     an = Analyzer(config=(a.config or overrides), profile=a.profile)
     if a.no_vlm and a.config:
@@ -101,6 +101,9 @@ def main() -> int:
             schema_problems[r.video_id] = probs
         (out / "results" / f"{r.video_id:02d}.json").write_text(json.dumps(res, ensure_ascii=False), encoding="utf-8")
         cands = res.get("candidates_all", [])
+        for c in cands:  # map engine type ids onto the team taxonomy for classification metrics
+            c["type_id_engine"] = c["type_id"]
+            c["type_id"] = team_of.get(c["type_id"], c["type_id"])
         pvs.append(PerVideo(r.video_id, r.label, r.t_sec, r.content_md5 or str(r.video_id), cands, team.get(r.video_id), el, res.get("stage_timings", {})))
         ev = ", ".join(f"{c['type_id']}@{c['t_event']:.1f}({c['confidence']:.2f})" for c in sorted(cands, key=lambda c: -c["confidence"])[:4])
         print(f"[{i + 1}/{len(rows)}] id {r.video_id:>2} {r.label:<12} t={r.t_sec if r.t_sec is not None else '-':<5} verdict={res['verdict']:<12} {el:5.1f}s  {ev}", flush=True)
