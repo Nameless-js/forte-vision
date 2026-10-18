@@ -12,6 +12,8 @@ import yaml
 PACKAGE_DIR = Path(__file__).resolve().parent
 REPO_ROOT = PACKAGE_DIR.parent
 CONFIG_DIR = REPO_ROOT / "configs"
+if not (CONFIG_DIR / "default.yaml").exists():
+    CONFIG_DIR = PACKAGE_DIR / "configs"
 PROFILES = ("gpu-large", "gpu-small", "cpu")
 
 
@@ -109,4 +111,6 @@ class Config:
             deep_update(data, overrides)
         if data.get("device", "auto") == "auto":
             data["device"] = "cpu" if prof == "cpu" else "cuda"
+        if os.environ.get("FORTE_CACHE_DIR"):
+            data.setdefault("cache", {})["dir"] = os.environ["FORTE_CACHE_DIR"]
         return cls(data)

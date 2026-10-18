@@ -512,12 +512,15 @@ def run_rules(states: list[FrameState], cal: Calibration, cfg: dict, fps: float,
             k = max(0.0, min(1.0, (secured - 2.0) / 6.0))
             conf = hi - (hi - lo) * k
             facts.append(f"работа у сейфа перед уходом ≈{secured:.1f} с")
+        dep_needs_support = (not cash_after) and k >= 0.5
         t_dep = _disengage_time(states, cal, seg.start, cfg)
         if t_dep < seg.start - 0.2:
             facts.append(f"последний контакт с рабочим местом на {t_dep:.1f} с, затем уход")
+        if cash_after:
+            dep_needs_support = False
         cands.append(
             Candidate(
-                type_id, t_dep, (max(0.0, t_dep - 10.0), min(duration, seg.start + 3.0)), conf, facts, rule_id="R1b",
+                type_id, t_dep, (max(0.0, t_dep - 10.0), min(duration, seg.start + 3.0)), conf, facts, rule_id="R1b", needs_support=dep_needs_support,
                 vlm_window=(max(0.0, t_dep - 8.0), min(duration, seg.start + 3.0)),
                 vlm_question=(
                     "Кассир уходит из кассового помещения. По кадрам ПЕРЕД уходом: убрала ли она ценности/предметы "
@@ -608,7 +611,7 @@ def run_rules(states: list[FrameState], cal: Calibration, cfg: dict, fps: float,
                     Candidate(
                         "issue_without_count", h.t, (max(0.0, h.t - 10.0), h.t + 2.0), conf,
                         [f"передача наличных кассир→клиент на {h.t:.1f} с", f"возможный пересчёт закончился на {cnt.end:.1f} с (за {h.t - cnt.end:.0f} с до выдачи)"],
-                        rule_id="R5w",
+                        rule_id="R5w", needs_support=True,
                         vlm_question="Пересчитывал ли кассир купюры (перебирал по одной или на счётной машине) непосредственно перед передачей их клиенту?",
                         vlm_expect=("counted_money", {"no"}, {"yes"}),
                     )
@@ -640,7 +643,7 @@ def run_rules(states: list[FrameState], cal: Calibration, cfg: dict, fps: float,
                     Candidate(
                         "accept_without_count", max(cnt.start, acq + 1.0), (acq, min(duration, cnt.start + 4.0)), conf,
                         [how, f"пересчёт начат на {cnt.start:.1f} с, когда {'инкассатор' if ep.is_collector else 'клиент'} уже уходил (у окна до {t_party_gone:.1f} с)"],
-                        rule_id="R6b",
+                        rule_id="R6b", needs_support=True,
                         vlm_question="Пересчитывал ли кассир принятые наличные, ПОКА клиент ещё находился у стола, или начал пересчёт только после того, как клиент отвернулся/ушёл?",
                         vlm_expect=("counted_money", {"no"}, {"yes"}),
                     )
@@ -712,7 +715,7 @@ def run_rules(states: list[FrameState], cal: Calibration, cfg: dict, fps: float,
             Candidate(
                 "collection_bag_unchecked", first.start, (max(0.0, first.start - 2.0), first.end + 2.0), conf,
                 [f"сумка инкассатора у рук {first.start:.1f}–{first.end:.1f} с; сопроводительный документ не зафиксирован"],
-                rule_id="R8",
+                rule_id="R8", needs_support=True,
                 vlm_question="Передаётся ли инкассаторская сумка? Осматривал ли кассир сумку и пломбу и работал ли с сопроводительным документом (бумагой) при передаче? Если документа и осмотра не видно — bag_checked: no.",
                 vlm_expect=("bag_checked", {"no"}, {"yes", "no_bag"}),
             )
@@ -835,7 +838,7 @@ def run_rules(states: list[FrameState], cal: Calibration, cfg: dict, fps: float,
                     Candidate(
                         "suspect_note_mishandled", round(w0 + 1.0, 1), (w0, w1), conf,
                         [f"работа счётной машины до {m.end:.1f} с, затем ручная работа с купюрами {handling:.1f} с"],
-                        rule_id="R11",
+                        rule_id="R11", needs_support=True,
                         vlm_question=(
                             "После выгрузки купюр из счётной машины: отделял ли кассир отдельную купюру от пачки, "
                             "и если да — вернул ли он её обратно в пересчитанную пачку (нарушение) или отложил "
@@ -870,7 +873,7 @@ def run_rules(states: list[FrameState], cal: Calibration, cfg: dict, fps: float,
                     Candidate(
                         "cash_left_unattended", round(dwell.end, 1), (dwell.start, min(duration, dwell.end + 6.0)), conf,
                         [f"работа у сейфа {dwell.start:.1f}–{dwell.end:.1f} с, затем кассир отходит с наличными; возврата к сейфу не зафиксировано"],
-                        rule_id="R12",
+                        rule_id="R12", needs_support=True,
                         vlm_question="Осталась ли дверца сейфа (металлического шкафа) открытой после того, как кассир отошёл от него? Ответь в поле safe_open.",
                         vlm_expect=("safe_open", {"yes"}, {"no"}),
                         vlm_window=(max(0.0, dwell.start - 1.0), min(duration, dwell.end + 6.0)),
@@ -898,6 +901,6 @@ def merge_candidates(cands: list[Candidate], within_s: float) -> list[Candidate]
 
 def select_violations(cands: list[Candidate], threshold: float, per_type: Optional[dict] = None, max_n: int = 6) -> list[Candidate]:
     per_type = per_type or {}
-    keep = [c for c in cands if c.confidence >= float(per_type.get(c.type_id, threshold))]
+    keep = [c for c in cands if getattr(c, "eligible", True) and c.confidence >= float(per_type.get(c.type_id, threshold))]
     keep.sort(key=lambda c: -c.confidence)
     return sorted(keep[:max_n], key=lambda c: c.t_event)

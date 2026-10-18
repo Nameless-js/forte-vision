@@ -1,0 +1,40 @@
+.bank-mode .bank-select-field { display:inline-flex; min-width:0; max-width:100%; vertical-align:middle; }
+.bank-mode label > .bank-select-field { display:flex; width:100%; }
+.bank-mode .bank-select-native { display:none; }
+.bank-mode .bank-select { display:block; min-width:0; width:100%; }
+.bank-mode .bank-select-trigger {
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  width:100%; min-width:0; min-height:42px; padding:10px 13px;
+  border:1px solid hsl(var(--input)); border-radius:9px;
+  background:hsl(var(--background)); color:hsl(var(--foreground));
+  font:400 12px/1.5 var(--font); text-align:left;
+  transition:background .18s,border-color .18s;
+}
+.bank-mode .bank-select-trigger > span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.bank-mode .bank-select-trigger > svg { flex-shrink:0; color:hsl(var(--muted-foreground)); transition:transform .2s; }
+.bank-mode .bank-select-trigger > svg.is-open { transform:rotate(180deg); }
+.bank-mode .bank-select-trigger:hover:not(:disabled) { border-color:hsl(var(--primary)); }
+.bank-mode .bank-select-trigger[aria-expanded=true] { border-color:hsl(var(--ring)); box-shadow:0 0 0 3px hsl(var(--ring) / .08); }
+.bank-mode .bank-select-trigger:disabled { opacity:.45; cursor:not-allowed; }
+.bank-mode .bank-select-menu {
+  z-index:100; overflow-y:auto; overscroll-behavior:contain; padding:5px;
+  border:1px solid hsl(var(--border)); border-radius:10px;
+  background:hsl(var(--card)); color:hsl(var(--foreground));
+  box-shadow:0 10px 30px hsl(var(--secondary) / .14);
+  font:400 12px/1.5 var(--font);
+}
+.bank-mode .bank-select-option { display:flex; align-items:center; gap:9px; padding:10px; border-radius:6px; cursor:pointer; }
+.bank-mode .bank-select-option > span { flex:1; min-width:0; overflow-wrap:anywhere; }
+.bank-mode .bank-select-option > svg { flex-shrink:0; }
+.bank-mode .bank-select-option.is-active { background:hsl(var(--muted)); }
+.bank-mode .bank-select-option.is-selected { background:hsl(var(--primary) / .08); color:hsl(var(--primary)); }
+.bank-mode .bank-select-option[aria-disabled=true] { opacity:.45; cursor:not-allowed; }
+.bank-mode .header-right .bank-select-field { max-width:150px; }
+.bank-mode .player-controls .bank-select-trigger { min-height:30px; padding:4px 7px; background:transparent; font-size:10px; }
+@media(prefers-reduced-motion:reduce) { .bank-mode .bank-select-trigger, .bank-mode .bank-select-trigger > svg { transition:none; } }
+
+/* The legacy language-select class now sits on the custom control wrapper. */
+.bank-mode .bank-select.language-select { padding:0; border:0; background:transparent; }
+
+/* Keep the first portal render out of document flow, before position measurement. */
+.bank-mode .bank-select-menu { position:fixed; }

@@ -139,7 +139,7 @@ vlm:
   verify_candidates: true
   reject_below_confidence: 0.35        # a candidate the VLM contradicts with confidence >= this is dropped
   catch_all:
-    enabled: true
+    enabled: false                    # experimental; enable explicitly and measure added false positives
     window_s: 10.0
     stride_s: 10.0
     min_repeats: 2                     # hit must repeat on two adjacent windows

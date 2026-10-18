@@ -1,0 +1,21 @@
+{
+  "ok": true,
+  "wheel": "forte_ai-0.1.0-py3-none-any.whl",
+  "resource_files": [
+    "forte_ai/result_schema.json",
+    "forte_ai/configs/default.yaml",
+    "forte_ai/configs/no-catchall.yaml",
+    "forte_ai/configs/profile-cpu.yaml",
+    "forte_ai/configs/profile-gpu-large.yaml",
+    "forte_ai/configs/profile-gpu-small.yaml",
+    "forte_ai/configs/vlm-4b.yaml",
+    "forte_ai/kb_data/rule_cards.json",
+    "forte_ai/kb_data/laws/law_191_iv_2009.json",
+    "forte_ai/kb_data/laws/nbrk_14_2020.json",
+    "forte_ai/kb_data/laws/nbrk_231_2019.json",
+    "forte_ai/kb_data/laws/nbrk_88_2024.json"
+  ],
+  "stdout": "{\"package_path\": \"C:\\\\Users\\\\arkhi\\\\AppData\\\\Local\\\\Temp\\\\forte-wheel-1l20q_lr\\\\forte_ai\\\\__init__.py\", \"cards\": 14, \"ok\": true}\n",
+  "stderr": "",
+  "scope": "wheel resource/import isolation using existing dependencies; not a fresh dependency installation or Docker build"
+}

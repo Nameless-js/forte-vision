@@ -58,7 +58,7 @@ def t_setup(args: list[str]) -> None:
     py = venv_python()
     run([py, "-m", "pip", "install", "--upgrade", "pip"])
     if "--cpu" in args:
-        run([py, "-m", "pip", "install", "torch==2.6.0", "torchvision==0.21.0"])
+        run([py, "-m", "pip", "install", "--index-url", "https://download.pytorch.org/whl/cpu", "torch==2.6.0", "torchvision==0.21.0"])
     else:
         run(
             [
@@ -74,9 +74,15 @@ def t_setup(args: list[str]) -> None:
         )
     req = ROOT / "requirements.txt"
     if req.exists():
-        run([py, "-m", "pip", "install", "-r", str(req)])
-    run([py, "-m", "pip", "install", "-e", f"{ROOT}[dev]", "--no-deps"])
-    run([py, str(ROOT / "scripts" / "build_labels.py")])
+        # The selected torch build must survive installing the development freeze.
+        filtered = VENV / "requirements-runtime.txt"
+        filtered.write_text("\n".join(line for line in req.read_text(encoding="utf-8").splitlines() if not line.lower().startswith(("torch==", "torchvision=="))) + "\n", encoding="utf-8")
+        run([py, "-m", "pip", "install", "-r", str(filtered)])
+    run([py, "-m", "pip", "install", "-e", f"{ROOT}[dev]"])
+    if (ROOT / "public").is_dir() and (ROOT / "open" / "open_labels.xlsx").is_file():
+        run([py, str(ROOT / "scripts" / "build_labels.py")])
+    else:
+        print("Dataset not supplied: skipping label rebuild. You can analyze your own uploaded videos.", flush=True)
     if (ROOT / "scripts" / "inventory.py").exists() and (ROOT / "public").exists():
         run([py, str(ROOT / "scripts" / "inventory.py")], check=False)
 
@@ -113,14 +119,55 @@ def t_offline_check(args: list[str]) -> None:
 
 
 def t_verify(args: list[str]) -> None:
-    t_test([])
-    t_eval(["--out", str(ROOT / "reports" / "final")])
-    t_robustness(["--out", str(ROOT / "reports" / "final" / "robustness")])
-    t_timing(["--out", str(ROOT / "reports" / "final" / "timing")])
-    t_offline_check(["--out", str(ROOT / "reports" / "final" / "offline")])
-    t_api_test(["--out", str(ROOT / "reports" / "final" / "api_test")])
-    run([venv_python(), str(ROOT / "scripts" / "validate_reports.py"), str(ROOT / "reports" / "final")])
-    print("\nVERIFY: all steps passed")
+    """Run every check, retain failures, and never equate successful execution with model quality."""
+    import hashlib
+    import json
+    import time
+    out = ROOT / "reports" / "final"
+    out.mkdir(parents=True, exist_ok=True)
+    digest = hashlib.sha256()
+    for folder in ("forte_ai", "server", "scripts", "tests", "configs"):
+        for path in sorted((ROOT / folder).rglob("*")):
+            if path.suffix in (".py", ".yaml"):
+                digest.update(path.relative_to(ROOT).as_posix().encode())
+                digest.update(path.read_bytes())
+    signature = digest.hexdigest()
+    progress_path = out / "verification.json"
+    previous = json.loads(progress_path.read_text(encoding="utf-8")) if progress_path.exists() else {}
+    previous_steps = {x["name"]: x for x in previous.get("steps", [])} if previous.get("source_sha256") == signature and "--resume" in args else {}
+    py = venv_python()
+    script = lambda name: str(ROOT / "scripts" / name)
+    steps = [
+        ("tests", [py, "-m", "pytest", "-q", "--junitxml", str(out / "tests.xml")]),
+        ("evaluation", [py, script("eval.py"), "--out", str(out), "--note", "Final implementation verification; default configuration; cached perception"]),
+        ("offline", [py, script("offline_check.py"), "--no-cache", "--out", str(out / "offline")]),
+        ("api", [py, script("api_test.py"), "--timeout", "300", "--out", str(out / "api_test")]),
+        ("equivalence", [py, script("contract_equivalence.py")]),
+        ("timing", [py, script("timing.py"), "--out", str(out / "timing")]),
+        ("robustness-perception", [py, script("robustness.py"), "--perception-only", "--out", str(out / "robustness")]),
+        ("robustness", [py, script("robustness.py"), "--out", str(out / "robustness")]),
+        ("schema", [py, script("validate_reports.py"), str(out)]),
+        ("packaging", [py, script("packaging_check.py")]),
+        ("quality-gates", [py, script("final_report.py"), "--check"]),
+    ]
+    state = {"source_sha256": signature, "steps": [], "ok": False}
+    for name, cmd in steps:
+        old = previous_steps.get(name)
+        if old and old.get("exit_code") == 0:
+            entry = dict(old, resumed=True)
+            print(f"RESUME: {name} already passed for this source hash", flush=True)
+        else:
+            print(f"VERIFY STAGE: {name}", flush=True)
+            started = time.monotonic()
+            code = run(cmd, check=False)
+            entry = {"name": name, "exit_code": code, "elapsed_s": round(time.monotonic() - started, 1)}
+        state["steps"].append(entry)
+        progress_path.write_text(json.dumps(state, indent=2), encoding="utf-8")
+    state["ok"] = all(x["exit_code"] == 0 for x in state["steps"])
+    progress_path.write_text(json.dumps(state, indent=2), encoding="utf-8")
+    print("VERIFY:", "all gates passed" if state["ok"] else "unmet or unverified gates; see FINAL_REPORT.md")
+    if not state["ok"]:
+        raise SystemExit(2)
 
 
 def t_clean_cache(args: list[str]) -> None:

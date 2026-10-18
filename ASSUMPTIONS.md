@@ -20,3 +20,12 @@ Numbered, append-only. Each entry: what was decided, why, and where it matters.
 - **A-16 Config precedence.** default.yaml < profile overlay < explicit user config (file or dict) < programmatic overrides. (Before the fix a YAML passed with `--config` was silently overridden by the profile overlay.)
 - **A-17 Low-confidence, VLM-arbitrated rules.** Patterns that geometry cannot separate from normal behaviour (note merged back after a machine count — video 44 vs clean 43/45; safe left open — video 20; collector bag without document — 17; count started only as the client left — 34; issue long after a counting-like motion) emit candidates at 0.40–0.48, below the verdict threshold, and only cross it when Layer C supports them. On the CPU profile (no VLM) they never fire.
 - **A-18 Handover.** A handover is an active reach (wrist ≥10 % of the diagonal ahead of the torso and at/over the counter line), not hand proximity: two people seated across a desk keep their hands within reach all the time.
+
+- **A-12 Completion audit.** `Analyzer.deadline_sec` is a soft budget. Untrusted API uploads use a persistent
+  spawned inference process with a separate parent-enforced timeout (270 s by default). A timed-out job is
+  failed explicitly. We do not infer a clean verdict from a timeout or unavailable model.
+- **A-13 Validation scope.** LOVO holds out content groups for threshold fitting, but rule discovery and prompt
+  engineering used all training videos. Reported LOVO numbers are development estimates, not unbiased unseen
+  performance. Augmentations do not substitute for an independently filmed camera-angle test.
+- **A-14 Shipping profile.** Qwen3-VL-4B-Instruct NF4 with contrastive scoring is the measured GPU-small default.
+  Catch-all is experimental and disabled explicitly. CPU mode cannot verify `needs_support` candidates.

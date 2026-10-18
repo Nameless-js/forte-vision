@@ -1,0 +1,42 @@
+{
+  "n_runs": 12,
+  "verdict_agreement": 0.8333333333333334,
+  "timecode_within_tol": 1.0,
+  "tol_s": 3.0,
+  "role_ok": 1.0,
+  "per_variant": {
+    "hflip": {
+      "verdict_agreement": 1.0,
+      "timecode_within_tol": 1.0,
+      "role_ok": 1.0
+    },
+    "rot+10": {
+      "verdict_agreement": 1.0,
+      "timecode_within_tol": 1.0,
+      "role_ok": 1.0
+    },
+    "rot-10": {
+      "verdict_agreement": 0.5,
+      "timecode_within_tol": 1.0,
+      "role_ok": 1.0
+    }
+  },
+  "gate_verdict_ge_0.90": false,
+  "gate_timecode_ge_0.80": true,
+  "n_errors": 0,
+  "n_videos": 4,
+  "variants": [
+    "hflip",
+    "rot+10",
+    "rot-10"
+  ],
+  "vlm_enabled": true,
+  "scope": "subset",
+  "n_expected": 12,
+  "coverage_fraction": 1.0,
+  "missing_or_unprocessed": 0,
+  "until_utc": "2026-10-18T04:26:32.623754+00:00",
+  "full_suite_expected_runs": 378,
+  "full_suite_coverage_fraction": 0.031746031746031744,
+  "scope_reason": "User requested fast completion; selected four videos and three transformations with a two-minute scoring budget"
+}

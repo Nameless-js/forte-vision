@@ -1,0 +1,22 @@
+{
+ "env": {
+  "HF_HUB_OFFLINE": "1",
+  "TRANSFORMERS_OFFLINE": "1",
+  "HF_DATASETS_OFFLINE": "1"
+ },
+ "audit": {
+  "network_calls_in_processing_path": [],
+  "face_patterns": [],
+  "face_dependencies": []
+ },
+ "run": {
+  "ok": true,
+  "verdict": "no_violation",
+  "n_violations": 0,
+  "elapsed_s": 55.0,
+  "schema_problems": [],
+  "vlm_calls": 4
+ },
+ "network_attempts": [],
+ "ok": true
+}

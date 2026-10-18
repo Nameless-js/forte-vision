@@ -1,0 +1,13 @@
+.git
+.venv
+models
+public
+data
+reports
+analysis
+tmp
+build
+dist
+**/__pycache__
+*.egg-info
+.env

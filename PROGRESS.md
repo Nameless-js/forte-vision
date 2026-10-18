@@ -110,3 +110,82 @@ hallucinated full pose; glass-door optics put real people at 0.35-0.55; only beh
 | 016 | 4B default + R10 empty start + laptop probe + disengage time | 18/22 / 8 | 19/22 / 14 | departures AUC 0.86, overall 0.72 |
 | 017 | anchor det-gating, at-window by distance, R9c visitor change, equipment-reach exclusion, laptop caps after VLM, cashier-owned phones, per-type VLM weights | **17/22 / 3** | **20/22 / 10** | accuracy 0.81 at config threshold |
 Remaining errors after 017 (config threshold): FN 1 (issue 0.44), 2 (no-id 0.43), 20 (open safe, no candidate), 22 (departure looks like a proper lock — paired with clean 23), 34 (acceptance handover undetected); FP 14 (cashier opening a bag herself), 19 (machine reach read as issue + false desk cash), 31 (cashier arriving = identical to 32 intruder).
+
+### Completion audit ? in progress (2026-10-18)
+
+- Existing tests: 105 passed before changes; expanded suite: 120 passed, including real spawned-process
+  timeout/recovery, verifier-mode policy, and missing-artifact quality-gate checks.
+- Added persistent supervised inference to the reference worker (270 s timeout, explicit failed status,
+  cleanup and next-job recovery); direct Analyzer remains soft-budget.
+- Fixed wheel resource packaging and tested outside the checkout; corrected Docker Python base and CPU
+  setup's torch selection. Docker is unavailable and has not been built.
+- Full HTTP lifecycle passed; final verification is rerunning all checks into reports/final/.
+- Iter_020 wrist-withdrawal safe hypothesis gave the same detection/localization/type metrics as iter_019;
+  reverted it rather than adding an unmeasured inference claim. Default threshold still 0.5.
+- Added source-hash-resumable verification and artifact-based FINAL_REPORT generation. Unmet quality gates
+  must produce nonzero status and remain visible, not a false DONE marker.
+- Full 42-video / nine-variant robustness verification is scheduled as part of the running verification.
+
+### Deadline confirmed ? 12:00 Asia/Qyzylorda (2026-10-18)
+
+- User explicitly requested delivery by 12:00. Full robustness could exceed the remaining time, so the
+  initial video-first fill was stopped; its completed perception caches are preserved.
+- Source hash matched the completed six validation stages before changing scheduling. Evidence lives in
+  reports/final/deadline_continuation.json. Inference code/configuration was not changed for this adjustment.
+- Resumed variant-first (all 42 videos for one transform, then the next), with perception cutoff 11:10 and
+  cached-only verdict scoring cutoff 11:40. Partial coverage is explicitly reported and cannot pass the full
+  378-run robustness gate. Added regression tests for coverage and explicit timezone handling: 122 tests pass.
+- Timing now proven: cold cache 110.7 / 61.8 / 70.2 s on videos 14 / 39 / 4. Slow-VLM test observed two real
+  25 s injected delays, skipped subsequent work and returned a valid result in 54.0 s.
+- Positive-video Python/CLI outputs are identical including JPEG evidence; offline uncached perception/VLM
+  completed in 55.0 s with four VLM scoring calls and zero outbound connection attempts.
+
+### Expedited finish (2026-10-18, after deadline clarification)
+
+- User then requested finishing sooner. The 11:10/11:40 schedule is superseded: stopped the long cache fill
+  and retained completed caches. No inference model, rules or thresholds were changed for this decision.
+- Final robustness smoke test: four videos (1?4), hflip and +/-10-degree rotations, cached perception only,
+  with a two-minute scoring cutoff. Actual coverage is in reports/final/robustness/summary.json. This subset
+  cannot pass the full 378-run robustness requirement.
+- Revalidating result JSONs, rebuilding the deliverable wheel and regenerating the final report. Quality
+  requirements remain unmet and will be stated explicitly; no unconditional production-ready/DONE claim.
+
+### Completion pass finished ? expedited delivery (2026-10-18)
+
+- 122 tests passed; all 43 result JSON files validated. Real HTTP lifecycle, uncached offline execution,
+  positive-video CLI/package equality, and isolated wheel-resource check passed.
+- Cold-cache longest-video maximum: 110.7 s. Slow-VLM watchdog exercised two 25 s delays,
+  returned in 54 s and skipped subsequent work. Hard process timeout/recovery separately unit-tested.
+- Deployment threshold 0.5: 17/22 positives, 1/20 false positives.
+  LOVO: 17/22 positives, 2/20 false positives. Quality targets remain unmet.
+- Expedited robustness: 12/378 full-suite variants (four videos, three transforms), verdict
+  agreement 83.3%. Two verdict changes under -10-degree rotation. This is a smoke test;
+  the full robustness gate is not passed. No long validation jobs are intentionally left running.
+- Final wheel: reports/final/packaging/forte_ai-0.1.0-py3-none-any.whl; weights excluded.
+- FINAL_REPORT.md is regenerated from artifacts. Quality check correctly exits 2. Docker and clean dependency
+  installation remain unverified. Changes are left for review; no external deployment or Git commit performed.
+
+### Frontend integration (2026-10-18)
+
+- Connected frontend/backend/model_adapter.py directly to the local SupervisedAnalyzer. Persistent model
+  process, 250 s hard timeout, explicit cancellation and single active GPU request. Root inference rules,
+  weights and thresholds unchanged. Added cancellation support to the supervisor for server shutdown.
+- Frontend displays real progress/stages and evidence; citation document/clause normalized to title/section.
+  Real analysis is the default, including after loading a new video. Demo remains explicit and labeled.
+- Added scripts/start_app.py: one command starts Vite + the integrated FastAPI API, generates a local key,
+  and defaults to SQLite. The Vite proxy keeps the key server-side. Existing media/history/checks preserved.
+- 140 Python tests passed across engine and frontend backend. React TypeScript/build, all 315 translation
+  entries (both themes / three languages), and feature checks passed.
+- Genuine end-to-end proxy/API/GPU check on video 4 passed in 29.0 s: violation, valid JPEG evidence,
+  normative citation, processing lifecycle, history persistence and upload cleanup. See reports/integration/.
+- Repaired Cyrillic encoding in the earlier delivery/readme notes while updating common startup instructions.
+- Original ML quality limitations remain; integration does not claim improved detection accuracy.
+
+
+## Подготовка GitHub-сдачи (2026-10-18)
+
+- README переписан для запуска жюри с чистого клона: Windows/Linux, GPU/CPU, веса, API, ключ, ограничения и диагностика.
+- `scripts/run.py setup` больше не требует закрытый набор видео: пересборка разметки пропускается, если датасет не предоставлен.
+- В Git включены локальные шрифты frontend; ключи, базы и тестовый runtime исключены.
+- Повторно пройдены 140 тестов, pip check, сборка интерфейса и проверки переводов/функций.
+- Из экспортированного Git-дерева без датасета/весов/секретов повторно пройдены 140 тестов; отдельные npm ci и production-сборка успешны. Python-зависимости при этой проверке использованы из существующей .venv; их полная свежая установка не заявляется.

@@ -58,7 +58,7 @@ def main() -> int:
         if not a.base_url:
             (out / "jobs.sqlite3").unlink(missing_ok=True)
             procs.append(subprocess.Popen([py, "-m", "uvicorn", "server.app:app", "--host", "127.0.0.1", "--port", str(a.port), "--log-level", "warning"], cwd=str(ROOT), env=env))
-            procs.append(subprocess.Popen([py, "-m", "server.worker", "--poll", "0.5"], cwd=str(ROOT), env=env))
+            procs.append(subprocess.Popen([py, "-m", "server.worker", "--poll", "0.5", "--max-jobs", "1"], cwd=str(ROOT), env=env))
             for _ in range(120):
                 try:
                     if requests.get(f"{base}/health", timeout=2).status_code == 200:

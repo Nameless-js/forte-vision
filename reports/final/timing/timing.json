@@ -1,0 +1,98 @@
+{
+ "profile": "gpu-small",
+ "deadline_s": 240,
+ "videos": [
+  {
+   "video_id": 14,
+   "duration_s": 142.5,
+   "wall_s": 110.7,
+   "stage_timings": {
+    "probe": 0.0,
+    "perception": 106.98,
+    "perception.decode": 0.879,
+    "perception.detect": 96.209,
+    "perception.track": 0.212,
+    "perception.pose": 9.634,
+    "perception.total": 106.979,
+    "perception.n_sampled": 713.0,
+    "roles": 0.221,
+    "rules": 0.059,
+    "vlm": 3.468,
+    "report": 0.0,
+    "total": 110.718
+   },
+   "vlm": {
+    "calls": 2,
+    "cached": 0,
+    "skipped_deadline": 0
+   },
+   "within_240": true
+  },
+  {
+   "video_id": 39,
+   "duration_s": 78.7,
+   "wall_s": 61.8,
+   "stage_timings": {
+    "probe": 0.0,
+    "perception": 61.585,
+    "perception.decode": 0.433,
+    "perception.detect": 53.18,
+    "perception.track": 0.143,
+    "perception.pose": 7.801,
+    "perception.total": 61.584,
+    "perception.n_sampled": 394.0,
+    "roles": 0.155,
+    "rules": 0.037,
+    "report": 0.0,
+    "total": 61.766
+   },
+   "vlm": {
+    "calls": 0,
+    "cached": 0,
+    "skipped_deadline": 0
+   },
+   "within_240": true
+  },
+  {
+   "video_id": 4,
+   "duration_s": 72.7,
+   "wall_s": 70.2,
+   "stage_timings": {
+    "probe": 0.0,
+    "perception": 59.433,
+    "perception.decode": 0.404,
+    "perception.detect": 49.53,
+    "perception.track": 0.146,
+    "perception.pose": 9.336,
+    "perception.total": 59.433,
+    "perception.n_sampled": 364.0,
+    "roles": 0.106,
+    "rules": 0.042,
+    "vlm": 2.858,
+    "report": 7.745,
+    "total": 70.172
+   },
+   "vlm": {
+    "calls": 3,
+    "cached": 0,
+    "skipped_deadline": 0
+   },
+   "within_240": true
+  }
+ ],
+ "watchdog": {
+  "video_id": 4,
+  "wall_s": 54.0,
+  "injected_delay_s": 25.0,
+  "slow_calls_observed": 2,
+  "vlm_cutoff_s": 35,
+  "vlm_calls": 2,
+  "skipped_deadline": 1,
+  "returned_before_300": true,
+  "exercised": true,
+  "ok": true,
+  "verdict": "violation"
+ },
+ "max_wall_s": 110.7,
+ "gate_time_le_240": true
+}

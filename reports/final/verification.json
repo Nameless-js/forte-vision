@@ -1,0 +1,59 @@
+{
+  "source_sha256": "69ebb873043634039da23cc300dcd0218c566a3e917f19660c5121b5273d3bf2",
+  "steps": [
+    {
+      "name": "evaluation",
+      "exit_code": 0,
+      "elapsed_s": 70.1
+    },
+    {
+      "name": "offline",
+      "exit_code": 0,
+      "elapsed_s": 57.3
+    },
+    {
+      "name": "api",
+      "exit_code": 0,
+      "elapsed_s": 28.7
+    },
+    {
+      "name": "equivalence",
+      "exit_code": 0,
+      "elapsed_s": 53.3
+    },
+    {
+      "name": "timing",
+      "exit_code": 0,
+      "elapsed_s": 325.6
+    },
+    {
+      "name": "tests",
+      "exit_code": 0,
+      "elapsed_s": 3.3
+    },
+    {
+      "name": "robustness",
+      "exit_code": 0,
+      "elapsed_s": 91.6
+    },
+    {
+      "name": "schema",
+      "exit_code": 0,
+      "elapsed_s": 0.3
+    },
+    {
+      "name": "packaging",
+      "exit_code": 0,
+      "elapsed_s": 2.9
+    },
+    {
+      "name": "quality-gates",
+      "exit_code": 2
+    }
+  ],
+  "ok": false,
+  "inherited_source_sha256": "edebeb3caa5459bd3aa0ef95ce059eb94515c80fcf68cbfc3ce41317c371247e",
+  "deadline_utc": "2026-10-18T07:00:00+00:00",
+  "coverage_policy": "User requested faster completion: bounded cached-only subset; full robustness unverified",
+  "deadline_schedule_superseded": true
+}

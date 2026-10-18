@@ -3,21 +3,20 @@
 #   docker build -t forte-ai .
 #   docker run --gpus all -p 8000:8000 -e FORTE_API_KEY=secret forte-ai
 #
-# Base image: CUDA 12.4 runtime (matches torch 2.6.0+cu124). For a CPU-only host build with
+# Python 3.12 base with CUDA libraries supplied by torch 2.6.0+cu124. For CPU build with
 #   --build-arg TORCH_INDEX=https://download.pytorch.org/whl/cpu --build-arg PROFILE=cpu
-FROM nvidia/cuda:12.4.1-cudnn-runtime-ubuntu22.04
+FROM python:3.12-slim-bookworm
 
 ARG TORCH_INDEX=https://download.pytorch.org/whl/cu124
 ARG PROFILE=gpu-small
 ENV DEBIAN_FRONTEND=noninteractive PYTHONUNBUFFERED=1 PYTHONUTF8=1 PIP_NO_CACHE_DIR=1
 
-RUN apt-get update && apt-get install -y --no-install-recommends python3.12 python3.12-venv python3.12-dev python3-pip git curl libgl1 libglib2.0-0 \
-    && rm -rf /var/lib/apt/lists/* \
-    && python3.12 -m venv /opt/venv
-ENV PATH=/opt/venv/bin:$PATH
+# PyTorch wheels supply CUDA userspace libraries; --gpus all supplies the host driver.
+RUN apt-get update && apt-get install -y --no-install-recommends git curl libgl1 libglib2.0-0 \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
-COPY requirements.txt pyproject.toml ./
+COPY requirements.txt pyproject.toml setup.py MANIFEST.in README.md ./
 RUN pip install --upgrade pip \
     && pip install --index-url ${TORCH_INDEX} torch==2.6.0 torchvision==0.21.0 \
     && grep -viE "^(torch|torchvision)==" requirements.txt > /tmp/req.txt \
@@ -28,7 +27,6 @@ COPY server ./server
 COPY configs ./configs
 COPY kb ./kb
 COPY scripts ./scripts
-COPY data/labels.csv ./data/labels.csv
 RUN pip install -e . --no-deps
 
 # --- weights baked into the image (needs network at build time only) ---

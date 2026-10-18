@@ -1,0 +1,7 @@
+{
+  "prior_source_sha256": "edebeb3caa5459bd3aa0ef95ce059eb94515c80fcf68cbfc3ce41317c371247e",
+  "prior_stages_source_match": true,
+  "deadline_local": "2026-10-18 12:00 Asia/Qyzylorda",
+  "reason": "User explicitly requested delivery before 12:00; full robustness phase stopped, completed caches preserved",
+  "changed_scope": "Validation scheduling and robustness coverage reporting; inference code unchanged"
+}

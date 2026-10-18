@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "video_id": 4,
+  "verdict": "violation",
+  "n_violations": 1,
+  "comparison": "verdict and full violations including evidence JPEGs; excludes job IDs, timings and cache counters",
+  "schema_problems": []
+}

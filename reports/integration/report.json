@@ -1,0 +1,53 @@
+{
+  "ok": true,
+  "steps": [
+    {
+      "name": "frontend HTML served",
+      "ok": true
+    },
+    {
+      "name": "Vite proxy authenticates without a browser API key",
+      "ok": true
+    },
+    {
+      "name": "direct API still requires jury key",
+      "ok": true
+    },
+    {
+      "name": "video uploaded through frontend proxy",
+      "ok": true
+    },
+    {
+      "name": "real inference completed",
+      "ok": true
+    },
+    {
+      "name": "processing lifecycle visible",
+      "ok": true
+    },
+    {
+      "name": "engine result schema and JPEG evidence valid",
+      "ok": true
+    },
+    {
+      "name": "real engine positive result",
+      "ok": true
+    },
+    {
+      "name": "citation fields mapped for React",
+      "ok": true
+    },
+    {
+      "name": "upload cleaned up",
+      "ok": true
+    },
+    {
+      "name": "analysis persisted in history",
+      "ok": true
+    }
+  ],
+  "video_id": 4,
+  "elapsed_s": 29.0,
+  "verdict": "violation",
+  "violations": 1
+}

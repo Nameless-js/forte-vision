@@ -23,7 +23,7 @@ class PerVideo:
 
 def select_by_threshold(cands: list[dict], thr: float, per_type: Optional[dict] = None, max_n: int = 6) -> list[dict]:
     per_type = per_type or {}
-    keep = [c for c in cands if float(c["confidence"]) >= float(per_type.get(c["type_id"], thr))]
+    keep = [c for c in cands if c.get("eligible", True) and float(c["confidence"]) >= float(per_type.get(c["type_id"], thr))]
     keep.sort(key=lambda c: -float(c["confidence"]))
     return sorted(keep[:max_n], key=lambda c: c["t_event"])
 

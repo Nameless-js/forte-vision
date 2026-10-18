@@ -40,10 +40,56 @@ def pct(x):
     return "-" if x is None else f"{100 * x:.0f} %"
 
 
+def evaluate_gates(fd: Path) -> list[dict]:
+    m = load(fd / "metrics.json") or {}
+    cv = m.get("lovo", {})
+    loc = cv.get("localization", {})
+    rob = load(fd / "robustness" / "summary.json") or {}
+    tim = load(fd / "timing" / "timing.json") or {}
+    off = load(fd / "offline" / "offline_report.json") or {}
+    api = load(fd / "api_test" / "api_test_report.json") or {}
+    equiv = load(fd / "api_test" / "equivalence.json") or {}
+    package = load(fd / "packaging" / "report.json") or {}
+    tests_ok = False
+    test_xml = fd / "tests.xml"
+    if test_xml.exists():
+        import xml.etree.ElementTree as ET
+        suites = ET.parse(test_xml).getroot().iter("testsuite")
+        suites = list(suites)
+        tests_ok = bool(suites) and sum(int(x.get("tests", 0)) for x in suites) > 0 and all(int(x.get("failures", 0)) == 0 and int(x.get("errors", 0)) == 0 for x in suites)
+    catch_all = m.get("effective_config", {}).get("vlm", {}).get("catch_all", {}).get("enabled")
+    values = [
+        bool(cv) and cv.get("tp") == 22 and cv.get("fn") == 0 and cv.get("fp", 999) <= 1 and catch_all is False,
+        bool(loc) and loc.get("within_2s", 0) >= .8 and loc.get("within_5s", 0) >= .95 and not m.get("schema_problems") and not m.get("run_errors"),
+        bool(cv) and (cv.get("classification_accuracy") or 0) >= .8,
+        tests_ok,  # includes KB quote tests; legal applicability still requires human review
+        bool(rob) and rob.get("scope") == "full" and not rob.get("n_errors") and rob.get("gate_verdict_ge_0.90") and rob.get("gate_timecode_ge_0.80") and rob.get("role_ok") == 1,
+        bool(tim.get("gate_time_le_240")) and bool((tim.get("watchdog") or {}).get("ok")),
+        bool(off.get("ok")),
+        bool(api.get("ok")) and bool(equiv.get("ok")),
+        None,  # a local wheel check cannot prove fresh dependency setup or a Docker build
+        None,  # generated tables cannot certify that every document is current
+    ]
+    details = [
+        f"LOVO TP={cv.get('tp')}/22, FP={cv.get('fp')}; rule design used this dataset",
+        f"within 2s={loc.get('within_2s')}, within 5s={loc.get('within_5s')}",
+        f"type accuracy={cv.get('classification_accuracy')}; types are team-assigned",
+        "full unit test artifact includes verbatim KB quotation checks" if tests_ok else "full passing test artifact missing",
+        f"scope={rob.get('scope')}, runs={rob.get('n_runs')}, agreement={rob.get('verdict_agreement')}, time={rob.get('timecode_within_tol')}, role={rob.get('role_ok')}",
+        "cold timing and actually exercised slow-inference watchdog; hard process timeout tested separately",
+        "full perception/VLM path with socket guard; see offline_report.json",
+        "real HTTP lifecycle plus package/CLI evidence equality",
+        f"isolated wheel resources={package.get('ok')}; Docker unavailable, fresh dependency installation not verified",
+        "see narrative for unmet gates and exact reproduction commands",
+    ]
+    return [{"name": name, "requirement": requirement, "status": "PASSED" if v is True else "UNMET" if v is False else "NOT VERIFIED", "detail": detail} for (name, requirement), v, detail in zip(GATES, values, details)]
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--final", default=str(ROOT / "reports" / "final"))
     ap.add_argument("--out", default=str(ROOT / "FINAL_REPORT.md"))
+    ap.add_argument("--check", action="store_true", help="exit nonzero unless all Definition of Done gates are proven")
     a = ap.parse_args()
     fd = Path(a.final)
     m = load(fd / "metrics.json") or {}
@@ -97,12 +143,18 @@ def main() -> int:
         for r in rows:
             lines.append(f"| {r['video_id']} | {r['label']} | {r['t_label'] or '-'} | {r['team_type'] or '-'} | {r['pred_lovo']} | {r['t_pred_lovo'] or '-'} | {r['dt_lovo'] or '-'} | {r['pred_type_lovo'] or '-'} | {r['type_ok_lovo'] or '-'} |")
         lines.append("")
+    gates = evaluate_gates(fd)
+    lines += ["## Definition of Done gates", "", "These are internal engineering targets, not a claim about the jury score.", "", "| gate | status | evidence / limitation |", "|---|---|---|"]
+    lines += [f"| {g['name']} | {g['status']} | {g['detail']} |" for g in gates]
+    lines += [""]
+    fd.mkdir(parents=True, exist_ok=True)
+    (fd / "gates.json").write_text(json.dumps(gates, ensure_ascii=False, indent=2), encoding="utf-8")
     narrative = ROOT / "docs" / "final_report_narrative.md"
     if narrative.exists():
         lines += [narrative.read_text(encoding="utf-8")]
     Path(a.out).write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(f"wrote {a.out}")
-    return 0
+    return 2 if a.check and any(g["status"] != "PASSED" for g in gates) else 0
 
 
 if __name__ == "__main__":

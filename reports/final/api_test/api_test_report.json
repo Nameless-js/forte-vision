@@ -1,0 +1,57 @@
+{
+ "steps": [
+  {
+   "name": "server up",
+   "ok": true,
+   "detail": "http://127.0.0.1:8011"
+  },
+  {
+   "name": "401 without key",
+   "ok": true,
+   "detail": "401"
+  },
+  {
+   "name": "401 with wrong key",
+   "ok": true,
+   "detail": "401"
+  },
+  {
+   "name": "404 unknown job",
+   "ok": true,
+   "detail": "404"
+  },
+  {
+   "name": "POST analyze -> job_id",
+   "ok": true,
+   "detail": "200 {\"job_id\":\"1a9b3417\",\"status\":\"processing\"}"
+  },
+  {
+   "name": "job lifecycle processing -> done",
+   "ok": true,
+   "detail": "status=done elapsed=26s"
+  },
+  {
+   "name": "JSON schema + semantics",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "verdict present",
+   "ok": true,
+   "detail": "no_violation"
+  },
+  {
+   "name": "within 5 min",
+   "ok": true,
+   "detail": "26s"
+  },
+  {
+   "name": "upload deleted after processing",
+   "ok": true,
+   "detail": "[]"
+  }
+ ],
+ "ok": true,
+ "elapsed_s": 26.265096426010132,
+ "job_id": "1a9b3417"
+}

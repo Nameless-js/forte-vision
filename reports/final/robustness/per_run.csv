@@ -1,0 +1,13 @@
+video_id,label,t_label,variant,base_verdict,verdict,verdict_agree,base_t,var_t,dt,time_ok,role_ok,elapsed,error
+1,violation,22.0,hflip,no_violation,no_violation,True,[],[],,,True,7.6,
+1,violation,22.0,rot+10,no_violation,no_violation,True,[],[],,,True,0.1,
+1,violation,22.0,rot-10,no_violation,violation,False,[],[4.21],,,True,10.4,
+2,violation,10.0,hflip,no_violation,no_violation,True,[],[],,,True,0.0,
+2,violation,10.0,rot+10,no_violation,no_violation,True,[],[],,,True,0.0,
+2,violation,10.0,rot-10,no_violation,no_violation,True,[],[],,,True,0.0,
+3,no_violation,,hflip,no_violation,no_violation,True,[],[],,,True,0.0,
+3,no_violation,,rot+10,no_violation,no_violation,True,[],[],,,True,0.0,
+3,no_violation,,rot-10,no_violation,violation,False,[],[12.61],,,True,12.4,
+4,violation,57.0,hflip,violation,violation,True,[55.0],[55.2],0.20000000000000284,True,True,12.2,
+4,violation,57.0,rot+10,violation,violation,True,[55.0],[55.4],0.3999999999999986,True,True,10.5,
+4,violation,57.0,rot-10,violation,violation,True,[55.0],[55.0],0.0,True,True,11.3,

@@ -28,7 +28,7 @@ Layer B — events & rules (forte_ai/events/) — symbolic, temporal, explainabl
    │  hand motion WITH cash at hands), storage dwell, departures, empty-start mode
    │  rules R1a/R1b/R2/R3/R3b/R4/R5/R6/R7/R8/R9a/R9b/R10 → candidates {type_id, t_event, window, conf, facts}
    ▼
-Layer C — local VLM (forte_ai/vlm/, Qwen3-VL-2B-Instruct, transformers, greedy, strict JSON, cached)
+Layer C — local VLM (forte_ai/vlm/, Qwen3-VL-4B-Instruct NF4, contrastive A/B logits in both orders, cached)
    │  per candidate: 6 frames t±4 s with burned-in timestamps + facts + type-specific question
    │  → reject/support/neutral (confidence delta), Russian "what is visible" description
    │  conservative catch-all over 10 s windows (hit must repeat on 2 adjacent windows and not contradict A)
@@ -63,7 +63,7 @@ Verdict & report (forte_ai/report.py)
 6. **Citations are code, not text generation.** `kb/rule_cards.json` is the only source of legal references;
    a test asserts every quote appears verbatim in the stored act text fetched from the official mirror.
 
-## Performance profile (gpu-small, RTX 4060 Laptop 8 GB)
+## Historical benchmark (gpu-small, RTX 4060 Laptop 8 GB; see FINAL_REPORT.md for final measurements)
 
 | stage | longest video (142.5 s) | typical 20 s video |
 |---|---|---|
@@ -73,4 +73,20 @@ Verdict & report (forte_ai/report.py)
 | report (evidence JPEGs) | < 1 s | < 1 s |
 
 Degradation order when over budget (INTEGRATION.md): sample_fps 5→3 → detector input 480→416 → fewer VLM
-windows → VLM off (template descriptions). The watchdog guarantees a rule-based result before 300 s.
+windows → VLM off (template descriptions). The engine budget is soft. The public worker supervises a separate inference process and marks a timed-out job failed at its 270 s limit; it does not invent a clean verdict.
+
+## Completion audit
+
+`server/worker.py` delegates inference to `forte_ai/supervisor.py`. A persistent spawned process keeps
+weights alive; its parent can terminate and recreate it after a hung decoder, Python inference or CUDA call.
+Tests exercise real process timeout, progress forwarding, exception propagation and recovery.
+`Analyzer` itself remains the direct, soft-budget API.
+
+The current default uses contrastive 4B NF4 verification. The old generative JSON verifier remains optional;
+its explicit contradictions veto candidates. Rules tagged `needs_support` require positive verification
+in either mode. Experimental catch-all is disabled by default and is not a measured claim of unseen-type
+coverage. A switch to JSON mode or catch-all requires fresh evaluation.
+
+The wheel build copies canonical `configs/` and `kb/` into package resources and includes the JSON schema.
+Docker uses Python 3.12 with CUDA userspace libraries from PyTorch wheels. Docker build/runtime has not been
+verified on this Windows host. Full quality gates are assessed from artifacts, not documentation assertions.

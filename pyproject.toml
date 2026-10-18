@@ -43,6 +43,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "pytest>=8.0",
+    "httpx>=0.27,<1",
     "httpx>=0.27",
     "matplotlib>=3.8",
     "beautifulsoup4>=4.12",
@@ -58,7 +59,7 @@ forte-ai = "forte_ai.cli:main"
 include = ["forte_ai*", "server*"]
 
 [tool.setuptools.package-data]
-forte_ai = ["kb/*.json", "kb/laws/*.json", "vlm/*.txt"]
+forte_ai = ["result_schema.json", "kb_data/*.json", "kb_data/laws/*.json", "configs/*.yaml", "vlm/*.txt"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

@@ -1,5 +1,5 @@
 # --- data hygiene: never commit videos or extracted frames ---
-public/
+/public/
 *.mov
 *.MOV
 *.mp4
@@ -52,3 +52,21 @@ tmp/
 
 # raw fetched act pages (re-fetch with scripts/kb_build.py --fetch)
 data/laws_raw/
+
+# Generated validation payloads may embed dataset frames; keep them local.
+reports/**/job_result_full.json
+reports/**/cli_result.json
+reports/**/vlm-*/
+reports/**/vlm_cache_*/
+reports/**/watchdog-*/
+*.whl
+
+# Local databases, secrets and generated integration runtime
+*.sqlite
+*.sqlite-journal
+*.db
+.env.*
+!.env.example
+.api-key
+reports/**/runtime/
+*.tsbuildinfo

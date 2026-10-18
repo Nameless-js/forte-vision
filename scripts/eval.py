@@ -90,6 +90,7 @@ def main() -> int:
 
     pvs: list[PerVideo] = []
     schema_problems = {}
+    run_errors = {}
     t_all = time.time()
     trace_f = open(out / "hang_trace.txt", "w", encoding="utf-8")
     for i, r in enumerate(rows):
@@ -100,6 +101,7 @@ def main() -> int:
         try:
             res = an.analyze(vp, deadline_sec=a.deadline, use_cache=not a.no_cache, collect_all=True)
         except Exception as e:  # noqa: BLE001
+            run_errors[r.video_id] = f"{type(e).__name__}: {e}"
             print(f"[{i + 1}/{len(rows)}] id {r.video_id}: ERROR {e}", flush=True)
             pvs.append(PerVideo(r.video_id, r.label, r.t_sec, r.content_md5 or str(r.video_id), [], team.get(r.video_id), time.time() - t0, {}))
             continue
@@ -146,6 +148,8 @@ def main() -> int:
         "type_confusion_lovo": confusion_by_type(lovo["rows"]),
         "timing": {"mean_s": sum(times) / len(times) if times else 0, "max_s": max(times) if times else 0, "max_video": longest.video_id if longest else None, "total_wall_s": total_wall, "stage_mean": {k: sum(v) / len(v) for k, v in stage_sum.items()}, "stage_max": {k: max(v) for k, v in stage_sum.items()}},
         "schema_problems": schema_problems,
+        "run_errors": run_errors,
+        "effective_config": an.cfg.to_dict(),
         "team_types_available": bool(team),
     }
     (out / "metrics.json").write_text(json.dumps(metrics, ensure_ascii=False, indent=1), encoding="utf-8")
@@ -200,7 +204,8 @@ def main() -> int:
     (out / "README.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     print("\n".join(lines[:12]))
     print(f"wrote {out}")
-    return 0
+    an.close()
+    return 0 if pvs and not run_errors and not schema_problems else 2
 
 
 if __name__ == "__main__":

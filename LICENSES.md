@@ -12,6 +12,7 @@ via the Hub API and package metadata).
 | Grounding DINO tiny | `IDEA-Research/grounding-dino-tiny` (HF) | Apache-2.0 | open-vocabulary object detection (person, cash, bag, document, id card, phone, storage unit, counting machine, laptop) |
 | Grounding DINO base | `IDEA-Research/grounding-dino-base` (HF) | Apache-2.0 | optional, `gpu-large` profile |
 | RTMPose-s (body7) + YOLOX-tiny (unused detector) | `rtmlib` model zoo (OpenMMLab, ONNX) | Apache-2.0 (rtmlib, MMPose) | 2-D body keypoints (wrists/elbows); the 5 facial keypoints are never used for identification |
+| Qwen3-VL-4B-Instruct | `Qwen/Qwen3-VL-4B-Instruct` (HF) | Apache-2.0 | default `gpu-small` contrastive verifier, NF4 quantization |
 | Qwen3-VL-2B-Instruct | `Qwen/Qwen3-VL-2B-Instruct` (HF) | Apache-2.0 | local verifier / describer / catch-all (`gpu-small`) |
 | Qwen3-VL-8B-Instruct | `Qwen/Qwen3-VL-8B-Instruct` (HF) | Apache-2.0 | optional, `gpu-large` profile |
 

@@ -113,7 +113,22 @@ def make_variant(src: Path, variant: str, dst: Path) -> None:
         proc.stdin.write(out.tobytes())
     if proc is not None:
         proc.stdin.close()
-        proc.wait()
+        if proc.wait() != 0:
+            raise RuntimeError(f"variant encoder failed: {dst}")
+
+
+def until_epoch(value: str | None) -> float:
+    if value is None:
+        return float("inf")
+    from datetime import datetime
+    timestamp = datetime.fromisoformat(value)
+    if timestamp.tzinfo is None:
+        raise ValueError("--until-utc requires an explicit UTC offset")
+    return timestamp.timestamp()
+
+
+def full_scope(n_videos: int, variants: list[str], n_runs: int) -> bool:
+    return n_videos == 42 and set(variants) == set(VARIANTS) and n_runs == 42 * len(VARIANTS)
 
 
 def main() -> int:
@@ -128,7 +143,11 @@ def main() -> int:
     ap.add_argument("--perception-only", action="store_true", help="phase 1: only fill the perception cache for all variants")
     ap.add_argument("--config", default=None, help="config overlay for the analyzer (phase 2)")
     ap.add_argument("--tol", type=float, default=3.0)
+    ap.add_argument("--until-utc", default=None, help="stop between videos at an ISO timestamp with UTC offset")
+    ap.add_argument("--cached-only", action="store_true", help="evaluate only variants with existing perception; report missing coverage")
+    ap.add_argument("--variant-first", action="store_true", help="cover all videos of one transform before the next transform")
     a = ap.parse_args()
+    stop_at = until_epoch(a.until_utc)
     logging.basicConfig(level=logging.WARNING)
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
@@ -142,9 +161,14 @@ def main() -> int:
             dst = AUG_DIR / v / f"{r.video_id:02d}.mp4"
             make_variant(ROOT / r.path, v, dst)
             jobs.append((r, v, dst))
-    print(f"augmented files ready: {len(jobs)}")
+    expected_jobs = len(jobs)
+    if a.variant_first:
+        jobs.sort(key=lambda item: (a.variants.index(item[1]), item[0].video_id))
+    print(f"augmented files ready: {len(jobs)}", flush=True)
     if a.only_make:
         return 0
+    if not jobs:
+        raise ValueError("no labeled videos/variants selected")
     if a.perception_only:
         # phase 1: fill the perception cache for every variant (rule/VLM-independent, GPU-heavy)
         from forte_ai.config import Config
@@ -152,16 +176,25 @@ def main() -> int:
 
         eng = PerceptionEngine(Config.load(profile=a.profile))
         t_all = time.time()
+        processed = 0
+        errors = []
         for i, (r, v, dst) in enumerate(jobs):
+            if time.time() >= stop_at:
+                break
             t0 = time.time()
             try:
                 pr = eng.run(dst, use_cache=True)
                 status = "cache" if pr.from_cache else f"{time.time() - t0:.0f}s"
             except Exception as e:  # noqa: BLE001
                 status = f"ERROR {e}"
+                errors.append({"video_id": r.video_id, "variant": v, "error": str(e)})
+            processed += 1
             print(f"[{i + 1}/{len(jobs)}] id {r.video_id:>2} {v:<9} {status}", flush=True)
-        print(f"perception cache filled for {len(jobs)} variants in {time.time() - t_all:.0f} s")
-        return 0
+        progress = {"processed": processed, "expected": expected_jobs, "errors": errors, "until_utc": a.until_utc, "budget_exhausted": processed < expected_jobs, "elapsed_s": round(time.time() - t_all, 1)}
+        (out / "perception_progress.json").write_text(json.dumps(progress, indent=2), encoding="utf-8")
+        print(json.dumps(progress), flush=True)
+        eng.unload()
+        return 0 if not errors else 2
 
     from forte_ai.analyzer import Analyzer
 
@@ -169,12 +202,22 @@ def main() -> int:
     if a.no_vlm:
         an.cfg.set("vlm.enabled", False)
         an.vlm = None
+    if a.cached_only:
+        kept_jobs = []
+        for row, variant, path in jobs:
+            info = probe(path)
+            if an.perception.cache.path(info.content_md5, an.perception._cfg_hash()).exists():
+                kept_jobs.append((row, variant, path))
+        jobs = kept_jobs
+        print(f"cached variants available: {len(jobs)}/{expected_jobs}", flush=True)
     base: dict[int, dict] = {}
     results = []
     for r in rows:
         res = an.analyze(ROOT / r.path, use_cache=True)
         base[r.video_id] = res
     for r, v, dst in jobs:
+        if time.time() >= stop_at:
+            break
         t0 = time.time()
         try:
             res = an.analyze(dst, use_cache=True)
@@ -214,14 +257,15 @@ def main() -> int:
         xs = [x for x in results if x["variant"] == v]
         tv = [x for x in xs if x["time_ok"] is not None]
         per_variant[v] = {"verdict_agreement": sum(1 for x in xs if x["verdict_agree"]) / len(xs) if xs else None, "timecode_within_tol": (sum(1 for x in tv if x["time_ok"]) / len(tv)) if tv else None, "role_ok": sum(1 for x in xs if x["role_ok"]) / len(xs) if xs else None}
-    summary = {"n_runs": n, "verdict_agreement": agree, "timecode_within_tol": time_ok, "tol_s": a.tol, "role_ok": roles, "per_variant": per_variant, "gate_verdict_ge_0.90": agree >= 0.90, "gate_timecode_ge_0.80": (time_ok is None) or time_ok >= 0.80}
+    summary = {"n_runs": n, "verdict_agreement": agree, "timecode_within_tol": time_ok, "tol_s": a.tol, "role_ok": roles, "per_variant": per_variant, "gate_verdict_ge_0.90": agree >= 0.90, "gate_timecode_ge_0.80": time_ok is not None and time_ok >= 0.80, "n_errors": sum(bool(x["error"]) for x in results), "n_videos": len(rows), "variants": a.variants, "vlm_enabled": an.vlm is not None, "scope": "full" if full_scope(len(rows), a.variants, n) else "subset", "n_expected": expected_jobs, "coverage_fraction": n / expected_jobs if expected_jobs else 0, "missing_or_unprocessed": expected_jobs - n, "until_utc": a.until_utc}
     (out / "summary.json").write_text(json.dumps(summary, ensure_ascii=False, indent=1), encoding="utf-8")
     with open(out / "per_run.csv", "w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=list(results[0].keys()) if results else ["video_id"])
         w.writeheader()
         w.writerows(results)
     print(json.dumps(summary, indent=1))
-    return 0
+    an.close()
+    return 0 if n and not summary["n_errors"] else 2
 
 
 if __name__ == "__main__":

@@ -82,8 +82,15 @@ def main() -> int:
     t0 = time.time()
     try:
         an = Analyzer(profile=a.profile)
-        res = an.analyze(a.video, use_cache=not a.no_cache)
+        if a.no_cache and an.vlm is not None:
+            import tempfile
+            an.vlm.cache_dir = Path(tempfile.mkdtemp(prefix="vlm-offline-", dir=out))
+        res = an.analyze(a.video, use_cache=not a.no_cache, collect_all=True)
         probs = validate_result(res)
+        expected_vlm = an.vlm is not None and bool(res.get("candidates_all"))
+        executed_vlm = not expected_vlm or res.get("vlm", {}).get("calls", 0) > 0
+        if a.no_cache and not executed_vlm:
+            probs.append("VLM candidates existed but no uncached VLM inference completed")
         report["run"] = {"ok": not probs, "verdict": res["verdict"], "n_violations": len(res["violations"]), "elapsed_s": round(time.time() - t0, 1), "schema_problems": probs, "vlm_calls": res.get("vlm", {}).get("calls")}
     except Exception as e:  # noqa: BLE001
         report["run"] = {"ok": False, "error": f"{type(e).__name__}: {e}"}

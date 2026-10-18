@@ -1,87 +1,127 @@
-# INTEGRATION — how the web team plugs the engine in
+# Объединённое приложение
 
-The engine is a Python package (`forte_ai`). The recommended wiring is **in-process**: the backend's worker
-imports `forte_ai.Analyzer`, loads the models once and calls `analyze()` per job. The reference server in
-`server/` shows the complete lifecycle (upload → queue → worker → status → result) and can be used as-is.
+Для текущего `frontend/` используйте из корня `.venv/Scripts/python scripts/start_app.py` и откройте
+http://127.0.0.1:5173. API: порт 8000; ключ создаётся в frontend/.env и подставляется Vite на сервере.
+Backend `frontend.backend.main` напрямую вызывает процессный адаптер `forte_ai`; отдельный server.worker
+для этого запуска не требуется. Хранилище по умолчанию — SQLite. Реальный анализ включён по умолчанию.
+Фронтенд принимает `progress`/`stage`, а адаптер нормализует нормативные поля title/section.
+Лимит процесса модели для веб-приложения — 250 с, внешнее ожидание — 270 с.
 
-## 1. Package API (primary)
+Ниже описан самостоятельный референсный API движка. Для объединённого приложения главный запуск указан выше.
+
+# INTEGRATION ? connecting the local engine
+
+## Public uploads: process-supervised API
+
+The reference server uses a persistent spawned inference process. Model weights stay loaded between jobs.
+The parent worker enforces `FORTE_HARD_TIMEOUT_S` (default 270 seconds, must be below 300), including child
+startup. On timeout it terminates the inference process, records `status: failed`, deletes the upload,
+and starts a fresh inference process for the next job. It never converts a timeout into `no_violation`.
+Process cleanup has up to two 2-second waits. Queue waiting and HTTP upload time are additional: one GPU
+processes one video at a time, so concurrent requests do not have an unconditional five-minute guarantee.
+
+PowerShell, terminal 1:
+
+```powershell
+$env:FORTE_API_KEY = "replace-with-your-secret"
+.venv/Scripts/python -m server.worker --profile gpu-small
+```
+
+PowerShell, terminal 2 (set the same key):
+
+```powershell
+$env:FORTE_API_KEY = "replace-with-your-secret"
+.venv/Scripts/python -m uvicorn server.app:app --host 0.0.0.0 --port 8000
+```
+
+Linux uses `export FORTE_API_KEY=...` and `.venv/bin/python`.
+Both processes must share `FORTE_DB_PATH` and `FORTE_UPLOAD_DIR` if overriding the defaults.
+`FORTE_CACHE_DIR` overrides the inference cache location.
+
+* `POST /api/v1/analyze`, multipart field `file`, header `X-API-Key`: returns `{job_id,status:processing}`.
+* `GET /api/v1/jobs/{job_id}`, same header: returns `processing`, `done` with the result, or `failed` with an error.
+* Missing/wrong key: 401; unknown job: 404; unsupported extension: 400; upload over configured limit: 413.
+* SQLite persists jobs and progress. The uploaded video is deleted after the worker handles it.
+* `/health` confirms the HTTP process is alive, not that the models have warmed up.
+
+For another backend worker, use the same supervision boundary:
 
 ```python
-from forte_ai import Analyzer, AnalysisError
+from forte_ai.supervisor import SupervisedAnalyzer
 
-analyzer = Analyzer(device="auto", config="configs/default.yaml")   # loads all models ONCE (~10–30 s)
-# optional: analyzer.warmup()  # load the VLM too, so the first job is not slower
-
-def on_progress(fraction: float, stage_msg: str):   # 0.0..1.0, Russian stage text for the UI
-    job.progress = fraction; job.stage = stage_msg
-
+# Create/use in one queue worker; no simultaneous calls on the same instance.
+# On Windows, the application entry point must have an if __name__ == "__main__" guard.
+analyzer = SupervisedAnalyzer(profile="gpu-small", hard_timeout_s=270)
 try:
-    result = analyzer.analyze("path/to/video.mov", on_progress=on_progress, deadline_sec=240)
-except AnalysisError as e:
-    ...  # unrecoverable: corrupt file, no video stream, etc.
+    result = analyzer.analyze("upload.mov", deadline_sec=240,
+                              on_progress=lambda fraction, stage: print(fraction, stage))
+except Exception:
+    # The application records a failed job, never a clean verdict.
+    raise
+finally:
+    analyzer.close()
 ```
 
-* `result` is the ТЗ §10 JSON (`job_id`, `status`, `verdict`, `violations[]` with `type`, `timecode_sec`,
-  `description`, `evidence_frames[]{timestamp_sec,image_base64}`) plus extra keys the backend may pass through
-  or drop: `type_id`, `rule{document,clause,quote,url}`, `confidence`, `facts[]`, `source`, `t_window`,
-  `stage_timings`, `calibration`, `events`, `vlm`, `models`, `engine_version`, `profile`, `video`, `deadline`.
-  The backend should set its own `job_id`/`status` (or pass `job_id=` to `analyze`).
-* Thread safety: `analyze()` is serialised by an internal lock — call it from several threads if you like, the
-  calls run one after another (one GPU, one model set). For parallel jobs run several worker processes.
-* Models are loaded once per process; GPU memory is kept between videos (the VLM is loaded lazily on the first
-  video that needs it; on 8 GB GPUs the detector is freed before the VLM and reloaded on the next video).
-* Deterministic: fixed seeds, greedy decoding, cached perception keyed by file content.
-* Offline: after `python scripts/download_weights.py` the process works with `HF_HUB_OFFLINE=1
-  TRANSFORMERS_OFFLINE=1` and no network (see `scripts/offline_check.py`).
-* `deadline_sec` (default 240): the VLM stages stop at `time.vlm_cutoff_s` (200 s) and the rule-based result is
-  returned; the result carries `deadline.within_deadline`. The service never exceeds 300 s for the training
-  videos on the development GPU (see `reports/timing/`).
+## Direct Python API and CLI
 
-## 2. CLI (subprocess wiring)
-
+```python
+from forte_ai import Analyzer
+analyzer = Analyzer(profile="gpu-small")
+try:
+    result = analyzer.analyze("video.mov", deadline_sec=240)
+finally:
+    analyzer.close()
 ```
-python -m forte_ai analyze video.mov --out result.json [--evidence-dir frames/] [--profile gpu-small] [--deadline 240]
+
+Direct `Analyzer` is lock-serialised and useful for trusted batch evaluation. Its `deadline_sec` is a
+**soft budget**: it stops new VLM work, but cannot interrupt an executing CUDA call or video decoder.
+Use `SupervisedAnalyzer` or the reference worker for a hard process boundary.
+
+```text
+python -m forte_ai analyze video.mov --out result.json --profile gpu-small
 python -m forte_ai batch inbox/ --out results/
 ```
-Exit code 0 = valid result written; 3 = result written but it failed schema validation (should not happen);
-non-zero otherwise. Each call loads the models (≈10–30 s) — use the package API or the worker for throughput.
 
-## 3. Reference server (fallback / self-test)
+The result follows `forte_ai/result_schema.json`: `job_id`, `status`, `verdict`, and `violations[]` with
+`type`, `timecode_sec`, `description`, and 1?3 JPEG/base64 `evidence_frames`. Additional fields include
+`type_id`, deterministic `rule{document,clause,quote,url}`, confidence, facts, timings, calibration and VLM
+metadata. Do not display internal calibration as a user decision. Show the evidence and normative source.
+UI verdicts: `no_violation` → «Нарушение не обнаружено»; `violation` → «Обнаружены признаки возможных нарушений».
+The result requires human review.
 
+## Models, offline execution and packaging
+
+The measured `gpu-small` profile uses Grounding DINO tiny, RTMPose, and **Qwen3-VL-4B-Instruct NF4**.
+The VLM compares two descriptions in both orders, then can generate a neutral Russian description.
+Experimental catch-all detection is disabled by default; enable it explicitly only for a separately
+measured experiment. CPU mode has no VLM and cannot report candidates that require VLM support.
+
+Download weights once with `python scripts/download_weights.py --profile gpu-small`. On a new host,
+transfer both `models/hf` and RTMPose's `~/.cache/rtmlib` files, or run that download script before going
+offline. Set `FORTE_MODELS_DIR` if the HF weights live elsewhere. After download, the socket-guarded
+`offline-check --no-cache` verifies local inference.
+
+The wheel bundles default/profile configs, the JSON result schema and the normative KB. It does not
+bundle multi-GB model weights. `python scripts/packaging_check.py` tests the wheel outside the source tree.
+This test uses installed dependencies; it does not prove a clean dependency installation.
+
+Docker uses Python 3.12 and PyTorch's CUDA wheels; the host needs the NVIDIA driver and GPU container
+support. `docker build -t forte-ai .`, then `docker run --gpus all -p 8000:8000 -e FORTE_API_KEY=... forte-ai`.
+Docker is unavailable on the development host: its build and runtime remain unverified.
+
+## Validation and remaining limitations
+
+```text
+python scripts/run.py verify
+python scripts/run.py verify --resume
 ```
-set FORTE_API_KEY=<key>                     # Windows;  export FORTE_API_KEY=<key> on Linux
-python -m server.worker --profile gpu-small  # process 1: owns the models, processes the SQLite queue
-uvicorn server.app:app --host 0.0.0.0 --port 8000   # process 2: thin API
-```
-* `POST /api/v1/analyze` (multipart `file`, `.mov`) → `{"job_id": "...", "status": "processing"}`
-* `GET /api/v1/jobs/{job_id}` → `{"job_id","status": "processing|done|failed","progress","stage", ...result}`
-* Header `X-API-Key` is required on both; otherwise **401**. Unknown job → 404; non-.mov → 400.
-* Jobs are persisted in SQLite (`FORTE_DB_PATH`), uploads in `FORTE_UPLOAD_DIR`; the uploaded file is deleted
-  after processing (data hygiene). Progress from `on_progress` is written to the job row and exposed in
-  `GET`. Jobs stuck in `processing` for > 15 min (worker crash) are marked `failed`.
-* `python scripts/run.py api-test` starts both processes, uploads a video, polls until done, validates the JSON
-  against `forte_ai/result_schema.json` and checks the 401/404 paths.
-* Docker: `docker build -t forte-ai . && docker run --gpus all -p 8000:8000 -e FORTE_API_KEY=... forte-ai`
-  (weights are baked in during the build; the container runs with `HF_HUB_OFFLINE=1`).
 
-## 4. Alternative wiring
+Verification records each stage in `reports/final/verification.json`. Resume reuses successful stages
+only when the Python/config source hash matches. `FINAL_REPORT.md` is generated from actual artifacts;
+`--check` returns nonzero when quality requirements remain unmet. Successful tests do not mean the model
+has met detection/localization targets. See FINAL_REPORT.md and LIMITATIONS.md before deploying.
 
-* **Folder queue**: a watcher moves `inbox/*.mov` to `processing/`, calls `analyzer.analyze()` and writes
-  `results/<job_id>.json`; the frontend polls the results folder. Simple and robust for one GPU box.
-* **Redis queue** (RQ/Celery): the API enqueues `{job_id, path}`; one worker process with a module-level
-  `Analyzer` consumes jobs (`concurrency=1` per GPU); progress is written to Redis `job:<id>:progress`.
-* Any of these must keep **one Analyzer per process** and run jobs sequentially per GPU.
-
-## 5. Handling failures and the 5-minute limit
-
-* Return `status: processing` immediately after upload; the jury polls.
-* The engine's own budget is 240 s (configurable); the worst training video (142 s) takes well under that on
-  an RTX 4060 Laptop (see `reports/timing/timing.json`). If your hardware is slower, lower
-  `video.sample_fps` (5 → 3), `perception.detector.input_short_side` or disable the catch-all
-  (`vlm.catch_all.enabled: false`) in a config overlay; the order of degradation is fps → resolution → VLM
-  windows → VLM off.
-* On `AnalysisError` or any exception mark the job `failed` with a short error string; never return an empty
-  `done`.
-* Verdict wording for the UI: `no_violation` → «Нарушение не обнаружено»; `violation` → «Обнаружены признаки
-  возможных нарушений» (ТЗ §4). The result is a hint for a human reviewer, not a legal conclusion — show the
-  `description` and the `rule` (document, clause, quote, URL) next to the evidence frames.
+For this delivery the user set a 12:00 deadline. The deadline continuation preserves previously measured
+checks and explicitly reports a subset of robustness runs; it is not a full-suite pass. Its source-integrity
+proof and exact schedule are under `reports/final/deadline_continuation.json`. Resume the full `verify`
+when time permits to measure the remaining transforms.

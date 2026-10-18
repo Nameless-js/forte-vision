@@ -1,0 +1,317 @@
+{
+ "job_id": "1a9b3417",
+ "status": "done",
+ "progress": 1.0,
+ "stage": "Готово",
+ "verdict": "no_violation",
+ "engine_version": "0.1.0",
+ "profile": "gpu-small",
+ "video": {
+  "path": "1a9b3417.mov",
+  "duration_s": 25.933,
+  "fps": 29.923,
+  "width": 464,
+  "height": 848,
+  "content_md5": "767f2a65c96f8253bbe8e2f9d700e2a3"
+ },
+ "calibration": {
+  "frame_w": 464,
+  "frame_h": 848,
+  "cashier_track": 1,
+  "cashier_score": 0.803,
+  "cashier_center_norm": [
+   0.483,
+   0.601
+  ],
+  "cashier_hull_norm": [
+   [
+    0.208,
+    0.435
+   ],
+   [
+    0.208,
+    0.435
+   ],
+   [
+    0.21,
+    0.434
+   ],
+   [
+    0.487,
+    0.4
+   ],
+   [
+    0.516,
+    0.402
+   ],
+   [
+    0.581,
+    0.411
+   ],
+   [
+    0.626,
+    0.421
+   ],
+   [
+    0.629,
+    0.767
+   ],
+   [
+    0.621,
+    0.769
+   ],
+   [
+    0.61,
+    0.773
+   ],
+   [
+    0.593,
+    0.776
+   ],
+   [
+    0.494,
+    0.788
+   ],
+   [
+    0.322,
+    0.781
+   ],
+   [
+    0.213,
+    0.76
+   ]
+  ],
+  "counter_point_norm": [
+   0.438,
+   0.512
+  ],
+  "counter_normal": [
+   0.265,
+   0.964
+  ],
+  "counter_confidence": 1.0,
+  "client_tracks": [
+   3
+  ],
+  "collector_tracks": [],
+  "other_tracks": [
+   2,
+   4,
+   5
+  ],
+  "workplace_objects_norm": {
+   "counting_machine": [
+    0.16,
+    0.525
+   ],
+   "storage": [
+    0.773,
+    0.503
+   ],
+   "laptop": [
+    0.572,
+    0.474
+   ]
+  },
+  "storage_point_norm": [
+   0.779,
+   0.62
+  ],
+  "counting_machine_point_norm": [
+   0.16,
+   0.525
+  ],
+  "track_scores": {
+   "1": {
+    "presence": 0.992,
+    "static": 0.822,
+    "early": 1.0,
+    "objects": 0.659,
+    "cash": 0.391,
+    "det": 0.674,
+    "score": 0.803,
+    "n": 129,
+    "median": [
+     223.93675231933594,
+     509.65086669921874
+    ]
+   },
+   "2": {
+    "presence": 0.054,
+    "static": 0.84,
+    "early": 1.0,
+    "objects": 0.492,
+    "cash": 0.5,
+    "det": 0.434,
+    "score": 0.44,
+    "n": 7,
+    "median": [
+     26.850991010665894,
+     279.7712158203125
+    ]
+   },
+   "3": {
+    "presence": 0.977,
+    "static": 0.438,
+    "early": 1.0,
+    "objects": 0.722,
+    "cash": 0.043,
+    "det": 0.722,
+    "score": 0.682,
+    "n": 127,
+    "median": [
+     182.35070037841797,
+     358.32322998046874
+    ]
+   },
+   "4": {
+    "presence": 0.831,
+    "static": 0.817,
+    "early": 0.65,
+    "objects": 0.451,
+    "cash": 0.55,
+    "det": 0.494,
+    "score": 0.617,
+    "n": 108,
+    "median": [
+     26.420801654458046,
+     265.35206909179686
+    ]
+   },
+   "5": {
+    "presence": 0.169,
+    "static": 0.958,
+    "early": 0.45,
+    "objects": 0.538,
+    "cash": 0.5,
+    "det": 0.533,
+    "score": 0.457,
+    "n": 22,
+    "median": [
+     75.05519580841064,
+     288.5795593261719
+    ]
+   }
+  },
+  "window_anchor_norm": [
+   0.393,
+   0.423
+  ],
+  "cashier_client_dist_frac": 0.162,
+  "zone_radius_frac": 0.08,
+  "storage_points_norm": [
+   [
+    0.773,
+    0.503
+   ],
+   [
+    0.779,
+    0.62
+   ],
+   [
+    0.119,
+    0.282
+   ]
+  ],
+  "method": "presence+static+early+objects+cash",
+  "notes": []
+ },
+ "events": {
+  "episodes": [
+   [
+    0.4,
+    25.8,
+    [
+     3
+    ],
+    false
+   ]
+  ],
+  "handovers": [
+   [
+    22.6,
+    "cashier_to_client",
+    "cashier_reach+meet+cash",
+    0.93
+   ]
+  ],
+  "counting": [
+   [
+    8.8,
+    11.0
+   ],
+   [
+    12.8,
+    14.6
+   ]
+  ],
+  "cashier_absent": [],
+  "phone": [],
+  "cup": [],
+  "intrusion": [],
+  "cash_visible": [
+   [
+    0.4,
+    0.8
+   ],
+   [
+    10.8,
+    10.8
+   ],
+   [
+    13.4,
+    14.0
+   ],
+   [
+    19.6,
+    21.8
+   ],
+   [
+    23.2,
+    23.4
+   ]
+  ],
+  "id_shown": [],
+  "bag_handling": [],
+  "storage_dwell": [],
+  "room_empty": [],
+  "departures": [],
+  "empty_start": false
+ },
+ "vlm": {
+  "enabled": true,
+  "calls": 0,
+  "cached": 2,
+  "skipped_deadline": 0,
+  "rejected": [],
+  "catch_all_hits": []
+ },
+ "models": {
+  "detector": "IDEA-Research/grounding-dino-tiny",
+  "pose": "rtmlib/lightweight",
+  "vlm": "Qwen/Qwen3-VL-4B-Instruct"
+ },
+ "stage_timings": {
+  "probe": 0.102,
+  "perception": 0.014,
+  "perception.decode": 0.164,
+  "perception.detect": 18.425,
+  "perception.track": 0.048,
+  "perception.pose": 2.804,
+  "perception.total": 31.308,
+  "perception.n_sampled": 130.0,
+  "perception.cache_hit": 1.0,
+  "roles": 0.021,
+  "rules": 0.013,
+  "vlm": 21.886,
+  "report": 0.0,
+  "total": 22.047
+ },
+ "deadline": {
+  "deadline_s": 240.0,
+  "vlm_cutoff_s": 200.0,
+  "elapsed_s": 22.05,
+  "within_deadline": true
+ },
+ "violations": []
+}

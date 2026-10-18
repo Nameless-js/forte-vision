@@ -1,0 +1,62 @@
+[
+  {
+    "name": "1. Detection",
+    "requirement": "LOVO recall 22/22, FP on clean ≤ 1 (catch-all adds ≤ 1)",
+    "status": "UNMET",
+    "detail": "LOVO TP=17/22, FP=2; rule design used this dataset"
+  },
+  {
+    "name": "2. Localization",
+    "requirement": "≥ 80 % within ±2 s, ≥ 95 % within ±5 s; 1–3 valid JPEGs, one within ±1 s",
+    "status": "UNMET",
+    "detail": "within 2s=0.5882352941176471, within 5s=0.8235294117647058"
+  },
+  {
+    "name": "3. Classification",
+    "requirement": "type_id + rule card on every violation; LOVO type accuracy ≥ 80 %",
+    "status": "UNMET",
+    "detail": "type accuracy=0.7058823529411765; types are team-assigned"
+  },
+  {
+    "name": "4. Grounding",
+    "requirement": "every citation in kb/rule_cards.json, quotes verbatim (tests), SOURCES.md honest",
+    "status": "PASSED",
+    "detail": "full unit test artifact includes verbatim KB quotation checks"
+  },
+  {
+    "name": "5. Robustness",
+    "requirement": "verdict agreement ≥ 90 %, timecode within ±3 s ≥ 80 %, roles on flips/rotations",
+    "status": "UNMET",
+    "detail": "scope=subset, runs=12, agreement=0.8333333333333334, time=1.0, role=1.0"
+  },
+  {
+    "name": "6. Time",
+    "requirement": "≤ 240 s on the longest video; watchdog returns before 300 s",
+    "status": "PASSED",
+    "detail": "cold timing and actually exercised slow-inference watchdog; hard process timeout tested separately"
+  },
+  {
+    "name": "7. Offline & local",
+    "requirement": "HF offline + socket guard run succeeds; audit: no outbound calls, no face models",
+    "status": "PASSED",
+    "detail": "full perception/VLM path with socket guard; see offline_report.json"
+  },
+  {
+    "name": "8. Contract",
+    "requirement": "api-test passes; CLI == package API",
+    "status": "PASSED",
+    "detail": "real HTTP lifecycle plus package/CLI evidence equality"
+  },
+  {
+    "name": "9. Reproducibility",
+    "requirement": "fresh clone → README steps → setup/test/eval succeed; Docker build + api-test",
+    "status": "NOT VERIFIED",
+    "detail": "isolated wheel resources=True; Docker unavailable, fresh dependency installation not verified"
+  },
+  {
+    "name": "10. Docs",
+    "requirement": "all documents exist and are current; FINAL_REPORT has metrics, hardware, per-video, failures, commands",
+    "status": "NOT VERIFIED",
+    "detail": "see narrative for unmet gates and exact reproduction commands"
+  }
+]

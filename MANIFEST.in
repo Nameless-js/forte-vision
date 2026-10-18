@@ -1,0 +1,3 @@
+include forte_ai/result_schema.json
+recursive-include configs *.yaml
+recursive-include kb *.json

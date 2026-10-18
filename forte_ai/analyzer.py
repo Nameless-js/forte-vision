@@ -28,13 +28,13 @@ ProgressCb = Optional[Callable[[float, str], None]]
 
 class Deadline:
     def __init__(self, deadline_s: float, vlm_cutoff_s: float, hard_limit_s: float):
-        self.t0 = time.time()
+        self.t0 = time.monotonic()
         self.deadline_s = float(deadline_s)
         self.vlm_cutoff_s = float(vlm_cutoff_s)
         self.hard_limit_s = float(hard_limit_s)
 
     def elapsed(self) -> float:
-        return time.time() - self.t0
+        return time.monotonic() - self.t0
 
     def remaining(self) -> float:
         return self.deadline_s - self.elapsed()
@@ -202,7 +202,7 @@ class Analyzer:
         }
         if collect_all:
             extras["candidates_all"] = [
-                {"type_id": c.type_id, "t_event": round(c.t_event, 2), "t_window": [round(c.t_window[0], 2), round(c.t_window[1], 2)], "confidence": round(c.confidence, 3), "facts": c.facts, "source": c.source, "vlm": c.vlm, "rule_id": c.rule_id}
+                {"type_id": c.type_id, "t_event": round(c.t_event, 2), "t_window": [round(c.t_window[0], 2), round(c.t_window[1], 2)], "confidence": round(c.confidence, 3), "facts": c.facts, "source": c.source, "vlm": c.vlm, "rule_id": c.rule_id, "eligible": c.eligible, "needs_support": c.needs_support, "blocked": c.blocked}
                 for c in sorted(candidates, key=lambda c: c.t_event)
             ]
         rep_cfg = {"evidence_frames": vcfg.get("evidence_frames", 3), "evidence_jpeg_quality": cfg.get("video.evidence_jpeg_quality", 85), "evidence_max_width": cfg.get("video.evidence_max_width", 1280)}
@@ -233,7 +233,11 @@ class Analyzer:
         est_call = float(vcfg.get("est_call_s", 6.0))
         mode = str(vcfg.get("mode", "json"))
         if mode == "choice":
-            return self._vlm_choice_stage(video_path, info, roi, getter, candidates, dl, vlm_info, cb, vcfg, half)
+            kept = self._vlm_choice_stage(video_path, info, roi, getter, candidates, dl, vlm_info, cb, vcfg, half)
+            ccfg = vcfg.get("catch_all", {}) or {}
+            if bool(ccfg.get("enabled", False)):
+                kept.extend(self._catch_all(video_path, info, roi, getter, states, cal, kept, dl, vlm_info, ccfg))
+            return kept
         for i, c in enumerate(sorted(candidates, key=lambda c: -c.confidence)):
             if not dl.vlm_allowed(est_call):
                 vlm_info["skipped_deadline"] += 1
@@ -252,6 +256,7 @@ class Analyzer:
                 c.description_ru = f"На {c.t_event:.1f} с: {ans['what_is_visible_ru']}".replace(".0 с", " с")
             c.confidence = float(max(0.0, min(1.0, c.confidence + delta)))
             if verdict == "reject":
+                c.blocked = True
                 vlm_info["rejected"].append({"type_id": c.type_id, "t_event": round(c.t_event, 2), "answer": ans})
             kept.append(c)
             self._progress(cb, 0.78 + 0.12 * (i + 1) / max(1, len(candidates)), f"Проверка события {i + 1} из {len(candidates)}")
@@ -444,6 +449,7 @@ class Analyzer:
             st = c.probes.get("laptop")
             if st == "turned_off":
                 c.confidence = min(c.confidence, cap)
+                c.blocked = bool(self.cfg.get("rules.laptop_turned_off_blocks", True))
             elif st == "stays_on":
                 c.confidence = max(c.confidence, floor)
 

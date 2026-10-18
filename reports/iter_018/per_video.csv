@@ -1,0 +1,43 @@
+video_id,label,t_label,team_type,pred_cfg,pred_fit,pred_lovo,lovo_thr,t_pred_lovo,dt_lovo,pred_type_lovo,type_ok_lovo,elapsed_s,top_candidates
+1,violation,22.0,issue_without_count,no_violation,violation,violation,0.35,22.6,0.6,handover_without_documents,False,22.5,handover_without_documents@22.6:0.45; issue_without_count@22.6:0.44
+2,violation,10.0,handover_without_documents,no_violation,no_violation,no_violation,0.35,,,,,0.1,
+3,no_violation,,,no_violation,no_violation,no_violation,0.35,,,,,0.1,
+4,violation,57.0,two_clients_cash_mixed,violation,violation,violation,0.35,55.0,2.0,two_clients_cash_mixed,True,1.5,two_clients_cash_mixed@55.0:0.62
+5,no_violation,,,no_violation,no_violation,no_violation,0.35,,,,,0.2,
+8,no_violation,,,no_violation,no_violation,no_violation,0.35,,,,,0.1,
+10,no_violation,,,no_violation,no_violation,no_violation,0.35,,,,,0.0,
+11,violation,18.0,workplace_left_unattended,violation,violation,violation,0.35,17.8,0.2,handover_without_documents,False,4.7,workplace_left_unattended@8.0:1.00; workplace_left_unattended@14.0:1.00; accept_without_count@19.8:0.73; handover_without_documents@17.8:0.44
+12,no_violation,,,no_violation,violation,violation,0.35,,,,,1.3,workplace_left_unattended@33.4:0.40
+13,violation,47.0,accept_without_count,violation,violation,violation,0.35,60.8,13.8,workplace_left_unattended,False,2.6,workplace_left_unattended@60.8:0.66; handover_without_documents@0.2:0.48
+14,no_violation,,,no_violation,no_violation,no_violation,0.35,,,,,1.0,suspect_note_mishandled@50.0:0.13
+15,violation,15.0,workplace_left_unattended,violation,violation,violation,0.35,16.4,1.4,workplace_left_unattended,True,1.9,workplace_left_unattended@16.4:1.00
+16,no_violation,,,no_violation,violation,violation,0.35,,,,,0.5,handover_without_documents@14.4:0.48
+17,violation,7.0,handover_without_documents,violation,violation,violation,0.35,2.2,4.8,handover_without_documents,True,1.0,handover_without_documents@2.2:0.63
+18,violation,20.0,two_clients_cash_mixed,violation,violation,violation,0.35,19.2,0.8,issue_without_count,False,2.8,two_clients_cash_mixed@15.6:0.85; issue_without_count@19.2:0.66; handover_without_documents@19.2:0.45
+19,no_violation,,,no_violation,no_violation,no_violation,0.35,,,,,0.2,
+20,violation,5.0,workplace_left_unattended,no_violation,no_violation,no_violation,0.35,,,,,0.0,
+21,no_violation,,,no_violation,no_violation,no_violation,0.35,,,,,0.1,
+22,violation,14.0,workplace_left_unattended,no_violation,violation,no_violation,0.4,,,,,1.4,workplace_left_unattended@15.2:0.36
+23,no_violation,,,no_violation,no_violation,no_violation,0.35,,,,,1.4,workplace_left_unattended@12.2:0.34
+24,violation,8.0,workplace_left_unattended,violation,violation,violation,0.35,6.2,1.8,workplace_left_unattended,True,1.9,workplace_left_unattended@6.2:0.99
+25,no_violation,,,no_violation,no_violation,no_violation,0.35,,,,,1.4,workplace_left_unattended@13.6:0.34
+26,violation,9.0,workplace_left_unattended,violation,violation,violation,0.35,11.0,2.0,workplace_left_unattended,True,1.9,workplace_left_unattended@11.0:0.97
+27,no_violation,,,no_violation,violation,violation,0.35,,,,,1.4,workplace_left_unattended@10.0:0.44
+28,violation,7.0,workplace_left_unattended,violation,violation,violation,0.35,9.6,2.6,workplace_left_unattended,True,2.1,workplace_left_unattended@9.6:1.00
+29,no_violation,,,no_violation,violation,violation,0.35,,,,,1.3,workplace_left_unattended@9.6:0.45
+30,violation,13.0,unauthorized_in_cash_zone,violation,violation,violation,0.35,13.6,0.6,unauthorized_in_cash_zone,True,1.2,unauthorized_in_cash_zone@13.6:0.90
+31,no_violation,,,violation,violation,violation,0.35,,,,,1.3,unauthorized_in_cash_zone@9.4:0.95
+32,violation,5.0,unauthorized_in_cash_zone,violation,violation,violation,0.35,4.4,0.6,unauthorized_in_cash_zone,True,1.2,unauthorized_in_cash_zone@4.4:0.95
+33,violation,6.0,unauthorized_in_cash_zone,violation,violation,violation,0.35,3.2,2.8,unauthorized_in_cash_zone,True,1.1,unauthorized_in_cash_zone@3.2:0.95
+34,violation,13.0,accept_without_count,no_violation,no_violation,no_violation,0.35,,,,,0.0,
+35,no_violation,,,no_violation,no_violation,no_violation,0.35,,,,,0.3,
+37,no_violation,,,no_violation,no_violation,no_violation,0.35,,,,,0.0,
+38,violation,33.0,two_clients_cash_mixed,violation,violation,violation,0.35,36.2,3.2,two_clients_cash_mixed,True,13.2,two_clients_cash_mixed@36.2:0.85; two_clients_cash_mixed@57.2:0.62
+39,no_violation,,,no_violation,no_violation,no_violation,0.35,,,,,0.3,
+40,violation,17.0,unauthorized_in_cash_zone,violation,violation,violation,0.35,3.6,13.4,unauthorized_in_cash_zone,True,1.3,unauthorized_in_cash_zone@3.6:0.95
+43,no_violation,,,no_violation,no_violation,no_violation,0.35,,,,,0.1,
+44,violation,16.0,suspect_note_mishandled,violation,violation,violation,0.35,16.4,0.4,workplace_left_unattended,False,2.1,workplace_left_unattended@16.4:1.00
+45,no_violation,,,no_violation,no_violation,no_violation,0.35,,,,,0.1,
+46,violation,11.0,personal_items_at_workplace,violation,violation,violation,0.35,11.2,0.2,personal_items_at_workplace,True,1.1,personal_items_at_workplace@11.2:1.00
+47,violation,68.0,accept_without_count,violation,violation,violation,0.35,55.0,13.0,two_clients_cash_mixed,False,1.9,two_clients_cash_mixed@55.0:0.62
+48,no_violation,,,no_violation,no_violation,no_violation,0.35,,,,,0.2,

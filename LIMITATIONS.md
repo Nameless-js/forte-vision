@@ -40,8 +40,8 @@ description states only what is visible; confidence is reported per violation.
 
 * **5-minute budget**: measured end-to-end ≤ 240 s on the longest training video (142.5 s) on an RTX 4060
   Laptop (reports/timing). On slower hardware reduce `video.sample_fps`, then the detector input size, then
-  disable the VLM catch-all (INTEGRATION.md). The watchdog stops VLM calls at 200 s and the service returns
-  the rule-based result before 300 s in all tested scenarios.
+  disable the VLM catch-all (INTEGRATION.md). The soft watchdog stops starting new VLM work after its cutoff; it cannot interrupt an active call.
+  The reference worker adds a 270 s process timeout and records an explicit failure on timeout.
 * **CPU profile**: no VLM verification → more false positives and template descriptions; expected to be used
   only when no NVIDIA GPU exists.
 * **Docker**: the image is defined and reviewed (`Dockerfile`), but could not be *built* on the development
@@ -54,3 +54,25 @@ description states only what is visible; confidence is reported per violation.
   scale, brightness, crop, re-encode) measures the degradation — see reports/robustness. A radically
   different scene (several desks, a physical barrier with a transfer tray) would reduce rule coverage to the
   types that do not depend on the single-desk layout; the VLM catch-all remains active in that case.
+
+## Completion-audit limitations
+
+* The latest complete evaluation and unmet quality targets are recorded in FINAL_REPORT.md. A correct
+  video-level verdict can still correspond to the wrong event or type (notably videos 13, 44 and 47).
+* Cash is not reliably detected in videos 2 and 34, preventing handover-driven rules from proposing events.
+  In video 20, safe interaction geometry can miss the open-safe candidate. A sustained wrist-withdrawal
+  experiment (iter_020) did not improve metrics and was reverted.
+* The laptop screen heuristic and safe-interaction duration are visual proxies, not proof of system locking
+  or a safe being locked. Departure 22 and clean clip 23 remain difficult to separate reliably.
+* In an initially empty workplace, a cashier arriving for legitimate work (31) can look like an intruder (32).
+  The system has no identity or access-control data. It must not be interpreted as determining legal authority.
+* Rules were designed from all open videos. LOVO refits the verdict threshold with duplicate-content grouping;
+  it is not a held-out validation of rule discovery, prompts, taxonomy or detector phrase selection.
+* Augmented views test sensitivity to transformations of the existing recordings. Even a full augmentation
+  suite cannot prove performance on a genuinely new physical camera angle or a different cash desk.
+* The 240 s cold benchmarks exclude service startup/warmup; the public worker's 270 s hard timeout includes
+  child startup but excludes HTTP upload and waiting behind other queued videos. No concurrent throughput SLA
+  is established on one GPU. Timeout yields `failed`, not a fabricated `no_violation`.
+* RTMPose used ONNX Runtime CPU fallback on the development host; the CUDA provider was unavailable there.
+* A wheel resource/import check uses the existing dependency environment. A fresh install and Docker run are
+  separate checks and cannot be claimed from a successful wheel build.

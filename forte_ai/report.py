@@ -33,6 +33,19 @@ class Candidate:
     vlm_choice: Optional[tuple] = None  # (violation statement, normal statement) override for choice mode
     vlm_window: Optional[tuple] = None  # (t0, t1) frames window for the verifier (default t_event ± half)
     probes: dict = field(default_factory=dict)  # pixel-probe results (e.g. laptop screen state) applied after Layer C
+    needs_support: bool = False  # only reportable if Layer C supports it (p_violation >= 0.5); never on CPU profile
+    blocked: bool = False  # vetoed by physical pixel evidence (e.g. workstation locked before leaving)
+
+    @property
+    def eligible(self) -> bool:
+        if self.blocked:
+            return False
+        if self.needs_support:
+            v = self.vlm or {}
+            if v.get("p_violation") is not None:
+                return float(v["p_violation"]) >= 0.5
+            return v.get("verdict") == "support" and float((v.get("answer") or {}).get("confidence", 0.0)) >= 0.5
+        return True
 
     def key(self) -> tuple:
         return (self.type_id, round(self.t_event, 1))

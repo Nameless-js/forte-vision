@@ -1,0 +1,93 @@
+{
+ "profile": "gpu-small",
+ "deadline_s": 240,
+ "videos": [
+  {
+   "video_id": 14,
+   "duration_s": 142.5,
+   "wall_s": 116.1,
+   "stage_timings": {
+    "probe": 0.0,
+    "perception": 112.374,
+    "perception.decode": 0.862,
+    "perception.detect": 101.106,
+    "perception.track": 0.227,
+    "perception.pose": 10.143,
+    "perception.total": 112.374,
+    "perception.n_sampled": 713.0,
+    "roles": 0.223,
+    "rules": 0.064,
+    "vlm": 3.482,
+    "report": 0.0,
+    "total": 116.143
+   },
+   "vlm": {
+    "calls": 2,
+    "cached": 0,
+    "skipped_deadline": 0
+   },
+   "within_240": true
+  },
+  {
+   "video_id": 39,
+   "duration_s": 78.7,
+   "wall_s": 62.5,
+   "stage_timings": {
+    "probe": 0.001,
+    "perception": 62.284,
+    "perception.decode": 0.403,
+    "perception.detect": 53.533,
+    "perception.track": 0.117,
+    "perception.pose": 8.212,
+    "perception.total": 62.284,
+    "perception.n_sampled": 394.0,
+    "roles": 0.154,
+    "rules": 0.036,
+    "report": 0.0,
+    "total": 62.475
+   },
+   "vlm": {
+    "calls": 0,
+    "cached": 0,
+    "skipped_deadline": 0
+   },
+   "within_240": true
+  },
+  {
+   "video_id": 4,
+   "duration_s": 72.7,
+   "wall_s": 72.1,
+   "stage_timings": {
+    "probe": 0.0,
+    "perception": 61.067,
+    "perception.decode": 0.396,
+    "perception.detect": 50.807,
+    "perception.track": 0.121,
+    "perception.pose": 9.716,
+    "perception.total": 61.067,
+    "perception.n_sampled": 364.0,
+    "roles": 0.101,
+    "rules": 0.042,
+    "vlm": 2.826,
+    "report": 8.077,
+    "total": 72.113
+   },
+   "vlm": {
+    "calls": 3,
+    "cached": 0,
+    "skipped_deadline": 0
+   },
+   "within_240": true
+  }
+ ],
+ "watchdog": {
+  "video_id": 14,
+  "wall_s": 3.6,
+  "vlm_calls": 2,
+  "skipped_deadline": 0,
+  "returned_before_300": true,
+  "verdict": "no_violation"
+ },
+ "max_wall_s": 116.1,
+ "gate_time_le_240": true
+}
