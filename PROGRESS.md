@@ -85,3 +85,18 @@ Install toolchain → `data/labels.csv` → `analysis/inventory.md` → commit s
   | 003 | 7/22 (10) | 6 (8) | body-depth intrusion + co-occurrence/IoU guards |
   | → M2 | — | — | full rule rewrite from the reviewed taxonomy (R1a/R1b, R6 episode-based, R9b, R10 empty-start entry, counting with cash-fraction, cup class added — perception cache p3 rebuilding) |
 - Git: tag `m1-baseline` at iter_001 commit.
+
+### Iterations 5-12 (2026-10-18 morning) — rule layer convergence
+Failure-analysis-driven loop, one systemic cause per iteration (reports/iter_005..012, debug dumps in analysis/):
+| iter | change | LOVO recall | FP | note |
+|---|---|---|---|---|
+| 005 | p4 dedup + anchors | 16/22 | 15 | reflections became clients |
+| 006 | reflection det-gating, intrusion guards | 16/22 | 11 | zone stickiness at door |
+| 007 | pose-backed validity | 17/22 | 13 | glass people pass pose |
+| 008 | full-pose+det intruders, room gates | 12/22 | 10 | departures still masked |
+| 009 | (seat via anchors — no effect) | 12/22 | 10 | projection too compressed |
+| 010 | first-stationary-dwell seat, door-linger departures | 16/22 | 14 | type acc 0.75, median Δt 1.9 s |
+| 011 | strict cash-after, occlusion guard | 15/22 | 13 | securing gate razor-thin |
+| 012 | seat-based R10, soft securing, R5w/R6b/R8/R12/R1c → VLM band | 17/22 | 13 | config-thr: 13/22 at 5 FP |
+Key lesson recorded in ASSUMPTIONS/LIMITATIONS: chairs/jackets/reflections yield person boxes up to 0.88 with
+hallucinated full pose; glass-door optics put real people at 0.35-0.55; only behavioural/temporal signals separate them.
