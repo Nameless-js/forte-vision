@@ -1,0 +1,14 @@
+node_modules
+.python-deps
+.venv
+.env
+.env.*
+!.env.example
+backend
+supabase
+runtime
+docs
+.openai
+*.mov
+*.mp4
+*.webm

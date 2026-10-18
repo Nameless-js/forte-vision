@@ -70,3 +70,9 @@ reports/**/watchdog-*/
 .api-key
 reports/**/runtime/
 *.tsbuildinfo
+node_modules/
+.python-deps/
+.vercel/
+# Local CLI database runtime left from the previous layout
+/supabase/.temp/
+/supabase/
