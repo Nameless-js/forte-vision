@@ -168,6 +168,8 @@ class Analyzer:
         rule_cfg = dict(cfg.section("rules"))
         rule_cfg.setdefault("counter_margin_frac", cfg.get("roles.counter_margin_frac", 0.06))
         candidates, events = run_rules(states, cal, rule_cfg, pr.sample_fps, info.duration_s)
+        if bool(cfg.get("rules.laptop_probe", True)):
+            self._refine_departures(video_path, pr, candidates, info.duration_s)
         timings["rules"] = time.time() - t
         for c in candidates:
             c.annotate = self._annotation_for(c, cal, states, pr)
@@ -185,6 +187,8 @@ class Analyzer:
         self._progress(cb, 0.93, "Формирование отчёта")
         vcfg = cfg.section("verdict")
         chosen = select_violations(candidates, float(vcfg.get("threshold", 0.5)), vcfg.get("per_type_thresholds", {}), int(cfg.get("rules.max_violations_per_video", 6)))
+        if chosen and self.vlm is not None and str(cfg.get("vlm.mode", "json")) == "choice":
+            self._describe_chosen(video_path, info, pr, cal, chosen, dl, vlm_info)
         extras = {
             "engine_version": self.engine_version,
             "profile": cfg.profile,
@@ -225,6 +229,9 @@ class Analyzer:
         getter = lambda t: (lambda f: None if f is None else f.image)(frame_at(video_path, t))  # noqa: E731
         kept: list[Candidate] = []
         est_call = float(vcfg.get("est_call_s", 6.0))
+        mode = str(vcfg.get("mode", "json"))
+        if mode == "choice":
+            return self._vlm_choice_stage(video_path, info, roi, getter, candidates, dl, vlm_info, cb, vcfg, half)
         for i, c in enumerate(sorted(candidates, key=lambda c: -c.confidence)):
             if not dl.vlm_allowed(est_call):
                 vlm_info["skipped_deadline"] += 1
@@ -251,6 +258,69 @@ class Analyzer:
         if bool(ccfg.get("enabled", False)):
             kept.extend(self._catch_all(video_path, info, roi, getter, states, cal, kept, dl, vlm_info, ccfg))
         return kept
+
+    def _vlm_choice_stage(self, video_path, info, roi, getter, candidates: list[Candidate], dl: Deadline, vlm_info: dict, cb: ProgressCb, vcfg: dict, half: float) -> list[Candidate]:
+        """Contrastive verification: P(violation statement | frames) from first-token logits, averaged over both
+        option orders. Moves each candidate's confidence by w·(2p−1); never creates candidates."""
+        from .vlm import prompts as P
+
+        w = float(vcfg.get("choice_weight", 0.35))
+        est_call = float(vcfg.get("est_choice_s", 4.0))
+        n_frames = int(vcfg.get("frames_per_query", 6))
+        order = sorted(candidates, key=lambda c: -c.confidence)
+        for i, c in enumerate(order):
+            pair = c.vlm_choice or P.CHOICE_STATEMENTS_RU.get(c.type_id)
+            if pair is None:
+                continue
+            if not dl.vlm_allowed(est_call):
+                vlm_info["skipped_deadline"] += 1
+                continue
+            if c.vlm_window:
+                t0, t1 = max(0.0, c.vlm_window[0]), min(info.duration_s, c.vlm_window[1])
+            else:
+                t0, t1 = max(0.0, c.t_event - half), min(info.duration_s, c.t_event + half)
+            if t1 - t0 < 1.0:
+                t0, t1 = max(0.0, c.t_event - half), min(info.duration_s, c.t_event + half)
+            frames = self.vlm.frames_for_window(getter, t0, t1, roi, n=n_frames)
+            if not frames:
+                continue
+            p_v, cached = self.vlm.choice_score(info.content_md5, f"{c.type_id}:{c.rule_id}:{c.t_event:.1f}", frames, "", pair[0], pair[1])
+            vlm_info["calls"] += 0 if cached else 2
+            vlm_info["cached"] += int(cached)
+            if p_v is None:
+                continue
+            delta = w * (2.0 * p_v - 1.0)
+            c.confidence = float(max(0.0, min(1.0, c.confidence + delta)))
+            c.vlm = {"mode": "choice", "p_violation": round(float(p_v), 3), "delta": round(delta, 3), "window": [round(t0, 1), round(t1, 1)]}
+            if p_v < 0.5:
+                vlm_info["rejected"].append({"type_id": c.type_id, "t_event": round(c.t_event, 2), "p_violation": round(float(p_v), 3)})
+            self._progress(cb, 0.78 + 0.12 * (i + 1) / max(1, len(order)), f"Проверка события {i + 1} из {len(order)}")
+        return candidates
+
+    def _describe_chosen(self, video_path: Path, info, pr, cal, chosen: list[Candidate], dl: Deadline, vlm_info: dict) -> None:
+        """Neutral Russian 'what is visible' text for the reported violations only (bounded by the watchdog)."""
+        if self.vlm is None or self.vlm.model is None or not bool(self.cfg.get("vlm.describe", True)):
+            return
+        from .vlm import prompts as P
+
+        half = float(self.cfg.get("vlm.window_half_s", 4.0))
+        roi = self._roi(cal, pr)
+        getter = lambda t: (lambda f: None if f is None else f.image)(frame_at(video_path, t))  # noqa: E731
+        for c in chosen:
+            if not dl.vlm_allowed(float(self.cfg.get("vlm.est_describe_s", 7.0))):
+                vlm_info["skipped_deadline"] += 1
+                break
+            t0, t1 = max(0.0, c.t_event - half), min(info.duration_s, c.t_event + half)
+            frames = self.vlm.frames_for_window(getter, t0, t1, roi, n=int(self.cfg.get("vlm.frames_per_query", 6)))
+            try:
+                txt, cached = self.vlm.describe(info.content_md5, f"{c.type_id}:{c.t_event:.1f}", frames, P.DESCRIBE_PROMPT_RU)
+            except Exception as e:  # noqa: BLE001
+                log.warning("describe failed: %s", e)
+                continue
+            vlm_info["calls"] += 0 if cached else 1
+            vlm_info["cached"] += int(cached)
+            if txt and any("Ѐ" <= ch <= "ӿ" for ch in txt):
+                c.description_ru = f"На {c.t_event:.1f} с (окно {t0:.0f}–{t1:.0f} с): {txt}".replace(".0 с", " с")
 
     def _catch_all(self, video_path, info, roi, getter, states, cal, existing: list[Candidate], dl: Deadline, vlm_info: dict, ccfg: dict) -> list[Candidate]:
         from .vlm import prompts as P
@@ -294,6 +364,67 @@ class Analyzer:
                 vlm_info["catch_all_hits"].append({"type_id": tid, "t0": t0, "t1": group[-1][1]})
                 out.append(c)
         return out
+
+    # ------------------------------------------------------------------ evidence probes (pixel checks)
+    def _laptop_screen_state(self, video_path: Path, pr, t_dep: float, duration: float) -> Optional[str]:
+        """'stays_on' | 'turned_off' | 'never_on' | None. Brightness of the upper part of the (static) laptop
+        box sampled before and after a departure: an unlocked screen left lit in an empty room vs a
+        workstation locked/closed before leaving."""
+        import cv2
+
+        boxes = [d.xyxy for f in pr.frames for d in f.by_class("laptop")]
+        if len(boxes) < max(5, 0.2 * len(pr.frames)):
+            return None
+        b = np.median(np.asarray(boxes), axis=0) / (pr.scale or 1.0)
+        x1, y1, x2, y2 = [int(round(v)) for v in b]
+        w, h = x2 - x1, y2 - y1
+        if w < 12 or h < 12:
+            return None
+        sx1, sx2, sy1, sy2 = x1 + int(0.12 * w), x2 - int(0.12 * w), y1 + int(0.08 * h), y1 + int(0.55 * h)
+        thr_v = int(self.cfg.get("rules.laptop_bright_v", 170))
+
+        def bright_at(t: float) -> Optional[float]:
+            fr = frame_at(video_path, max(0.0, min(duration - 0.05, t)))
+            if fr is None:
+                return None
+            roi = fr.image[max(0, sy1):sy2, max(0, sx1):sx2]
+            if roi.size == 0:
+                return None
+            v = cv2.cvtColor(roi, cv2.COLOR_BGR2HSV)[..., 2]
+            return float(np.mean(v > thr_v))
+
+        before = [x for x in (bright_at(t_dep - d) for d in (14.0, 10.0, 6.0)) if x is not None]
+        after = [x for x in (bright_at(t) for t in (t_dep + 2.0, t_dep + 4.0, duration - 0.3)) if x is not None and True]
+        if not before or not after:
+            return None
+        on = float(self.cfg.get("rules.laptop_on_frac", 0.20))
+        off = float(self.cfg.get("rules.laptop_off_frac", 0.10))
+        was_on, still_on, now_off = max(before) >= on, min(after) >= on, max(after) <= off
+        if was_on and still_on:
+            return "stays_on"
+        if was_on and now_off:
+            return "turned_off"
+        if not was_on and max(after) <= off:
+            return "never_on"
+        return None
+
+    def _refine_departures(self, video_path: Path, pr, candidates: list[Candidate], duration: float) -> None:
+        boost = float(self.cfg.get("rules.laptop_stays_on_boost", 0.15))
+        pen = float(self.cfg.get("rules.laptop_turned_off_penalty", 0.20))
+        for c in candidates:
+            if c.rule_id not in ("R1b", "R1c") or c.type_id != "workplace_left_unsecured":
+                continue
+            try:
+                state = self._laptop_screen_state(video_path, pr, c.t_event, duration)
+            except Exception as e:  # noqa: BLE001
+                log.warning("laptop probe failed: %s", e)
+                state = None
+            if state == "stays_on":
+                c.confidence = min(1.0, c.confidence + boost)
+                c.facts.append("экран ноутбука остаётся включённым (не заблокирован) после ухода кассира")
+            elif state == "turned_off":
+                c.confidence = max(0.0, c.confidence - pen)
+                c.facts.append("перед уходом экран ноутбука погашен/заблокирован")
 
     # ------------------------------------------------------------------ drawing helpers
     @staticmethod

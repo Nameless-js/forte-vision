@@ -53,6 +53,7 @@ class Calibration:
     cashier_client_dist: float = 0.0  # ||cashier_center - window_anchor|| (det px)
     zone_radius: float = 0.0  # radius of the cashier zone around cashier_center (det px)
     storage_points: list = field(default_factory=list)  # all storage-unit cluster centres
+    track_first_t: dict = field(default_factory=dict)  # track id -> first time seen (s)
     method: str = "presence+static+early+objects+cash"
     notes: list[str] = field(default_factory=list)
 
@@ -403,7 +404,8 @@ def calibrate(frames: list[FrameDetections], poses: list[FramePoses], tracks: di
         frame_w, frame_h, diag, cashier, cs["score"], track_scores, c_center, [tuple(map(float, p)) for p in hull], point, counter_normal, counter_conf,
         clients, collectors, rest, workplace, storage_near, workplace.get("counting_machine"),
         window_anchor=window_anchor, cashier_client_dist=dist_cc, zone_radius=zone_radius,
-        storage_points=storage_pts or ([storage] if storage else []), notes=notes
+        storage_points=storage_pts or ([storage] if storage else []),
+        track_first_t={tid: float(st_.first_t) for tid, st_ in tracks.items()}, notes=notes
     )
 
 

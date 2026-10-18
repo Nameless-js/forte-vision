@@ -10,6 +10,7 @@ import argparse
 import csv
 import json
 import logging
+import os
 import platform
 import re
 import sys
@@ -66,6 +67,10 @@ def main() -> int:
     ap.add_argument("--note", default="")
     a = ap.parse_args()
     logging.basicConfig(level=logging.WARNING)
+    # hang watchdog: if a single video takes absurdly long, dump all thread stacks (re-armed per video)
+    import faulthandler
+
+    out_dir_for_trace = Path(a.out) if a.out else None
 
     from forte_ai.analyzer import Analyzer
 
@@ -86,9 +91,12 @@ def main() -> int:
     pvs: list[PerVideo] = []
     schema_problems = {}
     t_all = time.time()
+    trace_f = open(out / "hang_trace.txt", "w", encoding="utf-8")
     for i, r in enumerate(rows):
         vp = ROOT / r.path
         t0 = time.time()
+        faulthandler.cancel_dump_traceback_later()
+        faulthandler.dump_traceback_later(float(os.environ.get("FORTE_HANG_DUMP_S", "420")), repeat=True, file=trace_f)
         try:
             res = an.analyze(vp, deadline_sec=a.deadline, use_cache=not a.no_cache, collect_all=True)
         except Exception as e:  # noqa: BLE001
@@ -107,6 +115,8 @@ def main() -> int:
         pvs.append(PerVideo(r.video_id, r.label, r.t_sec, r.content_md5 or str(r.video_id), cands, team.get(r.video_id), el, res.get("stage_timings", {})))
         ev = ", ".join(f"{c['type_id']}@{c['t_event']:.1f}({c['confidence']:.2f})" for c in sorted(cands, key=lambda c: -c["confidence"])[:4])
         print(f"[{i + 1}/{len(rows)}] id {r.video_id:>2} {r.label:<12} t={r.t_sec if r.t_sec is not None else '-':<5} verdict={res['verdict']:<12} {el:5.1f}s  {ev}", flush=True)
+    faulthandler.cancel_dump_traceback_later()
+    trace_f.close()
     total_wall = time.time() - t_all
 
     # ---- metrics

@@ -30,6 +30,8 @@ class Candidate:
     source: str = "rules"  # rules | vlm_catch_all
     vlm_question: str = ""  # optional type-question override for the verifier
     vlm_expect: Optional[tuple] = None  # (answer_key, support_values, reject_values) override for judging
+    vlm_choice: Optional[tuple] = None  # (violation statement, normal statement) override for choice mode
+    vlm_window: Optional[tuple] = None  # (t0, t1) frames window for the verifier (default t_event ± half)
 
     def key(self) -> tuple:
         return (self.type_id, round(self.t_event, 1))

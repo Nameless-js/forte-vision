@@ -13,9 +13,13 @@ perception:
     mode: lightweight
 vlm:
   enabled: true
-  model_id: Qwen/Qwen3-VL-2B-Instruct
+  # measured (reports/iter_014 vs iter_015, choice mode): 4B-NF4 AUC 0.67 vs 2B-bf16 0.59 on rule candidates,
+  # departures 0.77 vs 0.63; 4B-NF4 peak VRAM ~4.5 GB with the vision tower kept in bf16
+  model_id: Qwen/Qwen3-VL-4B-Instruct
   dtype: bfloat16
-  load_in_4bit: false
+  load_in_4bit: true
+  quant_skip_modules: ["visual", "lm_head"]
+  min_free_vram_gb: 4.0
   frames_per_query: 6
   catch_all:
     max_windows: 12

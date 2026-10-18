@@ -67,12 +67,30 @@ def _rotation_of(stream) -> int:
     return rot % 360
 
 
-def probe(path: str | Path) -> VideoInfo:
-    import av
+_PROBE_CACHE: dict[tuple, "VideoInfo"] = {}
 
+
+def probe(path: str | Path) -> VideoInfo:
+    """Container metadata + content md5, cached per (path, size, mtime) — evidence/VLM frame grabs call
+    this repeatedly and re-hashing a 30 MB file each time is pure waste."""
     p = Path(path)
     if not p.exists():
         raise AnalysisError(f"video not found: {p}")
+    st = p.stat()
+    key = (str(p.resolve()), st.st_size, st.st_mtime_ns)
+    hit = _PROBE_CACHE.get(key)
+    if hit is not None:
+        return hit
+    info = _probe_uncached(p)
+    if len(_PROBE_CACHE) > 64:
+        _PROBE_CACHE.clear()
+    _PROBE_CACHE[key] = info
+    return info
+
+
+def _probe_uncached(p: Path) -> VideoInfo:
+    import av
+
     try:
         with av.open(str(p)) as c:
             if not c.streams.video:
@@ -165,7 +183,8 @@ def frame_at(path: str | Path, t: float, max_side: Optional[int] = None) -> Opti
     best: Optional[Frame] = None
     with av.open(str(path)) as c:
         vs = c.streams.video[0]
-        vs.thread_type = "AUTO"
+        # no frame-threading here: threaded decoding combined with seek() deadlocked intermittently
+        # (observed once during a full evaluation run); single-threaded decode of <=1 s is fast enough
         tb = vs.time_base or Fraction(1, 90000)
         seek_t = max(0.0, t - 1.0)
         try:

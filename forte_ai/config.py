@@ -84,6 +84,7 @@ class Config:
     ) -> "Config":
         cdir = Path(config_dir) if config_dir else CONFIG_DIR
         data = yaml.safe_load((cdir / "default.yaml").read_text(encoding="utf-8")) or {}
+        user: dict = {}
         if config is not None:
             if isinstance(config, Mapping):
                 user = dict(config)
@@ -92,8 +93,8 @@ class Config:
                 if not p.is_absolute() and not p.exists():
                     p = REPO_ROOT / p
                 user = yaml.safe_load(Path(p).read_text(encoding="utf-8")) or {}
-            deep_update(data, user)
-        prof = profile or os.environ.get("FORTE_PROFILE") or data.get("profile", "auto")
+        # precedence: default.yaml < profile overlay < explicit user config (file or dict) < overrides
+        prof = profile or os.environ.get("FORTE_PROFILE") or user.get("profile") or data.get("profile", "auto")
         if prof in (None, "", "auto"):
             prof = detect_profile()
         if prof not in PROFILES:
@@ -101,9 +102,9 @@ class Config:
         pfile = cdir / f"profile-{prof}.yaml"
         if pfile.exists():
             deep_update(data, yaml.safe_load(pfile.read_text(encoding="utf-8")) or {})
+        if user:
+            deep_update(data, user)
         data["profile"] = prof
-        if config is not None and isinstance(config, Mapping):
-            deep_update(data, dict(config))  # explicit user dict wins over the profile
         if overrides:
             deep_update(data, overrides)
         if data.get("device", "auto") == "auto":

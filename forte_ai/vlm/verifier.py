@@ -115,7 +115,12 @@ class VLMVerifier:
         if bool(self.cfg.get("load_in_4bit", False)):
             from transformers import BitsAndBytesConfig
 
-            kwargs["quantization_config"] = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_compute_dtype=dtype, bnb_4bit_quant_type="nf4")
+            # keep the vision tower (and the output head) in full precision: quantising the ViT costs most of
+            # the visual accuracy for very little memory
+            skip = list(self.cfg.get("quant_skip_modules", ["visual", "lm_head"]))
+            kwargs["quantization_config"] = BitsAndBytesConfig(
+                load_in_4bit=True, bnb_4bit_compute_dtype=dtype, bnb_4bit_quant_type="nf4", bnb_4bit_use_double_quant=True, llm_int8_skip_modules=skip
+            )
         try:
             from transformers import Qwen3VLForConditionalGeneration as Cls  # transformers >= 4.57
         except Exception:  # pragma: no cover
@@ -165,6 +170,93 @@ class VLMVerifier:
             out = self.model.generate(**inputs, max_new_tokens=self.max_new_tokens, do_sample=False, temperature=None, top_p=None, top_k=None)
         gen = out[:, inputs["input_ids"].shape[1] :]
         return self.processor.batch_decode(gen, skip_special_tokens=True)[0]
+
+    # ------------------------------------------------------------------ contrastive choice (logit scoring)
+    def _choice_logprobs(self, frames: list[np.ndarray], prompt: str) -> tuple[float, float]:
+        """One forward pass; returns (logP('A'), logP('B')) for the first answer token."""
+        import torch
+        from PIL import Image
+
+        self.load()
+        images = [Image.fromarray(f[:, :, ::-1]) for f in frames]
+        content = [{"type": "image"} for _ in images] + [{"type": "text", "text": prompt}]
+        messages = [{"role": "user", "content": content}]
+        text = self.processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+        inputs = self.processor(text=[text], images=images, return_tensors="pt")
+        inputs = {k: (v.to(self.model.device) if hasattr(v, "to") else v) for k, v in inputs.items()}
+        with torch.inference_mode():
+            out = self.model(**inputs)
+        logp = torch.log_softmax(out.logits[0, -1].float(), dim=-1)
+        tok = self.processor.tokenizer
+
+        def lp(letter: str) -> float:
+            ids = set()
+            for variant in (letter, " " + letter):
+                enc = tok.encode(variant, add_special_tokens=False)
+                if len(enc) == 1:
+                    ids.add(enc[0])
+            if not ids:
+                return -1e9
+            return float(torch.logsumexp(logp[list(ids)], dim=0))
+
+        return lp("A"), lp("B")
+
+    def choice_score(self, video_md5: str, tag: str, frames: list[np.ndarray], question: str, viol: str, norm: str) -> tuple[Optional[float], bool]:
+        """P(violation statement matches the frames), averaged over both option orders (removes position
+        bias). Returns (p_violation in [0,1] or None on failure, from_cache)."""
+        import math as _m
+
+        from . import prompts as P
+
+        prompt1 = P.choice_prompt(question, viol, norm)  # A = violation
+        prompt2 = P.choice_prompt(question, norm, viol)  # A = normal
+        key = self._cache_key(video_md5, "choice:" + tag, frames, prompt1 + "||" + prompt2)
+        cp = self.cache_dir / f"{key}.json"
+        if cp.exists():
+            try:
+                return json.loads(cp.read_text(encoding="utf-8")).get("p_violation"), True
+            except Exception:
+                pass
+        t0 = time.time()
+        try:
+            a1, b1 = self._choice_logprobs(frames, prompt1)
+            a2, b2 = self._choice_logprobs(frames, prompt2)
+        except Exception as e:  # noqa: BLE001
+            log.warning("choice scoring failed: %s", e)
+            return None, False
+
+        def p_first(a: float, b: float) -> float:
+            m = max(a, b)
+            ea, eb = _m.exp(a - m), _m.exp(b - m)
+            return ea / (ea + eb)
+
+        p_v = 0.5 * (p_first(a1, b1) + (1.0 - p_first(a2, b2)))
+        self.calls += 2
+        self.call_time += time.time() - t0
+        cp.write_text(json.dumps({"p_violation": p_v, "lp": [a1, b1, a2, b2], "tag": tag, "model": self.model_id, "viol": viol, "norm": norm}, ensure_ascii=False), encoding="utf-8")
+        return p_v, False
+
+    def describe(self, video_md5: str, tag: str, frames: list[np.ndarray], prompt: str) -> tuple[str, bool]:
+        """Short neutral Russian description of the frames (only for reported violations)."""
+        key = self._cache_key(video_md5, "describe:" + tag, frames, prompt)
+        cp = self.cache_dir / f"{key}.json"
+        if cp.exists():
+            try:
+                return json.loads(cp.read_text(encoding="utf-8")).get("text", ""), True
+            except Exception:
+                pass
+        t0 = time.time()
+        saved = self.max_new_tokens
+        self.max_new_tokens = int(self.cfg.get("describe_max_new_tokens", 90))
+        try:
+            txt = self._generate(frames, prompt).strip()
+        finally:
+            self.max_new_tokens = saved
+        txt = re.sub(r"\s+", " ", txt).strip().strip('"').strip()
+        self.calls += 1
+        self.call_time += time.time() - t0
+        cp.write_text(json.dumps({"text": txt, "tag": tag, "model": self.model_id}, ensure_ascii=False), encoding="utf-8")
+        return txt, False
 
     def ask_json(self, video_md5: str, tag: str, frames: list[np.ndarray], prompt: str, keys: list[str]) -> tuple[Optional[dict], str, bool]:
         """Returns (answer or None, raw text, from_cache). Retries once on invalid JSON."""

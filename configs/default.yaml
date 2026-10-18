@@ -117,6 +117,10 @@ rules:
 
 vlm:
   enabled: true
+  mode: choice                         # choice (contrastive A/B logit scoring) | json (generative checklist)
+  choice_weight: 0.35                  # confidence moves by choice_weight·(2·p_violation − 1)
+  describe: true                       # generate a neutral Russian description for reported violations
+  describe_max_new_tokens: 90
   model_id: Qwen/Qwen3-VL-2B-Instruct
   dtype: bfloat16                      # bfloat16 | float16
   load_in_4bit: false

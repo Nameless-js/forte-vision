@@ -266,8 +266,17 @@ def extract_events(states: list[FrameState], cal: Calibration, cfg: dict, fps: f
     def at_seat(s: FrameState) -> bool:
         return any(math.hypot(p[0] - cal.cashier_center[0], p[1] - cal.cashier_center[1]) <= seat_r for p in s.valid_bodies)
 
-    head = [s for s in states if s.t <= empty_start_s]
-    empty_start = bool(head) and not any(at_seat(s) for s in head)
+    # Empty start = the very first frames contain NO solid person anywhere in the room, and the track
+    # that later works at the desk only appears afterwards. In the training clips a cashier who is on duty
+    # is always detected from frame 0; seat-based tests fail because an entrant reaches "its own seat"
+    # within 2 s. People behind the glass wall never reach the room-occupancy detection level.
+    head0 = [s for s in states if s.t <= float(cfg.get("empty_start_probe_s", 0.4))]
+    st_c = None
+    if cal.cashier_track is not None:
+        from_tracks = getattr(cal, "track_first_t", {}) or {}
+        st_c = from_tracks.get(cal.cashier_track)
+    first_c = st_c if st_c is not None else next((s.t for s in states if s.cashier_present), 0.0)
+    empty_start = bool(head0) and all(s.n_people_strong == 0 for s in head0) and first_c >= float(cfg.get("empty_start_min_first_s", 0.6))
 
     handovers = _detect_handovers(states, cal, cfg, fps)
     return EventSummary(
@@ -342,6 +351,30 @@ def _detect_handovers(states: list[FrameState], cal: Calibration, cfg: dict, fps
     return out
 
 
+def _disengage_time(states: list[FrameState], cal: Calibration, t_absent: float, cfg: dict) -> float:
+    """Last moment before `t_absent` at which the cashier was still ENGAGED with the workplace (seated within
+    half the zone radius of the seat, or a wrist at the counting machine / a storage unit / the laptop). The
+    labels anchor departures on this "detached and oriented to leave" moment, not on the door crossing."""
+    diag = cal.diag
+    eq = [a for a in ([cal.counting_machine_point] + list(cal.storage_points) + [cal.workplace_objects.get("laptop")]) if a is not None]
+    r_hand = float(cfg.get("engage_hand_radius_frac", 0.07)) * diag
+    seat_r = 0.5 * cal.zone_radius
+    lookback = float(cfg.get("disengage_lookback_s", 10.0))
+    last = None
+    for st in states:
+        if st.t >= t_absent:
+            break
+        if st.t < t_absent - lookback or not st.cashier_present or st.cashier_box is None:
+            continue
+        b = st.cashier_box
+        body = ((b[0] + b[2]) / 2.0, b[1] + 0.6 * (b[3] - b[1]))
+        seated = cal.dist_to_cashier(body) <= seat_r
+        hands_at_eq = st.cashier_pose_ok and any(math.hypot(h[0] - a[0], h[1] - a[1]) <= r_hand for h in st.cashier_hands for a in eq)
+        if seated or hands_at_eq:
+            last = st.t
+    return last if last is not None else t_absent
+
+
 # ---------------------------------------------------------------------- rules
 def run_rules(states: list[FrameState], cal: Calibration, cfg: dict, fps: float, duration: float) -> tuple[list[Candidate], EventSummary]:
     ev = extract_events(states, cal, cfg, fps, duration)
@@ -360,24 +393,29 @@ def run_rules(states: list[FrameState], cal: Calibration, cfg: dict, fps: float,
     if ev.empty_start:
         near_r = float(cfg.get("workplace_near_frac", 0.16)) * diag
         anchors = [a for a in ([cal.counting_machine_point] + list(cal.storage_points) + [cal.workplace_objects.get("laptop")]) if a is not None] or [cal.cashier_center]
-        seat_r10 = max(1.2 * cal.zone_radius, 0.09 * diag)
-        mach = cal.counting_machine_point
-        flags = [
-            any(
-                math.hypot(p[0] - cal.cashier_center[0], p[1] - cal.cashier_center[1]) <= seat_r10
-                or (mach is not None and math.hypot(p[0] - mach[0], p[1] - mach[1]) <= 0.08 * diag)
-                for p in s.valid_bodies
-            )
-            for s in states
-        ]
+        # the entrant is "at the cash equipment": within r of the counting machine, a storage unit or the laptop
+        eq = [a for a in ([cal.counting_machine_point] + list(cal.storage_points) + [cal.workplace_objects.get("laptop")]) if a is not None]
+        r_eq = float(cfg.get("entry_equipment_radius_frac", 0.10)) * diag
+        flags = [any(math.hypot(p[0] - a[0], p[1] - a[1]) <= r_eq for p in s.valid_bodies for a in eq) for s in states]
         segs = runs(_smooth(flags, 3), [s.t for s in states], min_duration=float(cfg.get("entry_min_s", 1.5)), max_gap_frames=max(1, int(fps)))
         if segs:
-            # anchor on the first sustained presence; but if the first touch is brief (dropping a bag in
-            # passing) and a much longer settling comes later, the organisers label the settling moment
             first = segs[0]
-            longest = max(segs, key=lambda s: s.duration)
-            if first.duration < 3.0 and longest.duration >= 4.0 * first.duration and longest.start > first.end:
-                first = longest
+            # t_event: the entrant, already >= 2 s inside, first comes close to a storage unit (safe) or the
+            # counting machine — the moment the access to cash equipment becomes visible
+            t_in = next((st_.t for st_ in states if st_.valid_bodies), first.start)
+            r_close = float(cfg.get("entry_access_radius_frac", 0.07)) * diag
+            close_eq = [a for a in ([cal.counting_machine_point] + list(cal.storage_points)) if a is not None]
+            t_access = next(
+                (
+                    st_.t
+                    for st_ in states
+                    if st_.t >= t_in + float(cfg.get("entry_min_inside_s", 2.0))
+                    and any(math.hypot(p[0] - a[0], p[1] - a[1]) <= r_close for p in st_.valid_bodies for a in close_eq)
+                ),
+                None,
+            )
+            if t_access is not None:
+                first = type(first)(t_access, max(t_access, first.end), first.k_start, first.k_end)
             conf = float(base.get("entry_unattended", 0.8)) + min(0.15, 0.02 * sum(s.duration for s in segs))
             cands.append(
                 Candidate(
@@ -390,6 +428,11 @@ def run_rules(states: list[FrameState], cal: Calibration, cfg: dict, fps: float,
                         f"вошедший находится у кассового оборудования {first.start:.1f}–{first.end:.1f} с",
                     ],
                     rule_id="R10",
+                    vlm_window=(0.0, min(duration, first.start + 5.0)),
+                    vlm_choice=(
+                        "Сначала у кассового стола никого нет; затем входит человек и располагается у кассового оборудования (счётной машины, сейфа) или садится за кассовый стол, а кассира на рабочем месте нет.",
+                        "Кассир с самого начала находится на своём рабочем месте и работает; посторонние к кассовому оборудованию не подходят.",
+                    ),
                 )
             )
 
@@ -452,9 +495,13 @@ def run_rules(states: list[FrameState], cal: Calibration, cfg: dict, fps: float,
             k = max(0.0, min(1.0, (secured - 2.0) / 6.0))
             conf = hi - (hi - lo) * k
             facts.append(f"работа у сейфа перед уходом ≈{secured:.1f} с")
+        t_dep = _disengage_time(states, cal, seg.start, cfg)
+        if t_dep < seg.start - 0.2:
+            facts.append(f"последний контакт с рабочим местом на {t_dep:.1f} с, затем уход")
         cands.append(
             Candidate(
-                type_id, seg.start, (max(0.0, seg.start - 10.0), min(duration, seg.start + 3.0)), conf, facts, rule_id="R1b",
+                type_id, t_dep, (max(0.0, t_dep - 10.0), min(duration, seg.start + 3.0)), conf, facts, rule_id="R1b",
+                vlm_window=(max(0.0, t_dep - 8.0), min(duration, seg.start + 3.0)),
                 vlm_question=(
                     "Кассир уходит из кассового помещения. По кадрам ПЕРЕД уходом: убрала ли она ценности/предметы "
                     "в сейф и закрыла ли его, выключен/закрыт ли ноутбук, пуст ли стол? Если рабочее место осталось "
@@ -474,6 +521,7 @@ def run_rules(states: list[FrameState], cal: Calibration, cfg: dict, fps: float,
             seen_before = [s.t for s in states if s.t < te.start and s.valid_bodies]
             if seen_before and te.start - seen_before[-1] <= 6.0:
                 t_event = max(0.0, min(te.start, seen_before[-1] + 0.4) - 1.0)
+                t_event = min(t_event, _disengage_time(states, cal, t_event, cfg))
                 secured = _cum_in(ev.storage_dwell, t_event - lookback, te.start)
                 hi = float(base.get("workplace_left_unsecured", 0.78))
                 lo = float(base.get("workplace_left_secured", 0.45))
@@ -484,6 +532,7 @@ def run_rules(states: list[FrameState], cal: Calibration, cfg: dict, fps: float,
                         hi - (hi - lo) * k - 0.06,
                         [f"помещение пустеет с {te.start:.1f} с до конца видео; работа у сейфа перед этим ≈{secured:.1f} с"],
                         rule_id="R1c",
+                        vlm_window=(max(0.0, t_event - 10.0), min(duration, te.start + 2.0)),
                         vlm_question=(
                             "Уходит ли кассир из помещения, оставляя рабочее место без присмотра? Убрала ли она перед "
                             "уходом предметы в сейф, закрыт ли ноутбук, пуст ли стол? Если место осталось 'живым' — "
@@ -758,6 +807,11 @@ def run_rules(states: list[FrameState], cal: Calibration, cfg: dict, fps: float,
                         rule_id="R12",
                         vlm_question="Осталась ли дверца сейфа (металлического шкафа) открытой после того, как кассир отошёл от него? Ответь в поле safe_open.",
                         vlm_expect=("safe_open", {"yes"}, {"no"}),
+                        vlm_window=(max(0.0, dwell.start - 1.0), min(duration, dwell.end + 6.0)),
+                        vlm_choice=(
+                            "Кассир достаёт что-то из сейфа и отходит, оставив дверцу сейфа открытой.",
+                            "Кассир закрывает дверцу сейфа, прежде чем отойти от него.",
+                        ),
                     )
                 )
                 break

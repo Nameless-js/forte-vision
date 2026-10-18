@@ -1,0 +1,1753 @@
+[
+ {
+  "video_id": 1,
+  "label": "violation",
+  "t_label": 22.0,
+  "group": "767f2a65c96f8253bbe8e2f9d700e2a3",
+  "team_type": "issue_without_count",
+  "candidates": [
+   {
+    "type_id": "handover_without_documents",
+    "t_event": 14.0,
+    "t_window": [
+     0.0,
+     15.0
+    ],
+    "confidence": 0.392,
+    "facts": [
+     "передача наличных на 14.0 с без предъявления документа с начала обслуживания"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.42,
+     "delta": -0.056,
+     "window": [
+      10.0,
+      18.0
+     ]
+    },
+    "rule_id": "R7",
+    "type_id_engine": "no_id_check"
+   },
+   {
+    "type_id": "issue_without_count",
+    "t_event": 22.6,
+    "t_window": [
+     12.6,
+     24.6
+    ],
+    "confidence": 0.436,
+    "facts": [
+     "передача наличных кассир→клиент на 22.6 с",
+     "возможный пересчёт закончился на 11.0 с (за 12 с до выдачи)"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.522,
+     "delta": 0.016,
+     "window": [
+      18.6,
+      25.9
+     ]
+    },
+    "rule_id": "R5w",
+    "type_id_engine": "issue_without_count"
+   },
+   {
+    "type_id": "handover_without_documents",
+    "t_event": 22.6,
+    "t_window": [
+     0.4,
+     23.6
+    ],
+    "confidence": 0.621,
+    "facts": [
+     "передача наличных на 22.6 с без предъявления документа с начала обслуживания"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.749,
+     "delta": 0.174,
+     "window": [
+      18.6,
+      25.9
+     ]
+    },
+    "rule_id": "R7",
+    "type_id_engine": "no_id_check"
+   }
+  ]
+ },
+ {
+  "video_id": 2,
+  "label": "violation",
+  "t_label": 10.0,
+  "group": "cdf8c6d946765256427f68ffa89974f1",
+  "team_type": "handover_without_documents",
+  "candidates": [
+   {
+    "type_id": "handover_without_documents",
+    "t_event": 13.6,
+    "t_window": [
+     0.0,
+     14.6
+    ],
+    "confidence": 0.238,
+    "facts": [
+     "передача наличных на 13.6 с без предъявления документа с начала обслуживания"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.219,
+     "delta": -0.197,
+     "window": [
+      9.6,
+      17.1
+     ]
+    },
+    "rule_id": "R7",
+    "type_id_engine": "no_id_check"
+   }
+  ]
+ },
+ {
+  "video_id": 3,
+  "label": "no_violation",
+  "t_label": null,
+  "group": "c5efdc077357191503d132c9b0ccca1d",
+  "team_type": null,
+  "candidates": [
+   {
+    "type_id": "issue_without_count",
+    "t_event": 16.8,
+    "t_window": [
+     6.8,
+     18.8
+    ],
+    "confidence": 0.423,
+    "facts": [
+     "передача наличных кассир→клиент на 16.8 с",
+     "возможный пересчёт закончился на 8.8 с (за 8 с до выдачи)"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.504,
+     "delta": 0.003,
+     "window": [
+      12.8,
+      20.0
+     ]
+    },
+    "rule_id": "R5w",
+    "type_id_engine": "issue_without_count"
+   },
+   {
+    "type_id": "handover_without_documents",
+    "t_event": 16.8,
+    "t_window": [
+     0.0,
+     17.8
+    ],
+    "confidence": 0.403,
+    "facts": [
+     "передача наличных на 16.8 с без предъявления документа с начала обслуживания"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.433,
+     "delta": -0.047,
+     "window": [
+      12.8,
+      20.0
+     ]
+    },
+    "rule_id": "R7",
+    "type_id_engine": "no_id_check"
+   }
+  ]
+ },
+ {
+  "video_id": 4,
+  "label": "violation",
+  "t_label": 57.0,
+  "group": "fdd5aa51aefe4b42dd4d318bbbd3f207",
+  "team_type": "two_clients_cash_mixed",
+  "candidates": [
+   {
+    "type_id": "two_clients_cash_mixed",
+    "t_event": 9.2,
+    "t_window": [
+     9.2,
+     50.0
+    ],
+    "confidence": 0.899,
+    "facts": [
+     "два посетителя у окна одновременно 9.2–50.0 с, наличные на столе"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.57,
+     "delta": 0.049,
+     "window": [
+      5.2,
+      13.2
+     ]
+    },
+    "rule_id": "R9a",
+    "type_id_engine": "two_clients_cash_mixed"
+   },
+   {
+    "type_id": "handover_without_documents",
+    "t_event": 9.6,
+    "t_window": [
+     0.0,
+     10.6
+    ],
+    "confidence": 0.443,
+    "facts": [
+     "передача наличных на 9.6 с без предъявления документа с начала обслуживания"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.49,
+     "delta": -0.007,
+     "window": [
+      5.6,
+      13.6
+     ]
+    },
+    "rule_id": "R7",
+    "type_id_engine": "no_id_check"
+   },
+   {
+    "type_id": "two_clients_cash_mixed",
+    "t_event": 59.4,
+    "t_window": [
+     59.4,
+     72.6
+    ],
+    "confidence": 0.859,
+    "facts": [
+     "два посетителя у окна одновременно 59.4–72.6 с, наличные на столе"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.513,
+     "delta": 0.009,
+     "window": [
+      55.4,
+      63.4
+     ]
+    },
+    "rule_id": "R9a",
+    "type_id_engine": "two_clients_cash_mixed"
+   },
+   {
+    "type_id": "handover_without_documents",
+    "t_event": 60.4,
+    "t_window": [
+     4.6,
+     61.4
+    ],
+    "confidence": 0.409,
+    "facts": [
+     "передача наличных на 60.4 с без предъявления документа с начала обслуживания"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.441,
+     "delta": -0.041,
+     "window": [
+      56.4,
+      64.4
+     ]
+    },
+    "rule_id": "R7",
+    "type_id_engine": "no_id_check"
+   }
+  ]
+ },
+ {
+  "video_id": 5,
+  "label": "no_violation",
+  "t_label": null,
+  "group": "304e8be8155a1f6529fe86ba88d05668",
+  "team_type": null,
+  "candidates": [
+   {
+    "type_id": "personal_items_at_workplace",
+    "t_event": 10.0,
+    "t_window": [
+     10.0,
+     15.8
+    ],
+    "confidence": 0.76,
+    "facts": [
+     "предмет, похожий на телефон, у руки кассира 10.0–15.8 с"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.515,
+     "delta": 0.01,
+     "window": [
+      6.0,
+      14.0
+     ]
+    },
+    "rule_id": "R3",
+    "type_id_engine": "phone_at_workplace"
+   },
+   {
+    "type_id": "issue_without_count",
+    "t_event": 25.6,
+    "t_window": [
+     15.6,
+     27.6
+    ],
+    "confidence": 0.42,
+    "facts": [
+     "передача наличных кассир→клиент на 25.6 с",
+     "возможный пересчёт закончился на 18.4 с (за 7 с до выдачи)"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.5,
+     "delta": -0.0,
+     "window": [
+      21.6,
+      29.6
+     ]
+    },
+    "rule_id": "R5w",
+    "type_id_engine": "issue_without_count"
+   }
+  ]
+ },
+ {
+  "video_id": 8,
+  "label": "no_violation",
+  "t_label": null,
+  "group": "dacb4cf5da210be8550081264ca31317",
+  "team_type": null,
+  "candidates": []
+ },
+ {
+  "video_id": 10,
+  "label": "no_violation",
+  "t_label": null,
+  "group": "cc15799ee16a1c9d15fdbd7531d046bf",
+  "team_type": null,
+  "candidates": []
+ },
+ {
+  "video_id": 11,
+  "label": "violation",
+  "t_label": 18.0,
+  "group": "52d8217b15bc14b128e5d36d675bb98a",
+  "team_type": "workplace_left_unattended",
+  "candidates": [
+   {
+    "type_id": "workplace_left_unattended",
+    "t_event": 8.0,
+    "t_window": [
+     8.0,
+     15.4
+    ],
+    "confidence": 1.0,
+    "facts": [
+     "кассир вне рабочей зоны 8.0–15.4 с",
+     "клиент у окна 0.2–24.2 с"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.886,
+     "delta": 0.27,
+     "window": [
+      4.0,
+      12.0
+     ]
+    },
+    "rule_id": "R1a",
+    "type_id_engine": "cashier_left_during_service"
+   },
+   {
+    "type_id": "handover_without_documents",
+    "t_event": 17.8,
+    "t_window": [
+     0.0,
+     18.8
+    ],
+    "confidence": 0.759,
+    "facts": [
+     "передача наличных на 17.8 с без предъявления документа с начала обслуживания"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.952,
+     "delta": 0.317,
+     "window": [
+      13.8,
+      21.8
+     ]
+    },
+    "rule_id": "R7",
+    "type_id_engine": "no_id_check"
+   },
+   {
+    "type_id": "accept_without_count",
+    "t_event": 19.8,
+    "t_window": [
+     17.8,
+     21.8
+    ],
+    "confidence": 0.731,
+    "facts": [
+     "приём наличных на 17.8 с",
+     "пересчёт в присутствии клиента (до 24.2 с) не зафиксирован"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.688,
+     "delta": 0.131,
+     "window": [
+      15.8,
+      23.8
+     ]
+    },
+    "rule_id": "R6",
+    "type_id_engine": "accept_without_count"
+   },
+   {
+    "type_id": "workplace_left_unattended",
+    "t_event": 23.4,
+    "t_window": [
+     13.4,
+     25.6
+    ],
+    "confidence": 1.0,
+    "facts": [
+     "кассир выходит из помещения на 23.4 с; помещение остаётся пустым до 25.4 с",
+     "работа у сейфа перед уходом ≈0.0 с"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.985,
+     "delta": 0.34,
+     "window": [
+      13.4,
+      25.6
+     ]
+    },
+    "rule_id": "R1b",
+    "type_id_engine": "workplace_left_unsecured"
+   }
+  ]
+ },
+ {
+  "video_id": 12,
+  "label": "no_violation",
+  "t_label": null,
+  "group": "5c78378409c487c886b479d6fe561d0d",
+  "team_type": null,
+  "candidates": [
+   {
+    "type_id": "workplace_left_unattended",
+    "t_event": 34.8,
+    "t_window": [
+     24.8,
+     37.8
+    ],
+    "confidence": 0.624,
+    "facts": [
+     "кассир выходит из помещения на 34.8 с; помещение остаётся пустым до 42.2 с",
+     "работа у сейфа перед уходом ≈8.0 с"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.748,
+     "delta": 0.174,
+     "window": [
+      24.8,
+      37.8
+     ]
+    },
+    "rule_id": "R1b",
+    "type_id_engine": "workplace_left_unsecured"
+   }
+  ]
+ },
+ {
+  "video_id": 13,
+  "label": "violation",
+  "t_label": 47.0,
+  "group": "1fb32d10e1499480865e6b72199c6a3d",
+  "team_type": "accept_without_count",
+  "candidates": [
+   {
+    "type_id": "handover_without_documents",
+    "t_event": 0.2,
+    "t_window": [
+     0.0,
+     4.4
+    ],
+    "confidence": 0.482,
+    "facts": [
+     "сумка инкассатора у рук 0.2–2.4 с; сопроводительный документ не зафиксирован"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.503,
+     "delta": 0.002,
+     "window": [
+      0.0,
+      4.2
+     ]
+    },
+    "rule_id": "R8",
+    "type_id_engine": "collection_bag_unchecked"
+   },
+   {
+    "type_id": "accept_without_count",
+    "t_event": 59.8,
+    "t_window": [
+     59.2,
+     61.8
+    ],
+    "confidence": 0.853,
+    "facts": [
+     "приём наличных на 59.2 с",
+     "пересчёт в присутствии инкассатора (до 59.8 с) не зафиксирован"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.718,
+     "delta": 0.153,
+     "window": [
+      55.8,
+      63.8
+     ]
+    },
+    "rule_id": "R6",
+    "type_id_engine": "accept_without_count"
+   },
+   {
+    "type_id": "workplace_left_unattended",
+    "t_event": 61.0,
+    "t_window": [
+     51.0,
+     64.0
+    ],
+    "confidence": 0.782,
+    "facts": [
+     "помещение пустеет с 62.0 с до конца видео; работа у сейфа перед этим ≈4.0 с"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.746,
+     "delta": 0.172,
+     "window": [
+      51.0,
+      64.0
+     ]
+    },
+    "rule_id": "R1c",
+    "type_id_engine": "workplace_left_unsecured"
+   }
+  ]
+ },
+ {
+  "video_id": 14,
+  "label": "no_violation",
+  "t_label": null,
+  "group": "91f6d6e30c28c1d899ce874a06444561",
+  "team_type": null,
+  "candidates": [
+   {
+    "type_id": "handover_without_documents",
+    "t_event": 0.6,
+    "t_window": [
+     0.0,
+     5.2
+    ],
+    "confidence": 0.541,
+    "facts": [
+     "сумка инкассатора у рук 0.6–3.2 с; сопроводительный документ не зафиксирован"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.587,
+     "delta": 0.061,
+     "window": [
+      0.0,
+      4.6
+     ]
+    },
+    "rule_id": "R8",
+    "type_id_engine": "collection_bag_unchecked"
+   },
+   {
+    "type_id": "suspect_note_mishandled",
+    "t_event": 50.0,
+    "t_window": [
+     49.0,
+     59.0
+    ],
+    "confidence": 0.128,
+    "facts": [
+     "работа счётной машины до 49.0 с, затем ручная работа с купюрами 10.0 с"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.112,
+     "delta": -0.272,
+     "window": [
+      46.0,
+      54.0
+     ]
+    },
+    "rule_id": "R11",
+    "type_id_engine": "suspect_note_mishandled"
+   }
+  ]
+ },
+ {
+  "video_id": 15,
+  "label": "violation",
+  "t_label": 15.0,
+  "group": "d4e7c11733f8a6982fce711cf62c6a90",
+  "team_type": "workplace_left_unattended",
+  "candidates": [
+   {
+    "type_id": "workplace_left_unattended",
+    "t_event": 16.6,
+    "t_window": [
+     6.6,
+     19.6
+    ],
+    "confidence": 1.0,
+    "facts": [
+     "помещение пустеет с 17.6 с до конца видео; работа у сейфа перед этим ≈2.4 с"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.981,
+     "delta": 0.337,
+     "window": [
+      6.6,
+      19.6
+     ]
+    },
+    "rule_id": "R1c",
+    "type_id_engine": "workplace_left_unsecured"
+   }
+  ]
+ },
+ {
+  "video_id": 16,
+  "label": "no_violation",
+  "t_label": null,
+  "group": "d4d0dce8ff94ba59eb6be0780b18339e",
+  "team_type": null,
+  "candidates": [
+   {
+    "type_id": "handover_without_documents",
+    "t_event": 14.4,
+    "t_window": [
+     12.4,
+     20.0
+    ],
+    "confidence": 0.482,
+    "facts": [
+     "сумка инкассатора у рук 14.4–18.0 с; сопроводительный документ не зафиксирован"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.502,
+     "delta": 0.002,
+     "window": [
+      10.4,
+      18.4
+     ]
+    },
+    "rule_id": "R8",
+    "type_id_engine": "collection_bag_unchecked"
+   }
+  ]
+ },
+ {
+  "video_id": 17,
+  "label": "violation",
+  "t_label": 7.0,
+  "group": "1cff94bb96d75439b00365a07adee716",
+  "team_type": "handover_without_documents",
+  "candidates": [
+   {
+    "type_id": "handover_without_documents",
+    "t_event": 2.2,
+    "t_window": [
+     0.2,
+     4.8
+    ],
+    "confidence": 0.633,
+    "facts": [
+     "сумка инкассатора у рук 2.2–2.8 с; сопроводительный документ не зафиксирован"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.718,
+     "delta": 0.153,
+     "window": [
+      0.0,
+      6.2
+     ]
+    },
+    "rule_id": "R8",
+    "type_id_engine": "collection_bag_unchecked"
+   },
+   {
+    "type_id": "handover_without_documents",
+    "t_event": 7.8,
+    "t_window": [
+     0.0,
+     8.8
+    ],
+    "confidence": 0.644,
+    "facts": [
+     "передача наличных на 7.8 с без предъявления документа с начала обслуживания"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.781,
+     "delta": 0.196,
+     "window": [
+      3.8,
+      11.8
+     ]
+    },
+    "rule_id": "R7",
+    "type_id_engine": "no_id_check"
+   }
+  ]
+ },
+ {
+  "video_id": 18,
+  "label": "violation",
+  "t_label": 20.0,
+  "group": "abebea33f273d52bd3f50fb57c5444b9",
+  "team_type": "two_clients_cash_mixed",
+  "candidates": [
+   {
+    "type_id": "handover_without_documents",
+    "t_event": 11.2,
+    "t_window": [
+     0.0,
+     12.2
+    ],
+    "confidence": 0.148,
+    "facts": [
+     "передача наличных на 11.2 с без предъявления документа с начала обслуживания"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.074,
+     "delta": -0.298,
+     "window": [
+      7.2,
+      15.2
+     ]
+    },
+    "rule_id": "R7",
+    "type_id_engine": "no_id_check"
+   },
+   {
+    "type_id": "two_clients_cash_mixed",
+    "t_event": 15.6,
+    "t_window": [
+     15.6,
+     20.4
+    ],
+    "confidence": 0.995,
+    "facts": [
+     "два посетителя у окна одновременно 15.6–20.4 с, наличные на столе"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.707,
+     "delta": 0.145,
+     "window": [
+      11.6,
+      19.6
+     ]
+    },
+    "rule_id": "R9a",
+    "type_id_engine": "two_clients_cash_mixed"
+   },
+   {
+    "type_id": "issue_without_count",
+    "t_event": 19.2,
+    "t_window": [
+     9.2,
+     21.2
+    ],
+    "confidence": 0.657,
+    "facts": [
+     "передача наличных кассир→клиент на 19.2 с",
+     "возможный пересчёт закончился на 13.4 с (за 6 с до выдачи)"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.839,
+     "delta": 0.237,
+     "window": [
+      15.2,
+      22.6
+     ]
+    },
+    "rule_id": "R5w",
+    "type_id_engine": "issue_without_count"
+   },
+   {
+    "type_id": "handover_without_documents",
+    "t_event": 19.2,
+    "t_window": [
+     0.0,
+     20.2
+    ],
+    "confidence": 0.212,
+    "facts": [
+     "передача наличных на 19.2 с без предъявления документа с начала обслуживания"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.161,
+     "delta": -0.238,
+     "window": [
+      15.2,
+      22.6
+     ]
+    },
+    "rule_id": "R7",
+    "type_id_engine": "no_id_check"
+   }
+  ]
+ },
+ {
+  "video_id": 19,
+  "label": "no_violation",
+  "t_label": null,
+  "group": "595c577e53299940a5c557bf84c795a2",
+  "team_type": null,
+  "candidates": [
+   {
+    "type_id": "two_clients_cash_mixed",
+    "t_event": 7.0,
+    "t_window": [
+     7.0,
+     43.4
+    ],
+    "confidence": 0.89,
+    "facts": [
+     "два посетителя у окна одновременно 7.0–43.4 с, наличные на столе"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.557,
+     "delta": 0.04,
+     "window": [
+      3.0,
+      11.0
+     ]
+    },
+    "rule_id": "R9a",
+    "type_id_engine": "two_clients_cash_mixed"
+   },
+   {
+    "type_id": "handover_without_documents",
+    "t_event": 7.6,
+    "t_window": [
+     0.0,
+     8.6
+    ],
+    "confidence": 0.448,
+    "facts": [
+     "передача наличных на 7.6 с без предъявления документа с начала обслуживания"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.498,
+     "delta": -0.002,
+     "window": [
+      3.6,
+      11.6
+     ]
+    },
+    "rule_id": "R7",
+    "type_id_engine": "no_id_check"
+   }
+  ]
+ },
+ {
+  "video_id": 20,
+  "label": "violation",
+  "t_label": 5.0,
+  "group": "c19c3785b4a311ee97a6d0df1e9bddd6",
+  "team_type": "workplace_left_unattended",
+  "candidates": []
+ },
+ {
+  "video_id": 21,
+  "label": "no_violation",
+  "t_label": null,
+  "group": "7356dd59916c98eae91b2710b15ccb27",
+  "team_type": null,
+  "candidates": []
+ },
+ {
+  "video_id": 22,
+  "label": "violation",
+  "t_label": 14.0,
+  "group": "b88d9942288015ffe424d5a50f206ab2",
+  "team_type": "workplace_left_unattended",
+  "candidates": [
+   {
+    "type_id": "handover_without_documents",
+    "t_event": 0.2,
+    "t_window": [
+     0.0,
+     10.0
+    ],
+    "confidence": 0.494,
+    "facts": [
+     "сумка инкассатора у рук 0.2–8.0 с; сопроводительный документ не зафиксирован"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.519,
+     "delta": 0.014,
+     "window": [
+      0.0,
+      4.2
+     ]
+    },
+    "rule_id": "R8",
+    "type_id_engine": "collection_bag_unchecked"
+   },
+   {
+    "type_id": "workplace_left_unattended",
+    "t_event": 15.4,
+    "t_window": [
+     5.4,
+     18.4
+    ],
+    "confidence": 0.45,
+    "facts": [
+     "кассир выходит из помещения на 15.4 с; помещение остаётся пустым до 21.0 с",
+     "работа у сейфа перед уходом ≈12.6 с"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.5,
+     "delta": 0.0,
+     "window": [
+      5.4,
+      18.4
+     ]
+    },
+    "rule_id": "R1b",
+    "type_id_engine": "workplace_left_unsecured"
+   }
+  ]
+ },
+ {
+  "video_id": 23,
+  "label": "no_violation",
+  "t_label": null,
+  "group": "cc739e64be12fc0acdeb582d4fdc0463",
+  "team_type": null,
+  "candidates": [
+   {
+    "type_id": "workplace_left_unattended",
+    "t_event": 15.0,
+    "t_window": [
+     5.0,
+     18.0
+    ],
+    "confidence": 0.773,
+    "facts": [
+     "помещение пустеет с 16.0 с до конца видео; работа у сейфа перед этим ≈5.0 с"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.811,
+     "delta": 0.218,
+     "window": [
+      5.0,
+      18.0
+     ]
+    },
+    "rule_id": "R1c",
+    "type_id_engine": "workplace_left_unsecured"
+   }
+  ]
+ },
+ {
+  "video_id": 24,
+  "label": "violation",
+  "t_label": 8.0,
+  "group": "b18427a9a72818c2768fbf501ec2d9e3",
+  "team_type": "workplace_left_unattended",
+  "candidates": [
+   {
+    "type_id": "workplace_left_unattended",
+    "t_event": 6.4,
+    "t_window": [
+     0.0,
+     9.4
+    ],
+    "confidence": 0.986,
+    "facts": [
+     "кассир выходит из помещения на 6.4 с; помещение остаётся пустым до 14.6 с",
+     "работа у сейфа перед уходом ≈4.6 с"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.998,
+     "delta": 0.349,
+     "window": [
+      0.0,
+      9.4
+     ]
+    },
+    "rule_id": "R1b",
+    "type_id_engine": "workplace_left_unsecured"
+   }
+  ]
+ },
+ {
+  "video_id": 25,
+  "label": "no_violation",
+  "t_label": null,
+  "group": "8661055b1e0d0d2b083347eff3b581f7",
+  "team_type": null,
+  "candidates": [
+   {
+    "type_id": "workplace_left_unattended",
+    "t_event": 13.8,
+    "t_window": [
+     3.8,
+     16.8
+    ],
+    "confidence": 0.318,
+    "facts": [
+     "кассир выходит из помещения на 13.8 с; помещение остаётся пустым до 31.6 с",
+     "работа у сейфа перед уходом ≈18.4 с"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.312,
+     "delta": -0.132,
+     "window": [
+      3.8,
+      16.8
+     ]
+    },
+    "rule_id": "R1b",
+    "type_id_engine": "workplace_left_unsecured"
+   }
+  ]
+ },
+ {
+  "video_id": 26,
+  "label": "violation",
+  "t_label": 9.0,
+  "group": "23bc05eb011f80545a6009d98836baa6",
+  "team_type": "workplace_left_unattended",
+  "candidates": [
+   {
+    "type_id": "workplace_left_unattended",
+    "t_event": 11.2,
+    "t_window": [
+     1.2,
+     14.2
+    ],
+    "confidence": 0.867,
+    "facts": [
+     "кассир выходит из помещения на 11.2 с; помещение остаётся пустым до 19.6 с",
+     "работа у сейфа перед уходом ≈4.0 с"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.781,
+     "delta": 0.197,
+     "window": [
+      1.2,
+      14.2
+     ]
+    },
+    "rule_id": "R1b",
+    "type_id_engine": "workplace_left_unsecured"
+   }
+  ]
+ },
+ {
+  "video_id": 27,
+  "label": "no_violation",
+  "t_label": null,
+  "group": "9183adf045efbbc3cb115605e9ca704b",
+  "team_type": null,
+  "candidates": [
+   {
+    "type_id": "workplace_left_unattended",
+    "t_event": 10.2,
+    "t_window": [
+     0.2,
+     13.2
+    ],
+    "confidence": 0.437,
+    "facts": [
+     "кассир выходит из помещения на 10.2 с; помещение остаётся пустым до 26.4 с",
+     "работа у сейфа перед уходом ≈10.6 с"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.482,
+     "delta": -0.013,
+     "window": [
+      0.2,
+      13.2
+     ]
+    },
+    "rule_id": "R1b",
+    "type_id_engine": "workplace_left_unsecured"
+   }
+  ]
+ },
+ {
+  "video_id": 28,
+  "label": "violation",
+  "t_label": 7.0,
+  "group": "545c045acd070acb09ff2594f1b44577",
+  "team_type": "workplace_left_unattended",
+  "candidates": [
+   {
+    "type_id": "workplace_left_unattended",
+    "t_event": 9.8,
+    "t_window": [
+     0.0,
+     12.8
+    ],
+    "confidence": 1.0,
+    "facts": [
+     "кассир выходит из помещения на 9.8 с; помещение остаётся пустым до 16.4 с",
+     "работа у сейфа перед уходом ≈3.0 с"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.994,
+     "delta": 0.346,
+     "window": [
+      0.0,
+      12.8
+     ]
+    },
+    "rule_id": "R1b",
+    "type_id_engine": "workplace_left_unsecured"
+   }
+  ]
+ },
+ {
+  "video_id": 29,
+  "label": "no_violation",
+  "t_label": null,
+  "group": "4c92ba52ec957d0ecf81a09f66817b29",
+  "team_type": null,
+  "candidates": [
+   {
+    "type_id": "workplace_left_unattended",
+    "t_event": 10.0,
+    "t_window": [
+     0.0,
+     13.0
+    ],
+    "confidence": 1.0,
+    "facts": [
+     "кассир выходит из помещения на 10.0 с; помещение остаётся пустым до 17.2 с",
+     "работа у сейфа перед уходом ≈4.0 с"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.983,
+     "delta": 0.338,
+     "window": [
+      0.0,
+      13.0
+     ]
+    },
+    "rule_id": "R1b",
+    "type_id_engine": "workplace_left_unsecured"
+   }
+  ]
+ },
+ {
+  "video_id": 30,
+  "label": "violation",
+  "t_label": 13.0,
+  "group": "0608eca654509fddf4bb0dc799e2e6de",
+  "team_type": "unauthorized_in_cash_zone",
+  "candidates": [
+   {
+    "type_id": "unauthorized_in_cash_zone",
+    "t_event": 13.6,
+    "t_window": [
+     13.6,
+     18.6
+    ],
+    "confidence": 0.894,
+    "facts": [
+     "посторонний в зоне кассира 13.6–18.6 с"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.492,
+     "delta": -0.006,
+     "window": [
+      9.6,
+      17.6
+     ]
+    },
+    "rule_id": "R4",
+    "type_id_engine": "unauthorized_in_cash_zone"
+   }
+  ]
+ },
+ {
+  "video_id": 31,
+  "label": "no_violation",
+  "t_label": null,
+  "group": "442dc88203d3715c5293e7da2156bd35",
+  "team_type": null,
+  "candidates": []
+ },
+ {
+  "video_id": 32,
+  "label": "violation",
+  "t_label": 5.0,
+  "group": "e00ced6c40089f399ab909d11629a5df",
+  "team_type": "unauthorized_in_cash_zone",
+  "candidates": []
+ },
+ {
+  "video_id": 33,
+  "label": "violation",
+  "t_label": 6.0,
+  "group": "5575e411e2810a72703890f0b2443c10",
+  "team_type": "unauthorized_in_cash_zone",
+  "candidates": []
+ },
+ {
+  "video_id": 34,
+  "label": "violation",
+  "t_label": 13.0,
+  "group": "a91d22affe251b634dc0d7fd63235c9e",
+  "team_type": "accept_without_count",
+  "candidates": []
+ },
+ {
+  "video_id": 35,
+  "label": "no_violation",
+  "t_label": null,
+  "group": "d19984330918f5f57453950acce2118a",
+  "team_type": null,
+  "candidates": [
+   {
+    "type_id": "handover_without_documents",
+    "t_event": 11.4,
+    "t_window": [
+     0.0,
+     12.4
+    ],
+    "confidence": 0.303,
+    "facts": [
+     "передача наличных на 11.4 с без предъявления документа с начала обслуживания"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.312,
+     "delta": -0.132,
+     "window": [
+      7.4,
+      15.4
+     ]
+    },
+    "rule_id": "R7",
+    "type_id_engine": "no_id_check"
+   }
+  ]
+ },
+ {
+  "video_id": 37,
+  "label": "no_violation",
+  "t_label": null,
+  "group": "189e0353de852ff8f2ab3cd977db2a0f",
+  "team_type": null,
+  "candidates": []
+ },
+ {
+  "video_id": 38,
+  "label": "violation",
+  "t_label": 33.0,
+  "group": "e5a64fff53efade025ae10e6bbd047df",
+  "team_type": "two_clients_cash_mixed",
+  "candidates": [
+   {
+    "type_id": "handover_without_documents",
+    "t_event": 10.2,
+    "t_window": [
+     0.0,
+     11.2
+    ],
+    "confidence": 0.382,
+    "facts": [
+     "передача наличных на 10.2 с без предъявления документа с начала обслуживания"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.427,
+     "delta": -0.051,
+     "window": [
+      6.2,
+      14.2
+     ]
+    },
+    "rule_id": "R7",
+    "type_id_engine": "no_id_check"
+   },
+   {
+    "type_id": "two_clients_cash_mixed",
+    "t_event": 36.2,
+    "t_window": [
+     36.2,
+     49.8
+    ],
+    "confidence": 0.846,
+    "facts": [
+     "два посетителя у окна одновременно 36.2–49.8 с, наличные на столе"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.495,
+     "delta": -0.004,
+     "window": [
+      32.2,
+      40.2
+     ]
+    },
+    "rule_id": "R9a",
+    "type_id_engine": "two_clients_cash_mixed"
+   },
+   {
+    "type_id": "handover_without_documents",
+    "t_event": 41.4,
+    "t_window": [
+     0.2,
+     42.4
+    ],
+    "confidence": 0.672,
+    "facts": [
+     "передача наличных на 41.4 с без предъявления документа с начала обслуживания"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.839,
+     "delta": 0.237,
+     "window": [
+      37.4,
+      45.4
+     ]
+    },
+    "rule_id": "R7",
+    "type_id_engine": "no_id_check"
+   }
+  ]
+ },
+ {
+  "video_id": 39,
+  "label": "no_violation",
+  "t_label": null,
+  "group": "5fd1b371c742b676b6c029d16c2e2198",
+  "team_type": null,
+  "candidates": [
+   {
+    "type_id": "handover_without_documents",
+    "t_event": 11.0,
+    "t_window": [
+     0.0,
+     12.0
+    ],
+    "confidence": 0.485,
+    "facts": [
+     "передача наличных на 11.0 с без предъявления документа с начала обслуживания"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.571,
+     "delta": 0.05,
+     "window": [
+      7.0,
+      15.0
+     ]
+    },
+    "rule_id": "R7",
+    "type_id_engine": "no_id_check"
+   },
+   {
+    "type_id": "handover_without_documents",
+    "t_event": 17.6,
+    "t_window": [
+     0.0,
+     18.6
+    ],
+    "confidence": 0.61,
+    "facts": [
+     "передача наличных на 17.6 с без предъявления документа с начала обслуживания"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.749,
+     "delta": 0.175,
+     "window": [
+      13.6,
+      21.6
+     ]
+    },
+    "rule_id": "R7",
+    "type_id_engine": "no_id_check"
+   },
+   {
+    "type_id": "handover_without_documents",
+    "t_event": 55.8,
+    "t_window": [
+     35.8,
+     56.8
+    ],
+    "confidence": 0.512,
+    "facts": [
+     "передача наличных на 55.8 с без предъявления документа с начала обслуживания"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.588,
+     "delta": 0.062,
+     "window": [
+      51.8,
+      59.8
+     ]
+    },
+    "rule_id": "R7",
+    "type_id_engine": "no_id_check"
+   }
+  ]
+ },
+ {
+  "video_id": 40,
+  "label": "violation",
+  "t_label": 17.0,
+  "group": "612cf89dc4e7213143242bc409949ded",
+  "team_type": "unauthorized_in_cash_zone",
+  "candidates": []
+ },
+ {
+  "video_id": 43,
+  "label": "no_violation",
+  "t_label": null,
+  "group": "d14976d777c2ecddbfd6f31f2359f4e0",
+  "team_type": null,
+  "candidates": []
+ },
+ {
+  "video_id": 44,
+  "label": "violation",
+  "t_label": 16.0,
+  "group": "c41b35b2ac643cf436b0f6d548d5c163",
+  "team_type": "suspect_note_mishandled",
+  "candidates": [
+   {
+    "type_id": "workplace_left_unattended",
+    "t_event": 16.6,
+    "t_window": [
+     6.6,
+     19.6
+    ],
+    "confidence": 1.0,
+    "facts": [
+     "помещение пустеет с 17.6 с до конца видео; работа у сейфа перед этим ≈0.0 с"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.926,
+     "delta": 0.298,
+     "window": [
+      6.6,
+      19.6
+     ]
+    },
+    "rule_id": "R1c",
+    "type_id_engine": "workplace_left_unsecured"
+   }
+  ]
+ },
+ {
+  "video_id": 45,
+  "label": "no_violation",
+  "t_label": null,
+  "group": "3ba888f705c81cad73bc45ece2077ff4",
+  "team_type": null,
+  "candidates": []
+ },
+ {
+  "video_id": 46,
+  "label": "violation",
+  "t_label": 11.0,
+  "group": "e27b34f262cc51c90b44deda61422f56",
+  "team_type": "personal_items_at_workplace",
+  "candidates": [
+   {
+    "type_id": "personal_items_at_workplace",
+    "t_event": 11.2,
+    "t_window": [
+     11.2,
+     13.2
+    ],
+    "confidence": 1.0,
+    "facts": [
+     "стакан/бутылка/еда у руки кассира 11.2–13.2 с"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.999,
+     "delta": 0.349,
+     "window": [
+      7.2,
+      15.2
+     ]
+    },
+    "rule_id": "R3b",
+    "type_id_engine": "personal_items_at_workplace"
+   }
+  ]
+ },
+ {
+  "video_id": 47,
+  "label": "violation",
+  "t_label": 68.0,
+  "group": "fdd5aa51aefe4b42dd4d318bbbd3f207",
+  "team_type": "accept_without_count",
+  "candidates": [
+   {
+    "type_id": "two_clients_cash_mixed",
+    "t_event": 9.2,
+    "t_window": [
+     9.2,
+     50.0
+    ],
+    "confidence": 0.899,
+    "facts": [
+     "два посетителя у окна одновременно 9.2–50.0 с, наличные на столе"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.57,
+     "delta": 0.049,
+     "window": [
+      5.2,
+      13.2
+     ]
+    },
+    "rule_id": "R9a",
+    "type_id_engine": "two_clients_cash_mixed"
+   },
+   {
+    "type_id": "handover_without_documents",
+    "t_event": 9.6,
+    "t_window": [
+     0.0,
+     10.6
+    ],
+    "confidence": 0.443,
+    "facts": [
+     "передача наличных на 9.6 с без предъявления документа с начала обслуживания"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.49,
+     "delta": -0.007,
+     "window": [
+      5.6,
+      13.6
+     ]
+    },
+    "rule_id": "R7",
+    "type_id_engine": "no_id_check"
+   },
+   {
+    "type_id": "two_clients_cash_mixed",
+    "t_event": 59.4,
+    "t_window": [
+     59.4,
+     72.6
+    ],
+    "confidence": 0.859,
+    "facts": [
+     "два посетителя у окна одновременно 59.4–72.6 с, наличные на столе"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.513,
+     "delta": 0.009,
+     "window": [
+      55.4,
+      63.4
+     ]
+    },
+    "rule_id": "R9a",
+    "type_id_engine": "two_clients_cash_mixed"
+   },
+   {
+    "type_id": "handover_without_documents",
+    "t_event": 60.4,
+    "t_window": [
+     4.6,
+     61.4
+    ],
+    "confidence": 0.409,
+    "facts": [
+     "передача наличных на 60.4 с без предъявления документа с начала обслуживания"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.441,
+     "delta": -0.041,
+     "window": [
+      56.4,
+      64.4
+     ]
+    },
+    "rule_id": "R7",
+    "type_id_engine": "no_id_check"
+   }
+  ]
+ },
+ {
+  "video_id": 48,
+  "label": "no_violation",
+  "t_label": null,
+  "group": "304e8be8155a1f6529fe86ba88d05668",
+  "team_type": null,
+  "candidates": [
+   {
+    "type_id": "personal_items_at_workplace",
+    "t_event": 10.0,
+    "t_window": [
+     10.0,
+     15.8
+    ],
+    "confidence": 0.76,
+    "facts": [
+     "предмет, похожий на телефон, у руки кассира 10.0–15.8 с"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.515,
+     "delta": 0.01,
+     "window": [
+      6.0,
+      14.0
+     ]
+    },
+    "rule_id": "R3",
+    "type_id_engine": "phone_at_workplace"
+   },
+   {
+    "type_id": "issue_without_count",
+    "t_event": 25.6,
+    "t_window": [
+     15.6,
+     27.6
+    ],
+    "confidence": 0.42,
+    "facts": [
+     "передача наличных кассир→клиент на 25.6 с",
+     "возможный пересчёт закончился на 18.4 с (за 7 с до выдачи)"
+    ],
+    "source": "rules",
+    "vlm": {
+     "mode": "choice",
+     "p_violation": 0.5,
+     "delta": -0.0,
+     "window": [
+      21.6,
+      29.6
+     ]
+    },
+    "rule_id": "R5w",
+    "type_id_engine": "issue_without_count"
+   }
+  ]
+ }
+]

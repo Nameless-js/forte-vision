@@ -32,6 +32,15 @@ def test_user_overrides_win():
     assert cfg.get("rules.unattended_cash_s") is not None  # defaults preserved
 
 
+def test_user_config_file_beats_profile(tmp_path):
+    p = tmp_path / "u.yaml"
+    p.write_text("vlm:\n  model_id: some/other-model\n  load_in_4bit: true\n", encoding="utf-8")
+    cfg = Config.load(config=str(p), profile="gpu-small")  # profile-gpu-small.yaml also sets vlm.model_id
+    assert cfg.get("vlm.model_id") == "some/other-model"
+    assert cfg.get("vlm.load_in_4bit") is True
+    assert cfg.get("vlm.frames_per_query") is not None  # untouched profile/default keys survive
+
+
 def test_unknown_profile_rejected():
     with pytest.raises(ValueError):
         Config.load(profile="tpu-huge")
